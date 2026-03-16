@@ -72,6 +72,101 @@
       "description": "Permission de supprimer un utilisateur"
     }
   },
+  "profile": {
+    "singular": "Profil",
+    "create_profile": {
+      "value": "Créer un profil",
+      "description": "Permission de créer un profil"
+    },
+    "read_profile": {
+      "value": "Lire un profil",
+      "description": "Permission de voir les détails d'un profil"
+    },
+    "update_profile": {
+      "value": "Mettre à jour un profil",
+      "description": "Permission de mettre à jour un profil"
+    },
+    "delete_profile": {
+      "value": "Supprimer un profil",
+      "description": "Permission de supprimer un profil"
+    }
+  },
+  "invoice": {
+    "singular": "Facture",
+    "create_invoice": {
+      "value": "Créer une facture",
+      "description": "Permission de créer une facture"
+    },
+    "read_invoice": {
+      "value": "Lire une facture",
+      "description": "Permission de voir les détails d'une facture"
+    },
+    "update_invoice": {
+      "value": "Mettre à jour une facture",
+      "description": "Permission de mettre à jour une facture"
+    },
+    "delete_invoice": {
+      "value": "Supprimer une facture",
+      "description": "Permission de supprimer une facture"
+    }
+  },
+  "quotation": {
+    "singular": "Devis",
+    "create_quotation": {
+      "value": "Créer un devis",
+      "description": "Permission de créer un devis"
+    },
+    "read_quotation": {
+      "value": "Lire un devis",
+      "description": "Permission de voir les détails d'un devis"
+    },
+    "update_quotation": {
+      "value": "Mettre à jour un devis",
+      "description": "Permission de mettre à jour un devis"
+    },
+    "delete_quotation": {
+      "value": "Supprimer un devis",
+      "description": "Permission de supprimer un devis"
+    }
+  },
+  "payment": {
+    "singular": "Paiement",
+    "create_payment": {
+      "value": "Créer un paiement",
+      "description": "Permission de créer un paiement"
+    },
+    "read_payment": {
+      "value": "Lire un paiement",
+      "description": "Permission de voir les détails d'un paiement"
+    },
+    "update_payment": {
+      "value": "Mettre à jour un paiement",
+      "description": "Permission de mettre à jour un paiement"
+    },
+    "delete_payment": {
+      "value": "Supprimer un paiement",
+      "description": "Permission de supprimer un paiement"
+    }
+  },
+  "template": {
+    "singular": "Modèle",
+    "create_template": {
+      "value": "Créer un modèle",
+      "description": "Permission de créer un modèle"
+    },
+    "read_template": {
+      "value": "Lire un modèle",
+      "description": "Permission de voir les détails d'un modèle"
+    },
+    "update_template": {
+      "value": "Mettre à jour un modèle",
+      "description": "Permission de mettre à jour un modèle"
+    },
+    "delete_template": {
+      "value": "Supprimer un modèle",
+      "description": "Permission de supprimer un modèle"
+    }
+  },
   "activity": {
     "singular": "Activité",
     "create_activity": {

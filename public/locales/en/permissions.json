@@ -72,6 +72,101 @@
       "description": "Permission to delete user"
     }
   },
+  "profile": {
+    "singular": "Profile",
+    "create_profile": {
+      "value": "Create Profile",
+      "description": "Permission to create profile"
+    },
+    "read_profile": {
+      "value": "Read Profile",
+      "description": "Permission to view profile details"
+    },
+    "update_profile": {
+      "value": "Update Profile",
+      "description": "Permission to update profile"
+    },
+    "delete_profile": {
+      "value": "Delete Profile",
+      "description": "Permission to delete profile"
+    }
+  },
+  "invoice": {
+    "singular": "Invoice",
+    "create_invoice": {
+      "value": "Create Invoice",
+      "description": "Permission to create invoice"
+    },
+    "read_invoice": {
+      "value": "Read Invoice",
+      "description": "Permission to view invoice details"
+    },
+    "update_invoice": {
+      "value": "Update Invoice",
+      "description": "Permission to update invoice"
+    },
+    "delete_invoice": {
+      "value": "Delete Invoice",
+      "description": "Permission to delete invoice"
+    }
+  },
+  "quotation": {
+    "singular": "Quotation",
+    "create_quotation": {
+      "value": "Create Quotation",
+      "description": "Permission to create quotation"
+    },
+    "read_quotation": {
+      "value": "Read Quotation",
+      "description": "Permission to view quotation details"
+    },
+    "update_quotation": {
+      "value": "Update Quotation",
+      "description": "Permission to update quotation"
+    },
+    "delete_quotation": {
+      "value": "Delete Quotation",
+      "description": "Permission to delete quotation"
+    }
+  },
+  "payment": {
+    "singular": "Payment",
+    "create_payment": {
+      "value": "Create Payment",
+      "description": "Permission to create payment"
+    },
+    "read_payment": {
+      "value": "Read Payment",
+      "description": "Permission to view payment details"
+    },
+    "update_payment": {
+      "value": "Update Payment",
+      "description": "Permission to update payment"
+    },
+    "delete_payment": {
+      "value": "Delete Payment",
+      "description": "Permission to delete payment"
+    }
+  },
+  "template": {
+    "singular": "Template",
+    "create_template": {
+      "value": "Create Template",
+      "description": "Permission to create template"
+    },
+    "read_template": {
+      "value": "Read Template",
+      "description": "Permission to view template details"
+    },
+    "update_template": {
+      "value": "Update Template",
+      "description": "Permission to update template"
+    },
+    "delete_template": {
+      "value": "Delete Template",
+      "description": "Permission to delete template"
+    }
+  },
   "activity": {
     "singular": "Activity",
     "create_activity": {
