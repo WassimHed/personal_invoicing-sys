@@ -9,7 +9,7 @@ const findPaginated = async (
   order: 'ASC' | 'DESC' = 'ASC',
   sortKey: string,
   search: string = '',
-  relations: string[] = ['permissionsEntries', 'permissionsEntries.permission']
+  relations: string[] = ['permissions', 'permissions.permission']
 ): Promise<PagedResponse<Role>> => {
   const filter = search
     ? Object.values(ROLE_FILTER_ATTRIBUTES)

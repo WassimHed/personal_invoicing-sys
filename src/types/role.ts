@@ -5,7 +5,7 @@ export interface Role extends DatabaseEntity {
   id?: number;
   label?: string;
   description?: string;
-  permissionsEntries?: RolePermissionEntry[];
+  permissions?: RolePermissionEntry[];
 }
 
 export interface CreateRoleDto {

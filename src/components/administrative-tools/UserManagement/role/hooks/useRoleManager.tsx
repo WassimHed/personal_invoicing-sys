@@ -56,7 +56,7 @@ export const useRoleManager = create<RoleManager>((set, get) => ({
       id: data.id,
       label: data.label,
       description: data.description,
-      permissions: data?.permissionsEntries?.map((entry) => entry.permission || ({} as Permission))
+      permissions: data?.permissions?.map((entry) => entry.permission || ({} as Permission))
     }));
   },
   addPermission: (permission: Permission) => {

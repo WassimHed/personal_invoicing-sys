@@ -32,7 +32,7 @@ export default function RoleMain({ className }: RoleMainProps) {
   //set page title in the breadcrumb
   const { setRoutes } = useBreadcrumb();
   React.useEffect(() => {
-    setRoutes([
+    setRoutes?.([
       { title: tCommon('menu.administrative_tools') },
       { title: tCommon('submenu.user_management') },
       { title: tCommon('settings.user_management.roles') }
@@ -140,7 +140,7 @@ export default function RoleMain({ className }: RoleMainProps) {
   });
 
   const handleCreateSubmit = () => {
-    const { permissionsEntries, ...data } = roleManager.getRole();
+    const { permissions, ...data } = roleManager.getRole();
     createRole({
       ...data,
       permissionsIds: roleManager?.permissions?.map((permission) => permission.id || undefined)
@@ -148,7 +148,7 @@ export default function RoleMain({ className }: RoleMainProps) {
   };
 
   const handleUpdateSubmit = () => {
-    const { permissionsEntries, ...data } = roleManager.getRole();
+    const { permissions, ...data } = roleManager.getRole();
     updateRole({
       id: data.id,
       role: {

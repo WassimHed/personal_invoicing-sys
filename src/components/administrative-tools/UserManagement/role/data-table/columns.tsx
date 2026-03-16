@@ -48,7 +48,7 @@ export const getRoleColumns = (t: Function, tPermission: Function): ColumnDef<Ro
         />
       ),
       cell: ({ row }) => {
-        const entries = row.original.permissionsEntries;
+        const entries = row.original.permissions;
 
         if (entries?.length === 0) {
           return <div className="opacity-70">{t('roles.attributes.no_permissions')}</div>;
