@@ -89,6 +89,13 @@
     "validate": "Validate",
     "unassociate": "Unassociate"
   },
+  "buttons": {
+    "profile": "Profile",
+    "account": "Account",
+    "billing": "Billing",
+    "notifications": "Notifications",
+    "logout": "Log out"
+  },
   "elements": "Elements",
   "files": {
     "uploading": "Uploading",

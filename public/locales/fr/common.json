@@ -89,6 +89,13 @@
     "validate": "Valider",
     "unassociate": "Dissocier"
   },
+  "buttons": {
+    "profile": "Profil",
+    "account": "Compte",
+    "billing": "Facturation",
+    "notifications": "Notifications",
+    "logout": "Se déconnecter"
+  },
   "elements": "Éléments",
   "files": {
     "uploading": "Téléchargement",

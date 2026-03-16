@@ -75,28 +75,28 @@ export function UserNav({ className }: UserNavProps) {
         <DropdownMenuGroup>
           <DropdownMenuItem onClick={() => router.push('/profile')}>
             <User />
-            {t('common.buttons.profile')}
+            {t('buttons.profile')}
           </DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
           <DropdownMenuItem>
             <BadgeCheck />
-            {t('common.buttons.account')}
+            {t('buttons.account')}
           </DropdownMenuItem>
           <DropdownMenuItem>
             <CreditCard />
-            {t('common.buttons.billing')}
+            {t('buttons.billing')}
           </DropdownMenuItem>
           <DropdownMenuItem onClick={() => router.push('/notifications')}>
             <Bell />
-            {t('common.buttons.notifications')}
+            {t('buttons.notifications')}
           </DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={handleSignOut}>
           <LogOut />
-          {t('common.buttons.logout')}
+          {t('buttons.logout')}
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
