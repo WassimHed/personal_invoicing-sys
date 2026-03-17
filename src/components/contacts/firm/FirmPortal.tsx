@@ -103,13 +103,16 @@ export const FirmPortal = ({ className }: FirmPortalProps) => {
   const context: DataTableConfig<Firm> = {
     singularName: tContacts('firm.singular'),
     pluralName: tContacts('firm.plural'),
+    invisibleColumns: ['created_at', 'phone','tax_number'], // Add column IDs to hide
     inspectCallback: (entity: Firm) => {
       router.push(`/contacts/firm/${entity.id}`);
     },
     createCallback: () => {
       router.push('/contacts/new-firm');
     },
-    updateCallback: () => {},
+    updateCallback: (entity: Firm) => {
+      router.push(`/contacts/modify-firm/${entity.id}`);
+    },
     deleteCallback: () => {
       setDeleteDialog(true);
     },
