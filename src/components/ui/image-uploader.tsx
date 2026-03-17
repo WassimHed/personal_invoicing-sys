@@ -113,6 +113,7 @@ export const ImageUploader: React.FC<ImageUploaderProps> = ({
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger
+                asChild
                 disabled={!preview}
                 className="h-full w-full"
                 onClick={() => {
@@ -130,6 +131,7 @@ export const ImageUploader: React.FC<ImageUploaderProps> = ({
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger
+                asChild
                 disabled={!preview}
                 className="h-full w-full"
                 onClick={() => {

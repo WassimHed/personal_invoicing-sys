@@ -31,7 +31,8 @@ import { useQuotationArticleManager } from '../hooks/useQuotationArticleManager'
 import { QUOTATION_LIFECYCLE_ACTIONS } from '@/constants/quotation.lifecycle';
 import { QuotationInvoiceDialog } from '../dialogs/QuotationInvoiceDialog';
 import { QuotationInvoiceList } from './QuotationInvoiceList';
-import { Input } from '@/components/ui/input';
+import { FieldBuilder } from '@/components/shared/form-builder/FieldBuilder';
+import { FieldVariant } from '@/components/shared/form-builder/types';
 
 interface QuotationLifecycle {
   label: string;
@@ -471,13 +472,17 @@ export const QuotationControlSection = ({
                 )}
               </div>
             ) : (
-              <Input
-                className="font-bold my-4"
-                value={
-                  quotationManager.currency &&
-                  `${quotationManager.currency?.code && tCurrency(quotationManager.currency?.code)} (${quotationManager?.currency?.symbol})`
-                }
-                disabled
+              <FieldBuilder
+                field={{
+                  id: 'currency_ro',
+                  className: 'font-bold my-4',
+                  variant: FieldVariant.TEXT,
+                  props: {
+                    value: quotationManager.currency &&
+                           `${quotationManager.currency?.code && tCurrency(quotationManager.currency?.code)} (${quotationManager?.currency?.symbol})`,
+                    disabled: true
+                  }
+                }}
               />
             )}
           </div>

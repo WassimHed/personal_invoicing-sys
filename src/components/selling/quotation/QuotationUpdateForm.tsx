@@ -75,7 +75,7 @@ export const QuotationUpdateForm = ({ className, quotationId }: QuotationFormPro
   const { setRoutes } = useBreadcrumb();
   React.useEffect(() => {
     if (quotation?.sequential)
-      setRoutes([
+      setRoutes?.([
         { title: tCommon('menu.selling'), href: '/selling' },
         { title: tInvoicing('quotation.plural'), href: '/selling/quotations' },
         { title: tInvoicing('quotation.singular') + ' N° ' + quotation?.sequential }

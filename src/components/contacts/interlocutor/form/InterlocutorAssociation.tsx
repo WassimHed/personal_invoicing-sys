@@ -12,8 +12,9 @@ import { useTranslation } from 'react-i18next';
 import { useInterlocutorManager } from '../hooks/useInterlocutorManager';
 import { cn } from '@/lib/utils';
 import { Interlocutor } from '@/types';
-import { Input } from '@/components/ui/input';
 import { Combobox } from '@/components/ui/combo-box';
+import { FieldBuilder } from '@/components/shared/form-builder/FieldBuilder';
+import { FieldVariant } from '@/components/shared/form-builder/types';
 
 interface InterlocutorAssociationProps {
   className?: string;
@@ -59,13 +60,19 @@ export const InterlocutorAssociation: React.FC<InterlocutorAssociationProps> = (
 
       <div className="mx-1 w-full">
         <Label>{tCommon('interlocutor.attributes.position')}</Label>
-        <Input
-          isPending={loading || false}
-          className="mt-1"
-          placeholder="Ex. CEO"
-          value={interlocutorManager && interlocutorManager.position}
-          onChange={(e) => {
-            interlocutorManager.set('position', e.target.value);
+        <FieldBuilder
+          field={{
+            id: 'position',
+            className: 'mt-1',
+            variant: FieldVariant.TEXT,
+            placeholder: 'Ex. CEO',
+            props: {
+              value: interlocutorManager && interlocutorManager.position,
+              disabled: loading || false,
+              onChange: (v: string) => {
+                interlocutorManager.set('position', v);
+              }
+            }
           }}
         />
       </div>

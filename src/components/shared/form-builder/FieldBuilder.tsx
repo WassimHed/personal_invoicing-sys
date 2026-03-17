@@ -14,12 +14,14 @@ import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
 import { cn } from '@/lib/utils';
 import { CheckedState } from '@radix-ui/react-checkbox';
-import { Field, SelectOption } from './types';
+import { Field, SelectOption, RadioOption } from './types';
 import { Progress } from '@/components/ui/progress';
 import { useTranslation } from 'react-i18next';
 import { ImageUploaderManager } from '@/components/shared/form-builder/ImageUploaderManager';
 import { ImageUploader } from './ImageUploader';
 import { PasswordField } from './PasswordField';
+import { PhoneInput } from '@/components/ui/phone-input';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 
 interface FieldBuilderProps {
   field?: Field<any>;
@@ -31,7 +33,6 @@ export const FieldBuilder = ({ field }: FieldBuilderProps) => {
   switch (field?.variant) {
     case 'text':
     case 'email':
-    case 'tel':
     case 'url':
       return (
         <Input
@@ -47,6 +48,25 @@ export const FieldBuilder = ({ field }: FieldBuilderProps) => {
           }}
         />
       );
+    case 'tel': {
+      const rawValue = field.props?.value || '';
+      const cleanValue = typeof rawValue === 'string' ? rawValue.replace(/[^\d+]/g, '') : rawValue;
+      return (
+        <PhoneInput
+          className={cn(
+            field?.className,
+            field.error && 'border-destructive focus-visible:ring-destructive'
+          )}
+          defaultCountry="TN"
+          placeholder={field.placeholder}
+          value={cleanValue || undefined}
+          onChange={(value) => {
+            field?.props?.onChange?.(value);
+          }}
+          isPending={field?.props?.disabled}
+        />
+      );
+    }
     case 'number':
       return (
         <Input
@@ -71,8 +91,7 @@ export const FieldBuilder = ({ field }: FieldBuilderProps) => {
     case 'select':
       return (
         <Select
-          value={field?.props?.value}
-          defaultValue={field?.props?.value}
+          value={field?.props?.value || ''}
           onValueChange={field?.props?.onValueChange}
           disabled={field?.props?.disabled}>
           <SelectTrigger
@@ -118,15 +137,32 @@ export const FieldBuilder = ({ field }: FieldBuilderProps) => {
         <div className="flex items-center gap-2 h-8">
           <Checkbox
             {...field.props}
-            id={field.label}
+            id={field.id}
             checked={field?.props?.value}
             defaultChecked={field?.props?.defaultChecked}
             onCheckedChange={(value) => field?.props?.onCheckedChange?.(value)}
           />
-          <Label className={cn('text-xs')} htmlFor={field.label}>
+          <Label className={cn('text-xs')} htmlFor={field.id}>
             {field.description}
           </Label>
         </div>
+      );
+    case 'radio':
+      return (
+        <RadioGroup
+          value={field.props?.value}
+          onValueChange={field.props?.onValueChange}
+          disabled={field.props?.disabled}
+          className={cn('flex flex-wrap gap-4', field.className)}>
+          {field.props?.options?.map((option: RadioOption) => (
+            <div key={option.value} className="flex items-center space-x-2">
+              <RadioGroupItem value={option.value} id={`${field.id}-${option.value}`} />
+              <Label htmlFor={`${field.id}-${option.value}`} className="text-xs font-normal">
+                {option.label}
+              </Label>
+            </div>
+          ))}
+        </RadioGroup>
       );
     case 'password':
       return (
@@ -155,33 +191,18 @@ export const FieldBuilder = ({ field }: FieldBuilderProps) => {
         </div>
       );
     case 'textarea':
+      const { resizable, ...textareaProps } = field.props || {};
       return (
         <Textarea
-          {...field.props}
+          {...textareaProps}
           id={field.id}
-          className={cn(!field.props?.resizable && 'resize-none', field?.className)}
+          className={cn(!resizable && 'resize-none', field?.className)}
           placeholder={field.placeholder}
           value={field.props?.value}
           onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
             field?.props?.onChange?.(e.target.value)
           }
         />
-      );
-    case 'checkbox':
-      return (
-        <div className="flex flex-col gap-2 my-1">
-          {field.props?.selectOptions?.map((option: SelectOption) => (
-            <div key={option.label} className="flex items-center gap-2">
-              <Checkbox
-                id={option.label}
-                className={field?.className}
-                checked={field.props?.value as CheckedState}
-                onCheckedChange={(value: CheckedState) => field?.props?.onCheckedChange?.(value)}
-              />
-              <Label className="text-sm font-semibold">{option.label}</Label>
-            </div>
-          ))}
-        </div>
       );
     case 'file':
       return (

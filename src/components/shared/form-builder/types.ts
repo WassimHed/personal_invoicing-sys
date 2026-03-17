@@ -97,6 +97,17 @@ export interface SelectOption {
   value: string;
 }
 
+export interface RadioOption {
+  label: string;
+  value: string;
+}
+
+export interface RadioFieldProps extends BaseFieldProps {
+  value?: string;
+  onValueChange?: (value: string) => void;
+  options?: RadioOption[];
+}
+
 export interface SelectFieldProps extends BaseFieldProps {
   value?: string | null;
   onValueChange?: (value: string) => void;

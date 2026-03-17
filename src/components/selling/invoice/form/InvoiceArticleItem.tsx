@@ -1,7 +1,9 @@
 import React from 'react';
 import { cn } from '@/lib/utils';
 import { Label } from '@/components/ui/label';
-import { Input } from '@/components/ui/input';
+import { FieldBuilder } from '@/components/shared/form-builder/FieldBuilder';
+import { FieldVariant } from '@/components/shared/form-builder/types';
+
 import { ArticleInvoiceEntry, Currency, InvoiceTaxEntry, Tax } from '@/types';
 import {
   Select,
@@ -13,7 +15,7 @@ import {
 import { DISCOUNT_TYPE } from '@/types/enums/discount-types';
 import { toast } from 'sonner';
 import { useTranslation } from 'react-i18next';
-import { Textarea } from '@/components/ui/textarea';
+
 import { InvoiceTaxEntries } from './InvoiceTaxEntries';
 
 interface InvoiceArticleItemProps {
@@ -129,7 +131,7 @@ export const InvoiceArticleItem: React.FC<InvoiceArticleItemProps> = ({
 
   const handleAddTax = () => {
     if ((article.articleInvoiceEntryTaxes?.length || 0) >= taxes.length) {
-      toast.warn(tInvoicing('invoice.errors.surpassed_tax_limit'));
+      toast.warning(tInvoicing('invoice.errors.surpassed_tax_limit'));
       return;
     }
     onChange({
@@ -148,27 +150,50 @@ export const InvoiceArticleItem: React.FC<InvoiceArticleItemProps> = ({
           <div className="w-3/5">
             <Label className="mx-1">{tInvoicing('article.attributes.title')}</Label>
             {edit ? (
-              <Input
-                placeholder="Title"
-                value={article.article?.title}
-                onChange={handleTitleChange}
+              <FieldBuilder
+                field={{
+                  id: 'title',
+                  variant: FieldVariant.TEXT,
+                  placeholder: 'Title',
+                  props: {
+                    value: article.article?.title,
+                    onChange: (v: string) => handleTitleChange({ target: { value: v } } as any)
+                  }
+                }}
               />
             ) : (
-              <UneditableInput value={article.article?.title} />
+              <FieldBuilder
+                field={{
+                  id: 'title_ro',
+                  variant: FieldVariant.TEXT,
+                  props: { value: article.article?.title, disabled: true }
+                }}
+              />
             )}
           </div>
           {/* Quantity */}
           <div className="w-1/5">
             <Label className="mx-1">{tInvoicing('article.attributes.quantity')}</Label>
             {edit ? (
-              <Input
-                type="number"
-                placeholder="0"
-                value={article.quantity}
-                onChange={handleQuantityChange}
+              <FieldBuilder
+                field={{
+                  id: 'quantity',
+                  variant: FieldVariant.TEXT,
+                  placeholder: '0',
+                  props: {
+                    value: String(article.quantity || ''),
+                    onChange: (v: string) => handleQuantityChange({ target: { value: v } } as any)
+                  }
+                }}
               />
             ) : (
-              <UneditableInput value={article.quantity} />
+              <FieldBuilder
+                field={{
+                  id: 'quantity_ro',
+                  variant: FieldVariant.TEXT,
+                  props: { value: String(article.quantity || ''), disabled: true }
+                }}
+              />
             )}
           </div>
           {/* Price */}
@@ -176,14 +201,25 @@ export const InvoiceArticleItem: React.FC<InvoiceArticleItemProps> = ({
             <Label className="mx-1">{tInvoicing('article.attributes.unit_price')}</Label>
             <div className="flex items-center gap-2">
               {edit ? (
-                <Input
-                  type="number"
-                  placeholder="0"
-                  value={article.unit_price}
-                  onChange={handleUnitPriceChange}
+                <FieldBuilder
+                  field={{
+                    id: 'unit_price',
+                    variant: FieldVariant.TEXT,
+                    placeholder: '0',
+                    props: {
+                      value: String(article.unit_price || ''),
+                      onChange: (v: string) => handleUnitPriceChange({ target: { value: v } } as any)
+                    }
+                  }}
                 />
               ) : (
-                <Input value={article.unit_price} />
+                <FieldBuilder
+                  field={{
+                    id: 'unit_price_ro',
+                    variant: FieldVariant.TEXT,
+                    props: { value: String(article.unit_price || ''), disabled: true }
+                  }}
+                />
               )}
               <Label className="font-bold mx-1">{currency?.symbol}</Label>
             </div>
@@ -195,24 +231,35 @@ export const InvoiceArticleItem: React.FC<InvoiceArticleItemProps> = ({
               {edit ? (
                 <>
                   <Label className="mx-1">{tInvoicing('article.attributes.description')}</Label>
-                  <Textarea
-                    placeholder="Description"
-                    className="resize-none"
-                    value={article.article?.description}
-                    onChange={(e) => handleDescriptionChange(e)}
-                    rows={3}
+                  <FieldBuilder
+                    field={{
+                      id: 'description',
+                      variant: FieldVariant.TEXTAREA,
+                      placeholder: 'Description',
+                      props: {
+                        value: article.article?.description,
+                        onChange: (v: string) => handleDescriptionChange({ target: { value: v } } as any),
+                        rows: 3,
+                        className: 'resize-none'
+                      }
+                    }}
                   />
                 </>
               ) : (
                 article.article?.description && (
                   <>
                     <Label className="mx-1">{tInvoicing('article.attributes.description')}</Label>
-                    <Textarea
-                      disabled
-                      value={article.article?.description}
-                      className="resize-none"
-                      onClick={() => {}}
-                      rows={3 + (article?.articleInvoiceEntryTaxes?.length || 0)}
+                    <FieldBuilder
+                      field={{
+                        id: 'description_ro',
+                        variant: FieldVariant.TEXTAREA,
+                        props: {
+                          value: article.article?.description,
+                          disabled: true,
+                          rows: 3 + (article?.articleInvoiceEntryTaxes?.length || 0),
+                          className: 'resize-none'
+                        }
+                      }}
                     />
                   </>
                 )
@@ -242,36 +289,55 @@ export const InvoiceArticleItem: React.FC<InvoiceArticleItemProps> = ({
           <Label className="mx-1">{tInvoicing('invoice.attributes.discount')}</Label>
           <div className="flex items-center gap-2">
             {edit ? (
-              <Input
-                className="w-1/2"
-                type="number"
-                placeholder="0"
-                value={article.discount}
-                onChange={handleDiscountChange}
+              <FieldBuilder
+                field={{
+                  id: 'discount',
+                  className: 'w-1/2',
+                  variant: FieldVariant.TEXT,
+                  placeholder: '0',
+                  props: {
+                    value: String(article.discount || ''),
+                    onChange: (v: string) => handleDiscountChange({ target: { value: v } } as any)
+                  }
+                }}
               />
             ) : (
-              <UneditableInput className="w-1/2" value={article.discount || '0'} />
+              <FieldBuilder
+                field={{
+                  id: 'discount_ro',
+                  className: 'w-1/2',
+                  variant: FieldVariant.TEXT,
+                  props: { value: String(article.discount || '0'), disabled: true }
+                }}
+              />
             )}
             {edit ? (
-              <Select
-                onValueChange={handleDiscountTypeChange}
-                defaultValue={
-                  article.discount_type === DISCOUNT_TYPE.PERCENTAGE ? 'PERCENTAGE' : 'AMOUNT'
-                }>
-                <SelectTrigger className="w-1/2">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="PERCENTAGE">%</SelectItem>
-                  <SelectItem value="AMOUNT">{currency?.symbol || '$'}</SelectItem>
-                </SelectContent>
-              </Select>
+              <FieldBuilder
+                field={{
+                  id: 'discount_type',
+                  className: 'w-1/2',
+                  variant: FieldVariant.SELECT,
+                  props: {
+                    value: article.discount_type === DISCOUNT_TYPE.PERCENTAGE ? 'PERCENTAGE' : 'AMOUNT',
+                    onValueChange: handleDiscountTypeChange,
+                    options: [
+                      { value: 'PERCENTAGE', label: '%' },
+                      { value: 'AMOUNT', label: currency?.symbol || '$' }
+                    ]
+                  }
+                }}
+              />
             ) : (
-              <UneditableInput
-                className="w-1/2 font-bold mx-1"
-                value={
-                  article.discount_type === DISCOUNT_TYPE.PERCENTAGE ? '%' : currency?.symbol || '$'
-                }
+              <FieldBuilder
+                field={{
+                  id: 'discount_type_ro',
+                  className: 'w-1/2 font-bold mx-1',
+                  variant: FieldVariant.TEXT,
+                  props: {
+                    value: article.discount_type === DISCOUNT_TYPE.PERCENTAGE ? '%' : currency?.symbol || '$',
+                    disabled: true
+                  }
+                }}
               />
             )}
           </div>

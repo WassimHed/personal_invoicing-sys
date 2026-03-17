@@ -1,4 +1,5 @@
-import { Input } from '@/components/ui/input';
+import { FieldBuilder } from '@/components/shared/form-builder/FieldBuilder';
+import { FieldVariant } from '@/components/shared/form-builder/types';
 import { Label } from '@/components/ui/label';
 import { cn } from '@/lib/utils';
 import { Currency, PaymentInvoiceEntry } from '@/types';
@@ -131,7 +132,16 @@ export const PaymentInvoiceItem: React.FC<PaymentInvoiceItemProps> = ({
       {/* Amount Paid */}
       <div className="w-2/12 flex flex-col gap-2">
         <Label className="font-thin">{tInvoicing('invoice.attributes.payment')}</Label>
-        <Input type="number" onChange={handleAmountPaidChange} value={invoiceEntry.amount} />
+        <FieldBuilder
+          field={{
+            id: 'amount_paid',
+            variant: FieldVariant.TEXT,
+            props: {
+              value: String(invoiceEntry.amount || ''),
+              onChange: (v: string) => handleAmountPaidChange({ target: { value: v } } as any)
+            }
+          }}
+        />
       </div>
       {/* Remaining Amount */}
       <div className="w-2/12 flex flex-col gap-2">

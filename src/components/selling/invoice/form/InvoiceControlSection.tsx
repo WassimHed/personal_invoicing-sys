@@ -38,7 +38,8 @@ import { InvoiceDownloadDialog } from '../dialogs/InvoiceDownloadDialog';
 import { InvoiceDeleteDialog } from '../dialogs/InvoiceDeleteDialog';
 import { INVOICE_LIFECYCLE_ACTIONS } from '@/constants/invoice.lifecycle';
 import { InvoicePaymentList } from './InvoicePaymentList';
-import { Input } from '@/components/ui/input';
+import { FieldBuilder } from '@/components/shared/form-builder/FieldBuilder';
+import { FieldVariant } from '@/components/shared/form-builder/types';
 
 interface InvoiceLifecycle {
   label: string;
@@ -353,9 +354,16 @@ export const InvoiceControlSection = ({
                   </Select>
                 </SelectShimmer>
               ) : invoiceManager.quotationId ? (
-                <Input
-                  className="font-bold my-4"
-                  value={quotations.find((q) => q.id == invoiceManager.quotationId)?.sequential}
+                <FieldBuilder
+                  field={{
+                    id: 'quotation_ro',
+                    className: 'font-bold my-4',
+                    variant: FieldVariant.TEXT,
+                    props: {
+                      value: quotations.find((q) => q.id == invoiceManager.quotationId)?.sequential,
+                      disabled: true
+                    }
+                  }}
                 />
               ) : (
                 <Label className="flex p-2 items-center justify-center gap-2 underline ">
@@ -464,12 +472,17 @@ export const InvoiceControlSection = ({
                   )}
                 </div>
               ) : (
-                <Input
-                  className="font-bold my-4"
-                  value={
-                    invoiceManager.currency &&
-                    `${invoiceManager.currency?.code && tCurrency(invoiceManager.currency?.code)} (${invoiceManager?.currency?.symbol})`
-                  }
+                <FieldBuilder
+                  field={{
+                    id: 'currency_ro',
+                    className: 'font-bold my-4',
+                    variant: FieldVariant.TEXT,
+                    props: {
+                      value: invoiceManager.currency &&
+                             `${invoiceManager.currency?.code && tCurrency(invoiceManager.currency?.code)} (${invoiceManager?.currency?.symbol})`,
+                      disabled: true
+                    }
+                  }}
                 />
               )}
             </div>
