@@ -2,7 +2,7 @@ import React from 'react';
 import { useRouter } from 'next/router';
 import { FirmDetails } from '@/components/contacts/firm/FirmDetails';
 import { useTranslation } from 'react-i18next';
-import { InvoicePortal } from '@/components/selling/invoice/InvoicePortal';
+import { InvoiceEmbeddedMain } from '@/components/selling/invoice/InvoiceEmbeddedMain';
 
 export default function Page() {
   const router = useRouter();
@@ -22,7 +22,7 @@ export default function Page() {
 
   return (
     <FirmDetails firmId={id}>
-      <InvoicePortal />
+      <InvoiceEmbeddedMain firmId={parseInt(id)} routes={routes} />
     </FirmDetails>
   );
 }

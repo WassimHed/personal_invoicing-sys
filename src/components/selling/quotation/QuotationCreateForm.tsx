@@ -55,7 +55,7 @@ export const QuotationCreateForm = ({ className, firmId }: QuotationFormProps) =
   //set page title in the breadcrumb
   const { setRoutes } = useBreadcrumb();
   React.useEffect(() => {
-    setRoutes(
+    setRoutes?.(
       !firmId
         ? [
             { title: tCommon('menu.selling'), href: '/selling' },
@@ -93,7 +93,7 @@ export const QuotationCreateForm = ({ className, firmId }: QuotationFormProps) =
   );
 
   //websocket to listen for server changes related to sequence number
-  const { currentSequence, isQuotationSequencePending } = useQuotationSocket();
+  const { currentSequence, isSequencePending: isQuotationSequencePending } = useQuotationSocket();
   //handle Sequential Number
   React.useEffect(() => {
     quotationManager.set('sequentialNumber', currentSequence);

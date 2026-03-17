@@ -106,9 +106,9 @@ export const useFirmAddressFormStructure = ({
     props: {
       value: address?.countryId?.toString(),
       onValueChange: (value) => setAddressField?.('countryId', parseInt(value)),
-      options: countries.map((country) => ({
-        label: country?.alpha2Code ? tCountry(country.alpha2Code) : country.name,
-        value: country.id.toString()
+      options: countries.map((country: any) => ({
+        label: country?.alpha2Code ? tCountry(country.alpha2Code) : country.name || '',
+        value: country?.id?.toString() || ''
       })),
       disabled
     }

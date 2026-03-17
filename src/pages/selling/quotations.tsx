@@ -1,10 +1,10 @@
 import React from 'react';
-import { QuotationMain } from '@/components/selling/quotation/QuotationMain';
+import { QuotationPortal } from '@/components/selling/quotation/QuotationPortal';
 
-export default function QuotationsPage() {
+export default function Page() {
   return (
-    <div className="flex-1 flex flex-col overflow-auto p-8">
-      <QuotationMain className="p-5 my-10" />
+    <div className="flex-1 flex flex-col overflow-hidden p-8">
+      <QuotationPortal className="p-5 my-10" />
     </div>
   );
 }

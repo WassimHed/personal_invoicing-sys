@@ -11,7 +11,7 @@ import { useMutation, useQuery } from '@tanstack/react-query';
 import { getErrorMessage } from '@/utils/errors';
 import { useRouter } from 'next/router';
 import { cn } from '@/lib/utils';
-import { useFirmManager } from '@/hooks/stores/useFirmStore';
+import { useFirmStore } from '@/hooks/stores/useFirmStore';
 import FirmContactInformation from './form/FirmContactInformation';
 import FirmEntrepriseInformation from './form/FirmEntrepriseInformation';
 import FirmAddressInformation from './form/FirmAddressInformation';
@@ -38,7 +38,7 @@ export const FirmUpdateForm = ({ className, firmId }: FirmFormProps) => {
   const { t: tContact } = useTranslation('contacts');
 
   //stores
-  const firmManager = useFirmManager();
+  const firmManager = useFirmStore();
 
   //Fetch options
   const {
@@ -58,7 +58,8 @@ export const FirmUpdateForm = ({ className, firmId }: FirmFormProps) => {
   const { setRoutes } = useBreadcrumb();
   React.useEffect(() => {
     if (firmId)
-      setRoutes([
+      setRoutes?.([
+
         { title: tCommon('menu.contacts'), href: '/contacts' },
         { title: tContact('firm.plural'), href: '/contacts/firms' },
         {

@@ -1,44 +1,51 @@
 import React from 'react';
+import { api } from '@/api';
+import { CreateInterlocutorDto, UpdateInterlocutorDto, Interlocutor } from '@/types';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import { useRouter } from 'next/router';
 import { toast } from 'sonner';
-import { useDebounce } from '@/hooks/other/useDebounce';
-import { api } from '@/api';
 import { getErrorMessage } from '@/utils/errors';
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useDebounce } from '@/hooks/other/useDebounce';
 import { useTranslation } from 'react-i18next';
+import { useInterlocutorDeleteDialog } from './dialogs/InterlocutorDeleteDialog';
+
 import { DataTable } from '@/components/shared/data-table/data-table';
 import { DataTableConfig } from '@/components/shared/data-table/types';
-import { CreateInterlocutorDto, Interlocutor, UpdateInterlocutorDto } from '@/types';
-import ContentSection from '@/components/shared/ContentSection';
-import { cn } from '@/lib/utils';
-import { BreadcrumbRoute, useBreadcrumb } from '@/context/BreadcrumbContext';
-import { useInterlocutorManager } from './hooks/useInterlocutorManager';
-import { useInterlocutorUpdateSheet } from './dialogs/InterlocutorUpdateSheet';
-import { useInterlocutorCreateOrAssociateSheet } from './dialogs/InterlocutorCreateOrAssociateSheet';
-import { useInterlocutorDisassociateDialog } from './dialogs/InterlocutorDisassociateDialog';
 import { useInterlocutorColumns } from './columns';
-import { useInterlocutorDeleteDialog } from './dialogs/InterlocutorDeleteDialog';
+import { useInterlocutorManager } from './hooks/useInterlocutorManager';
+import { useBreadcrumb } from '@/context/BreadcrumbContext';
+import { useInterlocutorCreateOrAssociateSheet } from './dialogs/InterlocutorCreateOrAssociateSheet';
+import { useInterlocutorUpdateSheet } from './dialogs/InterlocutorUpdateSheet';
 import { useInterlocutorPromoteDialog } from './dialogs/InterlocutorPromoteDialog';
+import { useInterlocutorDisassociateDialog } from './dialogs/InterlocutorDisassociateDialog';
 import { ArrowUp, Unlink } from 'lucide-react';
+import { useIntro } from '@/context/IntroContext';
+import { cn } from '@/lib/utils';
 
-interface InterlocutorEmbeddedMainProps {
+interface InterlocutorProps {
   className?: string;
   firmId?: number;
-  routes?: BreadcrumbRoute[];
 }
 
-export const InterlocutorEmbeddedMain: React.FC<InterlocutorEmbeddedMainProps> = ({
-  className,
-  firmId,
-  routes
-}) => {
+export const InterlocutorPortal: React.FC<InterlocutorProps> = ({ className, firmId }) => {
   const router = useRouter();
   const { t: tCommon } = useTranslation('common');
   const { t: tContacts } = useTranslation('contacts');
-  const { setRoutes } = useBreadcrumb();
+  const { setRoutes, clearRoutes } = useBreadcrumb();
+  const { setIntro, clearIntro } = useIntro();
+
   React.useEffect(() => {
-    if (routes && firmId) setRoutes?.([
-...routes, { title: tContacts('interlocutor.plural') }]);
+    if (!firmId) {
+      setIntro?.(tContacts('interlocutor.singular'), tContacts('interlocutor.card_description'));
+      setRoutes?.([
+        { title: tCommon('menu.contacts'), href: '/contacts' },
+        { title: tContacts('interlocutor.plural') }
+      ]);
+    }
+    return () => {
+      clearIntro?.();
+      clearRoutes?.();
+    };
   }, [router.locale, firmId]);
 
   const interlocutorManager = useInterlocutorManager();
@@ -270,8 +277,14 @@ export const InterlocutorEmbeddedMain: React.FC<InterlocutorEmbeddedMainProps> =
     setSortDetails: (order: boolean, sortKey: string) => setSortDetails({ order, sortKey }),
     //actions
     createCallback: openCreateInterlocutorSheet,
+    inspectCallback: (interlocutor: Interlocutor) => {
+      router.push(`/contacts/interlocutor/${interlocutor.id}`);
+    },
     updateCallback: firmId
-      ? () => openUpdateInterlocutorSheet()
+      ? (interlocutor: Interlocutor) => {
+          interlocutorManager.setInterlocutor(interlocutor, firmId);
+          openUpdateInterlocutorSheet();
+        }
       : undefined,
     deleteCallback: (interlocutor: Interlocutor) => {
       const isMain = interlocutor.firmsToInterlocutor?.find(
@@ -342,26 +355,20 @@ export const InterlocutorEmbeddedMain: React.FC<InterlocutorEmbeddedMainProps> =
 
   if (error) return 'An error has occurred: ' + error.message;
   return (
-    <ContentSection
-      title={tContacts('interlocutor.singular')}
-      desc={tContacts('interlocutor.card_description')}
-      className="w-full"
-      childrenClassName={cn('overflow-hidden', className)}>
-      <>
-        {createInterlocutorSheet}
-        {updateInterlocutorSheet}
-        {deleteInterlocutorDialog}
-        {promoteInterlocutorDialog}
-        {disassociateInterlocutorDialog}
-        <DataTable
-          className="flex flex-col flex-1 overflow-hidden p-1"
-          containerClassName="overflow-auto"
-          data={interlocutors}
-          columns={columns}
-          context={context}
-          isPending={isPending}
-        />
-      </>
-    </ContentSection>
+    <div className={cn('flex flex-col flex-1 overflow-hidden container mx-auto', className)}>
+      {createInterlocutorSheet}
+      {updateInterlocutorSheet}
+      {deleteInterlocutorDialog}
+      {promoteInterlocutorDialog}
+      {disassociateInterlocutorDialog}
+      <DataTable
+        className="flex flex-col flex-1 overflow-auto p-1"
+        containerClassName="overflow-auto"
+        data={interlocutors}
+        columns={columns}
+        context={context}
+        isPending={isPending}
+      />
+    </div>
   );
 };

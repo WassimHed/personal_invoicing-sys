@@ -5,15 +5,16 @@ import { useMutation, useQuery } from '@tanstack/react-query';
 import { useRouter } from 'next/router';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { PaymentActionsContext } from './data-table/ActionsContext';
-import { DataTable } from './data-table/data-table';
-import { getPaymentColumns } from './data-table/columns';
+import { DataTable } from '@/components/shared/data-table/data-table';
+import { usePaymentColumns } from './columns';
 import { toast } from 'sonner';
 import { getErrorMessage } from '@/utils/errors';
 import { usePaymentManager } from './hooks/usePaymentManager';
 import { PaymentDeleteDialog } from './dialogs/PaymentDeleteDialog';
 import ContentSection from '@/components/shared/ContentSection';
 import { cn } from '@/lib/utils';
+import { DataTableConfig } from '@/components/shared/data-table/types';
+import { Payment } from '@/types';
 
 interface PaymentEmbeddedMainProps {
   className?: string;
@@ -36,7 +37,8 @@ export const PaymentEmbeddedMain: React.FC<PaymentEmbeddedMainProps> = ({
   const { setRoutes } = useBreadcrumb();
   React.useEffect(() => {
     if (routes && (firmId || interlocutorId))
-      setRoutes([...routes, { title: tCommon('submenu.payments') }]);
+      setRoutes?.([
+...routes, { title: tCommon('submenu.payments') }]);
   }, [router.locale, firmId, interlocutorId, routes]);
 
   const paymentManager = usePaymentManager();
@@ -90,10 +92,11 @@ export const PaymentEmbeddedMain: React.FC<PaymentEmbeddedMainProps> = ({
     return paymentsResp?.data || [];
   }, [paymentsResp]);
 
-  const context = {
+  const context: DataTableConfig<Payment> = {
+    singularName: tInvoicing('payment.singular'),
+    pluralName: tInvoicing('payment.plural'),
     //dialogs
-    openDeleteDialog: () => setDeleteDialog(true),
-    openDownloadDialog: () => setDownloadDialog(true),
+    deleteCallback: () => setDeleteDialog(true),
     //search, filtering, sorting & paging
     searchTerm,
     setSearchTerm,
@@ -106,6 +109,8 @@ export const PaymentEmbeddedMain: React.FC<PaymentEmbeddedMainProps> = ({
     sortKey: sortDetails.sortKey,
     setSortDetails: (order: boolean, sortKey: string) => setSortDetails({ order, sortKey })
   };
+
+  const columns = usePaymentColumns(context);
 
   //Remove Invoice
   const { mutate: removePayment, isPending: isDeletePending } = useMutation({
@@ -140,15 +145,14 @@ export const PaymentEmbeddedMain: React.FC<PaymentEmbeddedMainProps> = ({
           isDeletionPending={isDeletePending}
           onClose={() => setDeleteDialog(false)}
         />
-        <PaymentActionsContext.Provider value={context}>
-          <DataTable
-            className="flex flex-col flex-1 overflow-hidden p-1"
-            containerClassName="overflow-auto"
-            data={payments}
-            columns={getPaymentColumns(tInvoicing, tCurrency)}
-            isPending={isPending}
-          />
-        </PaymentActionsContext.Provider>
+        <DataTable
+          context={context}
+          className="flex flex-col flex-1 overflow-hidden p-1"
+          containerClassName="overflow-auto"
+          data={payments}
+          columns={columns}
+          isPending={isPending}
+        />
       </>
     </ContentSection>
   );
