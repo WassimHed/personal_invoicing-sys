@@ -1,5 +1,5 @@
 import { PagedResponse } from '@/types/response';
-import { CreateUserDto, UpdateUserDto, User } from '@/types/user';
+import { CreateAbstractUserDto, UpdateAbstractUserDto, ResponseUserDto as User } from '@/types/user';
 import axios from './axios';
 import { USER_FILTER_ATTRIBUTES } from '@/constants/user.filter-attributes';
 
@@ -27,12 +27,12 @@ const findPaginated = async (
   return response.data;
 };
 
-const create = async (createUserDto: CreateUserDto): Promise<User> => {
+const create = async (createUserDto: CreateAbstractUserDto): Promise<User> => {
   const response = await axios.post<User>('public/user', createUserDto);
   return response.data;
 };
 
-const findById = async (id?: number): Promise<User> => {
+const findById = async (id?: string): Promise<User> => {
   const response = await axios.get<User>(`public/user/${id}`);
   return response.data;
 };
@@ -42,17 +42,17 @@ const findCurrent = async (): Promise<User> => {
   return response.data;
 };
 
-const update = async (id?: number, updateRoleDto?: UpdateUserDto): Promise<User> => {
+const update = async (id?: string, updateRoleDto?: UpdateAbstractUserDto): Promise<User> => {
   const response = await axios.put<User>(`public/user/${id}`, updateRoleDto);
   return response.data;
 };
 
-const deactivate = async (id?: number): Promise<User> => {
+const deactivate = async (id?: string): Promise<User> => {
   const response = await axios.put<User>(`public/user/deactivate/${id}`);
   return response.data;
 };
 
-const activate = async (id?: number): Promise<User> => {
+const activate = async (id?: string): Promise<User> => {
   const response = await axios.put<User>(`public/user/activate/${id}`);
   return response.data;
 };

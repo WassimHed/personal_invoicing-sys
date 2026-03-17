@@ -8,7 +8,7 @@ const find = async (): Promise<Currency[]> => {
 
 const factory = (): Currency => {
   return {
-    id: undefined,
+    id: 0,
     code: '',
     label: '',
     symbol: '',

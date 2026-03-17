@@ -1,4 +1,4 @@
-import { Sequential } from '@/types';
+import { UpdateSequentialDto as Sequential } from '@/types';
 import { DateFormat } from '@/types/enums/date-formats';
 import { format } from 'date-fns';
 

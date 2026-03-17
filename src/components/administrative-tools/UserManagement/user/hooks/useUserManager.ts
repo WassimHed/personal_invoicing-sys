@@ -1,8 +1,8 @@
-import { User } from '@/types';
+import { ResponseUserDto } from '@/types';
 import { create } from 'zustand';
 
 interface UserManagerData {
-  id?: number;
+  id?: string;
   username?: string;
   email?: string;
   firstName?: string;
@@ -16,8 +16,8 @@ interface UserManagerData {
 interface UserManager extends UserManagerData {
   set: (name: keyof UserManagerData, value: any) => void;
   reset: () => void;
-  getUser: () => Partial<User>;
-  setUser: (data: Partial<User>) => void;
+  getUser: () => Partial<ResponseUserDto> & { password?: string; confirmPassword?: string };
+  setUser: (data: Partial<ResponseUserDto>) => void;
 }
 
 const initialState: UserManagerData = {
@@ -60,7 +60,7 @@ export const useUserManager = create<UserManager>((set, get) => ({
     };
   },
 
-  setUser: (data: Partial<User>) => {
+  setUser: (data: Partial<ResponseUserDto>) => {
     set((state) => ({
       ...state,
       id: data.id,

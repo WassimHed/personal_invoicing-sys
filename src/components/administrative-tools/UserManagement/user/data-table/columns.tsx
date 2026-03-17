@@ -1,12 +1,18 @@
 import { ColumnDef } from '@tanstack/react-table';
 import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
-import { User } from '@/types';
+import { ResponseUserDto as User } from '@/types';
 import { transformDate } from '@/utils/date.utils';
 import { DataTableColumnHeader } from '@/components/shared/data-table/data-table-column-header';
 import { DataTableRowActions } from '@/components/shared/data-table/data-table-row-actions';
 
-export const getUserColumns = (t: Function, tCommon: Function): ColumnDef<User>[] => {
+import { DataTableConfig } from '@/components/shared/data-table/types';
+
+export const getUserColumns = (
+  t: Function,
+  tCommon: Function,
+  context: DataTableConfig<User>
+): ColumnDef<User>[] => {
   const translationNamespace = 'settings';
   const translate = (value: string, namespace: string = '') => {
     return t(value, { ns: namespace || translationNamespace });
@@ -25,6 +31,7 @@ export const getUserColumns = (t: Function, tCommon: Function): ColumnDef<User>[
           column={column}
           title={translate('users.attributes.username')}
           attribute="username"
+          context={context}
         />
       ),
       cell: ({ row }) => <div className="font-bold">{row.original.username}</div>,
@@ -38,6 +45,7 @@ export const getUserColumns = (t: Function, tCommon: Function): ColumnDef<User>[
           column={column}
           title={translate('users.attributes.email')}
           attribute="email"
+          context={context}
         />
       ),
       cell: ({ row }) => <div className="font-bold">{row.original.email}</div>,
@@ -51,6 +59,7 @@ export const getUserColumns = (t: Function, tCommon: Function): ColumnDef<User>[
           column={column}
           title={translate('users.attributes.first_name')}
           attribute="firstName"
+          context={context}
         />
       ),
       cell: ({ row }) => (
@@ -70,6 +79,7 @@ export const getUserColumns = (t: Function, tCommon: Function): ColumnDef<User>[
           column={column}
           title={translate('users.attributes.last_name')}
           attribute="lastName"
+          context={context}
         />
       ),
       cell: ({ row }) => (
@@ -89,6 +99,7 @@ export const getUserColumns = (t: Function, tCommon: Function): ColumnDef<User>[
           column={column}
           title={translate('users.attributes.date_of_birth')}
           attribute="dateOfBirth"
+          context={context}
         />
       ),
       cell: ({ row }) => (
@@ -110,6 +121,7 @@ export const getUserColumns = (t: Function, tCommon: Function): ColumnDef<User>[
           column={column}
           title={translate('users.attributes.role')}
           attribute="role.label"
+          context={context}
         />
       ),
       cell: ({ row }) => (
@@ -129,6 +141,7 @@ export const getUserColumns = (t: Function, tCommon: Function): ColumnDef<User>[
           column={column}
           title={translate('users.attributes.active')}
           attribute="isActive"
+          context={context}
         />
       ),
       cell: ({ row }) => (
@@ -145,9 +158,9 @@ export const getUserColumns = (t: Function, tCommon: Function): ColumnDef<User>[
     },
     {
       id: 'actions',
-      cell: ({ row }) => (
+      cell: ({ row, table }) => (
         <div className="flex justify-center">
-          <DataTableRowActions row={row} />
+          <DataTableRowActions row={row} context={(table.options.meta as any)?.context} />
         </div>
       )
     }

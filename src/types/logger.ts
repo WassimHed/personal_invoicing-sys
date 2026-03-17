@@ -1,6 +1,6 @@
 import { EVENT_TYPE } from './enums/event-types';
 import { PagedResponse } from './response';
-import { User } from './user';
+import { ResponseUserDto as User } from './user';
 
 export interface Log {
   id?: number;

@@ -140,6 +140,11 @@ export interface UpdateInvoiceDto extends CreateInvoiceDto {
   id?: number;
 }
 
+export interface UpdateInvoiceSequentialNumber {
+  id?: number;
+  sequential?: string;
+}
+
 export interface DuplicateInvoiceDto {
   id?: number;
   includeFiles?: boolean;

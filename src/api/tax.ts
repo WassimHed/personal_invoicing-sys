@@ -41,4 +41,18 @@ const remove = async (id?: number) => {
   return { data, status };
 };
 
-export const tax = { findPaginated, find, create, update, remove };
+const validate = (tax: CreateTaxDto | UpdateTaxDto): ToastValidation => {
+  const { label, isRate, value } = tax;
+
+  if (!label || label.length < 3) {
+    return { message: 'Veuillez entrer un titre valide' };
+  }
+  if (isRate && value && (value <= 0 || value > 99)) {
+    return {
+      message: 'Veuillez entrer une valeur valide (entre 0 et 99% pour un taux en pourcentage)'
+    };
+  }
+  return { message: '' };
+};
+
+export const tax = { findPaginated, find, create, update, remove, validate };

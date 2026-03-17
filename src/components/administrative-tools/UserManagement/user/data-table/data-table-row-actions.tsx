@@ -12,7 +12,7 @@ import { Row } from '@tanstack/react-table';
 import { Settings2, ShieldCheck, ShieldMinus, Telescope } from 'lucide-react';
 import { useUserManager } from '../hooks/useUserManager';
 import { useUserActions } from './action-context';
-import { User } from '@/types';
+import { ResponseUserDto as User } from '@/types';
 import { useTranslation } from 'react-i18next';
 
 interface DataTableRowActionsProps {

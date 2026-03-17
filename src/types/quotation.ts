@@ -131,6 +131,11 @@ export interface UpdateQuotationDto extends CreateQuotationDto {
   createInvoice?: boolean;
 }
 
+export interface UpdateQuotationSequentialNumber {
+  id?: number;
+  sequential?: string;
+}
+
 export interface DuplicateQuotationDto {
   id?: number;
   includeFiles?: boolean;

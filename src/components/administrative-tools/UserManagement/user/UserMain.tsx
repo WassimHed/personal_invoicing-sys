@@ -13,7 +13,7 @@ import { useActivateUserDialog } from './modals/UserActivateDialog';
 import { useDeactivateUserDialog } from './modals/UserDeactivateDialog';
 import { useBreadcrumb } from '@/context/BreadcrumbContext';
 import { useDebounce } from '@/hooks/other/useDebounce';
-import { CreateUserDto, UpdateUserDto, User } from '@/types';
+import { CreateAbstractUserDto, UpdateAbstractUserDto, ResponseUserDto as User } from '@/types';
 import { updateUserSchema } from '@/types/validations/user.validation';
 import { useRouter } from 'next/router';
 import { useTranslation } from 'react-i18next';
@@ -88,7 +88,7 @@ export default function UserMain({ className }: UserMainProps) {
   }, [usersResponse]);
 
   const { mutate: createUser, isPending: isCreationPending } = useMutation({
-    mutationFn: (user: CreateUserDto) => api.user.create(user),
+    mutationFn: (user: CreateAbstractUserDto) => api.user.create(user),
     onSuccess: () => {
       toast('User Created Successfully');
       refetchUsers();
@@ -101,7 +101,7 @@ export default function UserMain({ className }: UserMainProps) {
   });
 
   const { mutate: updateUser, isPending: isUpdatePending } = useMutation({
-    mutationFn: (data: { id?: number; user: UpdateUserDto }) => api.user.update(data.id, data.user),
+    mutationFn: (data: { id?: string; user: UpdateAbstractUserDto }) => api.user.update(data.id, data.user),
     onSuccess: () => {
       toast('User Updated Successfully');
       refetchUsers();
@@ -114,7 +114,7 @@ export default function UserMain({ className }: UserMainProps) {
   });
 
   const { mutate: activateUser, isPending: isActivationPending } = useMutation({
-    mutationFn: (id?: number) => api.user.activate(id),
+    mutationFn: (id?: string) => api.user.activate(id),
     onSuccess: () => {
       refetchUsers();
       toast('User Activated Successfully');
@@ -123,7 +123,7 @@ export default function UserMain({ className }: UserMainProps) {
   });
 
   const { mutate: deactivateUser, isPending: isDeactivationPending } = useMutation({
-    mutationFn: (id?: number) => api.user.deactivate(id),
+    mutationFn: (id?: string) => api.user.deactivate(id),
     onSuccess: () => {
       refetchUsers();
       toast('User Deactivated Successfully');
@@ -146,13 +146,16 @@ export default function UserMain({ className }: UserMainProps) {
     const data = userManager.getUser();
     const result = updateUserSchema.safeParse({
       ...data,
-      dateOfBirth: userManager.dateOfBirth?.toString(),
+      dateOfBirth: userManager.dateOfBirth && new Date(userManager.dateOfBirth),
       confirmPassword: userManager.confirmPassword
     });
     if (!result.success) {
       handleValidation(result);
     } else {
-      createUser(data);
+      createUser({
+        ...data,
+        dateOfBirth: data.dateOfBirth ? new Date(data.dateOfBirth) : undefined,
+      } as CreateAbstractUserDto);
     }
   };
 
@@ -160,13 +163,19 @@ export default function UserMain({ className }: UserMainProps) {
     const { id, ...user } = userManager.getUser();
     const result = updateUserSchema.safeParse({
       ...user,
-      dateOfBirth: userManager.dateOfBirth?.toString(),
+      dateOfBirth: userManager.dateOfBirth && new Date(userManager.dateOfBirth),
       confirmPassword: userManager.confirmPassword
     });
     if (!result.success) {
       handleValidation(result);
     } else {
-      updateUser({ id, user });
+      updateUser({
+        id,
+        user: {
+          ...user,
+          dateOfBirth: user.dateOfBirth ? new Date(user.dateOfBirth) : undefined,
+        } as UpdateAbstractUserDto
+      });
     }
   };
 
@@ -235,7 +244,7 @@ export default function UserMain({ className }: UserMainProps) {
             userManager.setUser(user);
             openDeactivateUserDialog();
           },
-          isActionVisible: (user: User) => user.isActive
+          isActionVisible: (user: User) => !!user.isActive
         }
       ]
     }
@@ -256,7 +265,7 @@ export default function UserMain({ className }: UserMainProps) {
         <DataTable
           className="flex flex-col flex-1 overflow-hidden p-1"
           containerClassName="overflow-auto"
-          columns={getUserColumns(tSettings, tCommon)}
+          columns={getUserColumns(tSettings, tCommon, context)}
           data={users}
           context={context}
           isPending={isPending}
