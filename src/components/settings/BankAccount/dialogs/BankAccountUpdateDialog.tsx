@@ -10,7 +10,7 @@ import {
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/shared';
-import { BankAccountForm } from '../BankAccountForm';
+import { BankAccountFormFields } from '../BankAccountFormFields';
 import { Info, Landmark } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Label } from '@/components/ui/label';
@@ -86,7 +86,7 @@ export const BankAccountUpdateDialog: React.FC<BankAccountUpdateDialogProps> = (
               {description}
             </DialogDescription>
           </DialogHeader>
-          <BankAccountForm className="gap-2 px-3 pb-5" />
+          <BankAccountFormFields className="gap-2 px-3 pb-5" />
           <DialogFooter className="border-t pt-2">{footer}</DialogFooter>
         </DialogContent>
       </Dialog>
@@ -102,7 +102,7 @@ export const BankAccountUpdateDialog: React.FC<BankAccountUpdateDialogProps> = (
               {description}
             </DrawerDescription>
           </DrawerHeader>
-          <BankAccountForm className="gap-2 px-3 pb-5" />
+          <BankAccountFormFields className="gap-2 px-3 pb-5" />
         </ScrollArea>
         <DrawerFooter className="border-t py-2">{footer}</DrawerFooter>
       </DrawerContent>

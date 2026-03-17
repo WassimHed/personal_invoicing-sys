@@ -20,7 +20,7 @@ import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Label } from '@/components/ui/label';
 import { Spinner } from '@/components/shared';
-import { BankAccountForm } from '../BankAccountForm';
+import { BankAccountFormFields } from '../BankAccountFormFields';
 import { Info, Landmark } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useMediaQuery } from '@/hooks/other/useMediaQuery';
@@ -87,7 +87,7 @@ export const BankAccountCreateDialog: React.FC<BankAccountCreateDialogProps> = (
               {description}
             </DialogDescription>
           </DialogHeader>
-          <BankAccountForm className="gap-2 px-3 pb-5" mainByDefault={mainByDefault} />
+          <BankAccountFormFields className="gap-2 px-3 pb-5" mainByDefault={mainByDefault} />
           <DialogFooter className="border-t pt-2">{footer}</DialogFooter>
         </DialogContent>
       </Dialog>
@@ -103,7 +103,7 @@ export const BankAccountCreateDialog: React.FC<BankAccountCreateDialogProps> = (
               {description}
             </DrawerDescription>
           </DrawerHeader>
-          <BankAccountForm className="gap-2 px-3 pb-5" mainByDefault={mainByDefault} />
+          <BankAccountFormFields className="gap-2 px-3 pb-5" mainByDefault={mainByDefault} />
         </ScrollArea>
         <DrawerFooter className="border-t py-2">{footer}</DrawerFooter>
       </DrawerContent>

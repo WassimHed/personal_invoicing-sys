@@ -55,7 +55,7 @@ export const PaymentUpdateForm = ({ className, paymentId }: PaymentFormProps) =>
 
   React.useEffect(() => {
     if (payment?.id)
-      setRoutes([
+      setRoutes?.([
         { title: tCommon('menu.selling'), href: '/selling' },
         { title: tInvoicing('payment.plural'), href: '/selling/payments' },
         { title: tInvoicing('payment.singular') + ' N° ' + payment?.id }

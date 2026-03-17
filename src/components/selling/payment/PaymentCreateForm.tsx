@@ -38,7 +38,7 @@ export const PaymentCreateForm = ({ className, firmId }: PaymentFormProps) => {
   const invoiceManager = usePaymentInvoiceManager();
 
   React.useEffect(() => {
-    setRoutes(
+    setRoutes?.(
       !firmId
         ? [
             { title: tCommon('menu.selling'), href: '/selling' },
