@@ -28,7 +28,7 @@ export const RoleForm: React.FC<RoleFormProps> = ({ className, permissions, load
   const groupedPermissions = permissions?.reduce(
     (groups, permission) => {
       const [_, ...rest] = permission?.label?.split('_') || [];
-      const entity = rest.join('_');
+      const entity = rest.join('_').toLocaleLowerCase();
       if (!groups[entity]) {
         groups[entity] = [];
       }
