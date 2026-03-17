@@ -2,8 +2,8 @@ import { api } from '@/api';
 import ContentSection from '@/components/shared/ContentSection';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import React from 'react';
-import { RoleActionsContext } from './data-table/action-context';
-import { DataTable } from './data-table/data-table';
+import { DataTable } from '@/components/shared/data-table/data-table';
+import { DataTableConfig } from '@/components/shared/data-table/types';
 import { getRoleColumns } from './data-table/columns';
 import { useRoleCreateSheet } from './modals/RoleCreateSheet';
 import { useRoleManager } from './hooks/useRoleManager';
@@ -13,10 +13,12 @@ import { useRoleDuplicateDialog } from './modals/RoleDuplicateDialog';
 import { toast } from 'sonner';
 import { useDebounce } from '@/hooks/other/useDebounce';
 import { useBreadcrumb } from '@/context/BreadcrumbContext';
-import { CreateRoleDto, UpdateRoleDto } from '@/types';
+import { CreateRoleDto, UpdateRoleDto, Role } from '@/types';
 import { useRouter } from 'next/router';
 import { useTranslation } from 'react-i18next';
 import { cn } from '@/lib/utils';
+import { CopyIcon } from 'lucide-react';
+import { RoleActionsContext } from './data-table/action-context';
 
 interface RoleMainProps {
   className?: string;
@@ -186,11 +188,9 @@ export default function RoleMain({ className }: RoleMainProps) {
       resetRole: () => roleManager.reset()
     });
 
-  const context = {
-    openCreateRoleSheet,
-    openUpdateRoleSheet,
-    openDeleteRoleDialog,
-    openDuplicateRoleDialog,
+  const context: DataTableConfig<Role> = {
+    singularName: tSettings('roles.singular'),
+    pluralName: tSettings('roles.plural'),
     //search, filtering, sorting & paging
     searchTerm,
     setSearchTerm,
@@ -201,7 +201,32 @@ export default function RoleMain({ className }: RoleMainProps) {
     setSize,
     order: sortDetails.order,
     sortKey: sortDetails.sortKey,
-    setSortDetails: (order: boolean, sortKey: string) => setSortDetails({ order, sortKey })
+    setSortDetails: (order: boolean, sortKey: string) => setSortDetails({ order, sortKey }),
+    //actions
+    createCallback: openCreateRoleSheet,
+    updateCallback: (role: Role) => {
+      roleManager.setRole(role);
+      openUpdateRoleSheet();
+    },
+    deleteCallback: (role: Role) => {
+      roleManager.setRole(role);
+      openDeleteRoleDialog();
+    },
+    targetEntity: (role: Role) => {
+      roleManager.setRole(role);
+    },
+    additionalActions: {
+      0: [
+        {
+          actionLabel: tCommon('commands.duplicate'),
+          actionIcon: <CopyIcon className="size-4" />,
+          actionCallback: (role: Role) => {
+            roleManager.setRole(role);
+            openDuplicateRoleDialog();
+          }
+        }
+      ]
+    }
   };
 
   const isPending = isRolesPending || paging || resizing || searching || sorting;
@@ -212,7 +237,7 @@ export default function RoleMain({ className }: RoleMainProps) {
       desc={tSettings('roles.description')}
       className="w-full"
       childrenClassName={cn('overflow-hidden', className)}>
-      <RoleActionsContext.Provider value={context}>
+      <RoleActionsContext.Provider value={context as any}>
         {createRoleSheet}
         {updateRoleSheet}
         {deleteRoleDialog}
@@ -222,6 +247,7 @@ export default function RoleMain({ className }: RoleMainProps) {
           containerClassName="overflow-auto"
           columns={getRoleColumns(tSettings, tPermission)}
           data={roles}
+          context={context}
           isPending={isPending}
         />
       </RoleActionsContext.Provider>

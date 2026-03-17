@@ -1,7 +1,7 @@
 import { Permission } from '@/types';
 import { ColumnDef } from '@tanstack/react-table';
-import { DataTableColumnHeader } from './data-table-column-header';
 import { getPermissionTranslation } from '../utils/getPermissionTranslation';
+import { DataTableColumnHeader } from '@/components/shared/data-table/data-table-column-header';
 
 export const getPermissionColumns = (
   t: Function,
@@ -15,11 +15,12 @@ export const getPermissionColumns = (
   return [
     {
       accessorKey: 'label',
-      header: ({ column }) => (
+      header: ({ column, table }) => (
         <DataTableColumnHeader
           column={column}
           title={translate('permissions.attributes.label')}
           attribute="label"
+          context={(table.options.meta as any)?.context}
         />
       ),
       cell: ({ row }) => {
@@ -30,11 +31,12 @@ export const getPermissionColumns = (
     },
     {
       accessorKey: 'description',
-      header: ({ column }) => (
+      header: ({ column, table }) => (
         <DataTableColumnHeader
           column={column}
           title={translate('permissions.attributes.description')}
           attribute="description"
+          context={(table.options.meta as any)?.context}
         />
       ),
       cell: ({ row }) => (

@@ -1,7 +1,7 @@
 import { api } from '@/api';
 import { Activity, Address, Currency, Firm, PaymentCondition, SOCIAL_TITLE } from '@/types';
 import _ from 'lodash';
-import create from 'zustand';
+import { create } from 'zustand';
 
 interface FirmData {
   //snapshot

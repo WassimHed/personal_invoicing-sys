@@ -1,6 +1,6 @@
 import React from 'react';
 import { api } from '@/api';
-import { CreateInterlocutorDto, UpdateInterlocutorDto } from '@/types';
+import { CreateInterlocutorDto, UpdateInterlocutorDto, Interlocutor } from '@/types';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../ui/card';
 import { useRouter } from 'next/router';
@@ -10,7 +10,8 @@ import { useDebounce } from '@/hooks/other/useDebounce';
 import { useTranslation } from 'react-i18next';
 import { useInterlocutorDeleteDialog } from './modals/InterlocutorDeleteDialog';
 import { InterlocutorActionsContext } from './data-table/ActionsContext';
-import { DataTable } from './data-table/data-table';
+import { DataTable } from '@/components/shared/data-table/data-table';
+import { DataTableConfig } from '@/components/shared/data-table/types';
 import { getInterlocutorColumns } from './data-table/columns';
 import { useInterlocutorManager } from './hooks/useInterlocutorManager';
 import { useBreadcrumb } from '@/context/BreadcrumbContext';
@@ -18,6 +19,7 @@ import { useInterlocutorCreateOrAssociateSheet } from './modals/InterlocutorCrea
 import { useInterlocutorUpdateSheet } from './modals/InterlocutorUpdateSheet';
 import { useInterlocutorPromoteDialog } from './modals/InterlocutorPromoteDialog';
 import { useInterlocutorDisassociateDialog } from './modals/InterlocutorDisassociateDialog';
+import { ArrowUp, Unlink } from 'lucide-react';
 
 interface InterlocutorProps {
   className?: string;
@@ -31,7 +33,7 @@ export const InterlocutorMain: React.FC<InterlocutorProps> = ({ className, firmI
   const { setRoutes } = useBreadcrumb();
   React.useEffect(() => {
     if (!firmId)
-      setRoutes([
+      setRoutes?.([
         { title: tCommon('menu.contacts'), href: '/contacts' },
         { title: tContacts('interlocutor.plural') }
       ]);
@@ -250,13 +252,9 @@ export const InterlocutorMain: React.FC<InterlocutorProps> = ({ className, firmI
       isDisassociatePending
     );
 
-  const context = {
-    //dialogs
-    openCreateDialog: () => openCreateInterlocutorSheet(),
-    openUpdateDialog: () => openUpdateInterlocutorSheet(),
-    openDeleteDialog: () => openDeleteInterlocutorDialog(),
-    openPromoteDialog: () => openPromoteInterlocutorDialog(),
-    openDisassociateDialog: () => openDisassociateInterlocutorDialog(),
+  const context: DataTableConfig<Interlocutor> = {
+    singularName: tContacts('interlocutor.singular'),
+    pluralName: tContacts('interlocutor.plural'),
     //search, filtering, sorting & paging
     searchTerm,
     setSearchTerm,
@@ -268,7 +266,69 @@ export const InterlocutorMain: React.FC<InterlocutorProps> = ({ className, firmI
     order: sortDetails.order,
     sortKey: sortDetails.sortKey,
     setSortDetails: (order: boolean, sortKey: string) => setSortDetails({ order, sortKey }),
-    context: { firmId }
+    //actions
+    createCallback: openCreateInterlocutorSheet,
+    inspectCallback: (interlocutor: Interlocutor) => {
+      router.push(`/contacts/interlocutor/${interlocutor.id}`);
+    },
+    updateCallback: firmId
+      ? (interlocutor: Interlocutor) => {
+          interlocutorManager.setInterlocutor(interlocutor, firmId);
+          openUpdateInterlocutorSheet();
+        }
+      : undefined,
+    deleteCallback: (interlocutor: Interlocutor) => {
+      const isMain = interlocutor.firmsToInterlocutor?.find(
+        (entry) => entry.firmId == firmId && entry.isMain
+      )?.isMain;
+      if (!isMain) {
+        interlocutorManager.set('id', interlocutor.id);
+        interlocutorManager.set('name', interlocutor.name);
+        interlocutorManager.set('surname', interlocutor.surname);
+        openDeleteInterlocutorDialog();
+      }
+    },
+    targetEntity: (interlocutor: Interlocutor) => {
+      interlocutorManager.set('id', interlocutor.id);
+      interlocutorManager.set('name', interlocutor.name);
+      interlocutorManager.set('surname', interlocutor.surname);
+    },
+    additionalActions: {
+      0: [
+        {
+          actionLabel: tCommon('commands.promote'),
+          actionIcon: <ArrowUp className="size-4" />,
+          actionCallback: (interlocutor: Interlocutor) => {
+            interlocutorManager.set('id', interlocutor.id);
+            interlocutorManager.set('name', interlocutor.name);
+            interlocutorManager.set('surname', interlocutor.surname);
+            openPromoteInterlocutorDialog();
+          },
+          isActionVisible: (interlocutor: Interlocutor) => {
+            const isMain = interlocutor.firmsToInterlocutor?.find(
+              (entry) => entry.firmId == firmId && entry.isMain
+            )?.isMain;
+            return !!firmId && !isMain;
+          }
+        },
+        {
+          actionLabel: tCommon('commands.unassociate'),
+          actionIcon: <Unlink className="size-4" />,
+          actionCallback: (interlocutor: Interlocutor) => {
+            interlocutorManager.set('id', interlocutor.id);
+            interlocutorManager.set('name', interlocutor.name);
+            interlocutorManager.set('surname', interlocutor.surname);
+            openDisassociateInterlocutorDialog();
+          },
+          isActionVisible: (interlocutor: Interlocutor) => {
+            const isMain = interlocutor.firmsToInterlocutor?.find(
+              (entry) => entry.firmId == firmId && entry.isMain
+            )?.isMain;
+            return !!firmId && !isMain;
+          }
+        }
+      ]
+    }
   };
 
   const isPending =
@@ -284,7 +344,7 @@ export const InterlocutorMain: React.FC<InterlocutorProps> = ({ className, firmI
 
   if (error) return 'An error has occurred: ' + error.message;
   return (
-    <InterlocutorActionsContext.Provider value={context}>
+    <InterlocutorActionsContext.Provider value={context as any}>
       {createInterlocutorSheet}
       {updateInterlocutorSheet}
       {deleteInterlocutorDialog}
@@ -300,6 +360,7 @@ export const InterlocutorMain: React.FC<InterlocutorProps> = ({ className, firmI
             className="my-5"
             data={interlocutors}
             columns={getInterlocutorColumns(tContacts, tCommon, firmId ? { firmId } : undefined)}
+            context={context}
             isPending={isPending}
           />
         </CardContent>

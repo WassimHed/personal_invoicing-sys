@@ -3,9 +3,9 @@ import ContentSection from '@/components/shared/ContentSection';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import React from 'react';
 import { toast } from 'sonner';
-import { UserActionsContext } from './data-table/action-context';
 import { getUserColumns } from './data-table/columns';
-import { DataTable } from './data-table/data-table';
+import { DataTable } from '@/components/shared/data-table/data-table';
+import { DataTableConfig } from '@/components/shared/data-table/types';
 import { useUserManager } from './hooks/useUserManager';
 import { useUserCreateSheet } from './modals/UserCreateSheet';
 import { useUserUpdateSheet } from './modals/UserUpdateSheet';
@@ -13,10 +13,12 @@ import { useActivateUserDialog } from './modals/UserActivateDialog';
 import { useDeactivateUserDialog } from './modals/UserDeactivateDialog';
 import { useBreadcrumb } from '@/context/BreadcrumbContext';
 import { useDebounce } from '@/hooks/other/useDebounce';
-import { CreateUserDto, UpdateUserDto } from '@/types';
+import { CreateUserDto, UpdateUserDto, User } from '@/types';
 import { updateUserSchema } from '@/types/validations/user.validation';
 import { useRouter } from 'next/router';
 import { useTranslation } from 'react-i18next';
+import { UserActionsContext } from './data-table/action-context';
+import { CheckCircle, XCircle } from 'lucide-react';
 
 interface UserMainProps {
   className?: string;
@@ -194,13 +196,9 @@ export default function UserMain({ className }: UserMainProps) {
     resetUser: () => userManager.reset()
   });
 
-  const context = {
-    openCreateUserSheet,
-    openUpdateUserSheet,
-    openActivateUserDialog,
-    openDeactivateUserDialog,
-    // openDeleteUserDialog,
-    // openDuplicateUserDialog,
+  const context: DataTableConfig<User> = {
+    singularName: tSettings('users.singular'),
+    pluralName: tSettings('users.plural'),
     //search, filtering, sorting & paging
     searchTerm,
     setSearchTerm,
@@ -211,7 +209,36 @@ export default function UserMain({ className }: UserMainProps) {
     setSize,
     order: sortDetails.order,
     sortKey: sortDetails.sortKey,
-    setSortDetails: (order: boolean, sortKey: string) => setSortDetails({ order, sortKey })
+    setSortDetails: (order: boolean, sortKey: string) => setSortDetails({ order, sortKey }),
+    //actions
+    createCallback: openCreateUserSheet,
+    updateCallback: (user: User) => {
+      userManager.setUser(user);
+      openUpdateUserSheet();
+    },
+    targetEntity: (user: User) => userManager.setUser(user),
+    additionalActions: {
+      0: [
+        {
+          actionLabel: tCommon('commands.activate'),
+          actionIcon: <CheckCircle className="size-4" />,
+          actionCallback: (user: User) => {
+            userManager.setUser(user);
+            openActivateUserDialog();
+          },
+          isActionVisible: (user: User) => !user.isActive
+        },
+        {
+          actionLabel: tCommon('commands.deactivate'),
+          actionIcon: <XCircle className="size-4" />,
+          actionCallback: (user: User) => {
+            userManager.setUser(user);
+            openDeactivateUserDialog();
+          },
+          isActionVisible: (user: User) => user.isActive
+        }
+      ]
+    }
   };
 
   const isPending = isUsersPending || paging || resizing || searching || sorting;
@@ -221,18 +248,17 @@ export default function UserMain({ className }: UserMainProps) {
       title={tSettings('users.singular')}
       desc={tSettings('users.description')}
       className="w-full">
-      <UserActionsContext.Provider value={context}>
+      <UserActionsContext.Provider value={context as any}>
         {createUserSheet}
         {updateUserSheet}
         {activateUserDialog}
         {deactivateUserDialog}
-        {/*{deleteUserDialog}
-        {duplicateUserDialog} */}
         <DataTable
           className="flex flex-col flex-1 overflow-hidden p-1"
           containerClassName="overflow-auto"
           columns={getUserColumns(tSettings, tCommon)}
           data={users}
+          context={context}
           isPending={isPending}
         />
       </UserActionsContext.Provider>

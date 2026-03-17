@@ -1,10 +1,10 @@
 import { ColumnDef } from '@tanstack/react-table';
-import { DataTableColumnHeader } from './data-table-column-header';
-import { DataTableRowActions } from './data-table-row-actions';
 import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
 import { User } from '@/types';
 import { transformDate } from '@/utils/date.utils';
+import { DataTableColumnHeader } from '@/components/shared/data-table/data-table-column-header';
+import { DataTableRowActions } from '@/components/shared/data-table/data-table-row-actions';
 
 export const getUserColumns = (t: Function, tCommon: Function): ColumnDef<User>[] => {
   const translationNamespace = 'settings';

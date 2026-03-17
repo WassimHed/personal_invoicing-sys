@@ -1,35 +1,43 @@
 import { Activity } from '@/types';
 import { ColumnDef } from '@tanstack/react-table';
-import { DataTableRowActions } from './data-table-row-actions';
-import { DataTableColumnHeader } from './data-table-column-header';
+import { DataTableColumnHeader } from '@/components/shared/data-table/data-table-column-header';
+import { DataTableRowActions } from '@/components/shared/data-table/data-table-row-actions';
+import { DataTableConfig } from '@/components/shared/data-table/types';
 
 export const getActivityColumns = (t: Function): ColumnDef<Activity>[] => {
-  const translationNamespace = 'settings';
-  const translate = (value: string, namespace: string = '') => {
-    return t(value, { ns: namespace || translationNamespace });
-  };
-
   return [
+    {
+      accessorKey: 'id',
+      header: ({ column }) => (
+        <DataTableColumnHeader column={column} title={t('activity.attributes.id')} />
+      ),
+      cell: ({ row }) => <div className="w-[80px]">{row.getValue('id')}</div>,
+      enableSorting: true,
+      enableHiding: true
+    },
     {
       accessorKey: 'label',
       header: ({ column }) => (
-        <DataTableColumnHeader
-          column={column}
-          title={translate('activity.attributes.label')}
-          attribute="label"
-        />
+        <DataTableColumnHeader column={column} title={t('activity.attributes.label')} />
       ),
-      cell: ({ row }) => <div>{row.original.label}</div>,
-      enableSorting: true,
-      enableHiding: false
+      cell: ({ row }) => {
+        return (
+          <div className="flex space-x-2">
+            <span className="max-w-[500px] truncate font-medium">{row.getValue('label')}</span>
+          </div>
+        );
+      }
     },
     {
       id: 'actions',
-      cell: ({ row }) => (
-        <div className="flex justify-end">
-          <DataTableRowActions row={row} />
-        </div>
-      )
+      cell: ({ row, table }) => {
+        const context = (table.options.meta as any)?.context as DataTableConfig<Activity>;
+        return (
+          <div className="flex justify-end">
+            <DataTableRowActions row={row} context={context} />
+          </div>
+        );
+      }
     }
   ];
 };

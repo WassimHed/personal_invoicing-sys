@@ -1,18 +1,10 @@
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectShimmer,
-  SelectTrigger,
-  SelectValue
-} from '@/components/ui/select';
 import { useTranslation } from 'react-i18next';
-import { Copy } from 'lucide-react';
 import { Address, Country } from '@/types';
+import { useFirmAddressFormStructure } from './useFirmAddressFormStructure';
+import { FormBuilder } from '@/components/shared/form-builder/FormBuilder';
 
 interface FirmAddressInformationProps {
   className?: string;
@@ -37,12 +29,18 @@ const FirmAddressInformation = React.memo<FirmAddressInformationProps>(
     icon,
     countries,
     handleCopyAddress,
-    disabled,
-    loading
+    disabled
   }) => {
-    const { t: tCommon } = useTranslation('common');
-    const { t: tCountry } = useTranslation('country');
     const { t: tContacts } = useTranslation('contacts');
+    const { firmAddressFormStructure } = useFirmAddressFormStructure({
+      address,
+      setAddressField,
+      otherAddressLabel,
+      countries,
+      handleCopyAddress,
+      disabled
+    });
+
     return (
       <Card className={className}>
         <CardHeader className="p-5">
@@ -54,84 +52,7 @@ const FirmAddressInformation = React.memo<FirmAddressInformationProps>(
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="mt-3 w-full">
-            <Label
-              className="flex items-center gap-2 underline my-2 justify-end cursor-pointer"
-              onClick={handleCopyAddress}>
-              <Copy />
-              {tCommon('commands.copy')} {tContacts(otherAddressLabel || '')}
-            </Label>
-
-            <div>
-              <Label>{tContacts('common.address.address')} (*)</Label>
-              <Input
-                className="mt-1"
-                placeholder="Ex. 188 Avenue 14 Janvier"
-                disabled={disabled}
-                value={address?.address}
-                onChange={(e) => setAddressField?.('address', e.target.value)}
-              />
-            </div>
-          </div>
-          <div className="mt-3 w-full">
-            <div>
-              <Label>{tContacts('common.address.address2')}</Label>
-              <Input
-                className="mt-1"
-                placeholder="Ex. 188 Avenue 14 Janvier"
-                disabled={disabled}
-                value={address?.address2}
-                onChange={(e) => setAddressField?.('address2', e.target.value)}
-              />
-            </div>
-            <div className="flex w-full mt-3">
-              <div className="w-2/3">
-                <Label>{tContacts('common.address.region')} (*)</Label>
-                <Input
-                  className="mt-1"
-                  placeholder="Ex. Bizerte"
-                  disabled={disabled}
-                  value={address?.region}
-                  onChange={(e) => setAddressField?.('region', e.target.value)}
-                />
-              </div>
-              <div className="w-1/3 ml-2">
-                <Label>{tContacts('common.address.zip_code')} (*)</Label>
-                <Input
-                  type="number"
-                  className="mt-1"
-                  placeholder="Ex. 7000"
-                  disabled={disabled}
-                  value={address?.zipcode}
-                  onChange={(e) => setAddressField?.('zipcode', e.target.value)}
-                />
-              </div>
-            </div>
-          </div>
-
-          <div className="mt-2 mr-2 w-full">
-            <Label>{tContacts('common.address.country')}</Label>
-            <div className="mt-2">
-              <SelectShimmer isPending={loading}>
-                <Select
-                  key={address?.countryId || 'country'}
-                  disabled={disabled}
-                  value={address?.countryId?.toString()}
-                  onValueChange={(e) => setAddressField?.('countryId', parseInt(e))}>
-                  <SelectTrigger>
-                    <SelectValue placeholder={tContacts('common.address.country')} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {countries?.map((country) => (
-                      <SelectItem key={country.id} value={country?.id?.toString() || ''}>
-                        {country?.alpha2Code && tCountry(country?.alpha2Code)}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </SelectShimmer>
-            </div>
-          </div>
+          <FormBuilder structure={firmAddressFormStructure} />
         </CardContent>
       </Card>
     );

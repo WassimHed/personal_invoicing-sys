@@ -1,28 +1,18 @@
 import React from 'react';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { useActivityManager } from './hooks/useActivityManager';
+import { cn } from '@/lib/utils';
+import { useActivityFormStructure } from './useActivityFormStructure';
+import { FormBuilder } from '@/components/shared/form-builder/FormBuilder';
 
 interface ActivityFormProps {
   className?: string;
 }
 
 export const ActivityForm = ({ className }: ActivityFormProps) => {
-  const activityManager = useActivityManager();
+  const { activityFormStructure } = useActivityFormStructure();
+
   return (
-    <div className={className}>
-      <div className="mt-4">
-        <Label>Titre(*)</Label>
-        <Input
-          className="mt-2"
-          placeholder="Ex. Service"
-          name="label"
-          value={activityManager?.label}
-          onChange={(e) => {
-            activityManager.set('label', e.target.value);
-          }}
-        />
-      </div>
+    <div className={cn('flex flex-col gap-4', className)}>
+      <FormBuilder structure={activityFormStructure} />
     </div>
   );
 };

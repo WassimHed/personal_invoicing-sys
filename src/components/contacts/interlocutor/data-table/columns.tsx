@@ -1,11 +1,11 @@
 import { Interlocutor } from '@/types';
 import { ColumnDef } from '@tanstack/react-table';
-import { DataTableRowActions } from './data-table-row-actions';
-import { DataTableColumnHeader } from './data-table-column-header';
 import { transformDateTime } from '@/utils/date.utils';
 import { INTERLOCUTOR_FILTER_ATTRIBUTES } from '@/constants/interlocutor.filter-attributes';
 import { Badge } from '@/components/ui/badge';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { DataTableColumnHeader } from '@/components/shared/data-table/data-table-column-header';
+import { DataTableRowActions } from '@/components/shared/data-table/data-table-row-actions';
 
 export const getInterlocutorColumns = (
   t: Function,
@@ -19,11 +19,12 @@ export const getInterlocutorColumns = (
   const columns: ColumnDef<Interlocutor>[] = [
     {
       accessorKey: 'title',
-      header: ({ column }) => (
+      header: ({ column, table }) => (
         <DataTableColumnHeader
           column={column}
           title={translate('interlocutor.attributes.title')}
           attribute={INTERLOCUTOR_FILTER_ATTRIBUTES.TITLE}
+          context={(table.options.meta as any)?.context}
         />
       ),
       cell: ({ row }) => <div>{row.original.title}</div>,
@@ -32,11 +33,12 @@ export const getInterlocutorColumns = (
     },
     {
       accessorKey: 'name',
-      header: ({ column }) => (
+      header: ({ column, table }) => (
         <DataTableColumnHeader
           column={column}
           title={translate('interlocutor.attributes.name')}
           attribute={INTERLOCUTOR_FILTER_ATTRIBUTES.NAME}
+          context={(table.options.meta as any)?.context}
         />
       ),
       cell: ({ row }) => <div>{row.original.name}</div>,
@@ -45,11 +47,12 @@ export const getInterlocutorColumns = (
     },
     {
       accessorKey: 'surname',
-      header: ({ column }) => (
+      header: ({ column, table }) => (
         <DataTableColumnHeader
           column={column}
           title={translate('interlocutor.attributes.surname')}
           attribute={INTERLOCUTOR_FILTER_ATTRIBUTES.SURNAME}
+          context={(table.options.meta as any)?.context}
         />
       ),
       cell: ({ row }) => <div>{row.original.surname}</div>,
@@ -58,11 +61,12 @@ export const getInterlocutorColumns = (
     },
     {
       accessorKey: 'phone',
-      header: ({ column }) => (
+      header: ({ column, table }) => (
         <DataTableColumnHeader
           column={column}
           title={translate('interlocutor.attributes.phone')}
           attribute={INTERLOCUTOR_FILTER_ATTRIBUTES.PHONE}
+          context={(table.options.meta as any)?.context}
         />
       ),
       cell: ({ row }) => (
@@ -79,11 +83,12 @@ export const getInterlocutorColumns = (
     },
     {
       accessorKey: 'email',
-      header: ({ column }) => (
+      header: ({ column, table }) => (
         <DataTableColumnHeader
           column={column}
           title={translate('interlocutor.attributes.email')}
           attribute={INTERLOCUTOR_FILTER_ATTRIBUTES.EMAIL}
+          context={(table.options.meta as any)?.context}
         />
       ),
       cell: ({ row }) => (
@@ -98,8 +103,12 @@ export const getInterlocutorColumns = (
   if (!context?.firmId) {
     columns.push({
       accessorKey: 'firms',
-      header: ({ column }) => (
-        <DataTableColumnHeader column={column} title={translate('interlocutor.attributes.firms')} />
+      header: ({ column, table }) => (
+        <DataTableColumnHeader
+          column={column}
+          title={translate('interlocutor.attributes.firms')}
+          context={(table.options.meta as any)?.context}
+        />
       ),
       cell: ({ row }) => {
         const firms = row.original.firmsToInterlocutor || [];
@@ -147,10 +156,11 @@ export const getInterlocutorColumns = (
     columns.push(
       {
         accessorKey: 'position',
-        header: ({ column }) => (
+        header: ({ column, table }) => (
           <DataTableColumnHeader
             column={column}
             title={translate('interlocutor.attributes.position')}
+            context={(table.options.meta as any)?.context}
           />
         ),
         cell: ({ row }) => {
@@ -175,10 +185,11 @@ export const getInterlocutorColumns = (
       },
       {
         accessorKey: 'is_main',
-        header: ({ column }) => (
+        header: ({ column, table }) => (
           <DataTableColumnHeader
             column={column}
             title={translate('interlocutor.attributes.is_main')}
+            context={(table.options.meta as any)?.context}
           />
         ),
         cell: ({ row }) => (
@@ -199,11 +210,12 @@ export const getInterlocutorColumns = (
 
   columns.push({
     accessorKey: 'created_at',
-    header: ({ column }) => (
+    header: ({ column, table }) => (
       <DataTableColumnHeader
         column={column}
         title={translate('interlocutor.attributes.created_at')}
         attribute={INTERLOCUTOR_FILTER_ATTRIBUTES.CREATEDAT}
+        context={(table.options.meta as any)?.context}
       />
     ),
     cell: ({ row }) => <div>{transformDateTime(row.original?.createdAt || '')}</div>,
@@ -213,9 +225,9 @@ export const getInterlocutorColumns = (
 
   columns.push({
     id: 'actions',
-    cell: ({ row }) => (
+    cell: ({ row, table }) => (
       <div className="flex justify-end">
-        <DataTableRowActions row={row} />
+        <DataTableRowActions row={row} context={(table.options.meta as any)?.context} />
       </div>
     )
   });

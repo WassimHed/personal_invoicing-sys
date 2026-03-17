@@ -1,8 +1,8 @@
 import { ColumnDef } from '@tanstack/react-table';
-import { DataTableColumnHeader } from './data-table-column-header';
-import { DataTableRowActions } from './data-table-row-actions';
 import { Role } from '@/types';
 import { getPermissionTranslation } from '../../permission/utils/getPermissionTranslation';
+import { DataTableColumnHeader } from '@/components/shared/data-table/data-table-column-header';
+import { DataTableRowActions } from '@/components/shared/data-table/data-table-row-actions';
 
 export const getRoleColumns = (t: Function, tPermission: Function): ColumnDef<Role>[] => {
   const translationNamespace = 'settings';
@@ -12,11 +12,12 @@ export const getRoleColumns = (t: Function, tPermission: Function): ColumnDef<Ro
   return [
     {
       accessorKey: 'label',
-      header: ({ column }) => (
+      header: ({ column, table }) => (
         <DataTableColumnHeader
           column={column}
           title={translate('roles.attributes.label')}
           attribute="label"
+          context={(table.options.meta as any)?.context}
         />
       ),
       cell: ({ row }) => <div>{row.original.label}</div>,
@@ -25,11 +26,12 @@ export const getRoleColumns = (t: Function, tPermission: Function): ColumnDef<Ro
     },
     {
       accessorKey: 'description',
-      header: ({ column }) => (
+      header: ({ column, table }) => (
         <DataTableColumnHeader
           column={column}
           title={translate('roles.attributes.description')}
           attribute="description"
+          context={(table.options.meta as any)?.context}
         />
       ),
       cell: ({ row }) => (
@@ -40,11 +42,12 @@ export const getRoleColumns = (t: Function, tPermission: Function): ColumnDef<Ro
     },
     {
       accessorKey: 'permissions',
-      header: ({ column }) => (
+      header: ({ column, table }) => (
         <DataTableColumnHeader
           column={column}
           title={translate('roles.attributes.permissions')}
           attribute="permissions"
+          context={(table.options.meta as any)?.context}
         />
       ),
       cell: ({ row }) => {
@@ -78,9 +81,9 @@ export const getRoleColumns = (t: Function, tPermission: Function): ColumnDef<Ro
     },
     {
       id: 'actions',
-      cell: ({ row }) => (
-        <div className="flex justify-center">
-          <DataTableRowActions row={row} />
+      cell: ({ row, table }) => (
+        <div className="flex justify-end">
+          <DataTableRowActions row={row} context={(table.options.meta as any)?.context} />
         </div>
       )
     }

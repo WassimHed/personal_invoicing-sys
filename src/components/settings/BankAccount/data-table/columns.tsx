@@ -1,9 +1,9 @@
 import { BankAccount } from '@/types';
 import { Badge } from '@/components/ui/badge';
 import { ColumnDef } from '@tanstack/react-table';
-import { DataTableRowActions } from './data-table-row-actions';
+import { DataTableRowActions } from '@/components/shared/data-table/data-table-row-actions';
 import { X } from 'lucide-react';
-import { DataTableColumnHeader } from './data-table-column-header';
+import { DataTableColumnHeader } from '@/components/shared/data-table/data-table-column-header';
 import { BANK_ACCOUNT_FILTER_ATTRIBUTES } from '@/constants/bank-account.filter-attributes';
 
 export const getBankAccountColumns = (
@@ -115,9 +115,9 @@ export const getBankAccountColumns = (
     },
     {
       id: 'actions',
-      cell: ({ row }) => (
+      cell: ({ row, table }) => (
         <div className="flex justify-end">
-          <DataTableRowActions row={row} />
+          <DataTableRowActions row={row} context={(table.options.meta as any)?.context} />
         </div>
       )
     }

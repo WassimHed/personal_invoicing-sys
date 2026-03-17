@@ -1,4 +1,4 @@
-import { DataTable } from './data-table/data-table';
+import { DataTable } from '@/components/shared/data-table/data-table';
 import { getPermissionColumns } from './data-table/columns';
 import React from 'react';
 import { useQuery } from '@tanstack/react-query';
@@ -10,6 +10,8 @@ import ContentSection from '@/components/shared/ContentSection';
 import { useRouter } from 'next/router';
 import { useTranslation } from 'react-i18next';
 import { cn } from '@/lib/utils';
+import { DataTableConfig } from '@/components/shared/data-table/types';
+import { Permission } from '@/types';
 
 interface PermissionMainProps {
   className?: string;
@@ -78,7 +80,9 @@ export default function PermissionMain({ className }: PermissionMainProps) {
     return permissionsResponse.data;
   }, [permissionsResponse]);
 
-  const context = {
+  const context: DataTableConfig<Permission> = {
+    singularName: tSettings('permissions.singular'),
+    pluralName: tSettings('permissions.plural'),
     //search, filtering, sorting & paging
     searchTerm,
     setSearchTerm,
@@ -94,7 +98,7 @@ export default function PermissionMain({ className }: PermissionMainProps) {
 
   const isPending = isPermissionsPending || paging || resizing || searching || sorting;
   return (
-    <PermissionActionsContext.Provider value={context}>
+    <PermissionActionsContext.Provider value={context as any}>
       <ContentSection
         title={tSettings('permissions.singular')}
         desc={tSettings('permissions.description')}
@@ -105,6 +109,7 @@ export default function PermissionMain({ className }: PermissionMainProps) {
           containerClassName="overflow-auto"
           columns={getPermissionColumns(tSettings, tPermission)}
           data={permissions}
+          context={context}
           isPending={isPending}
         />
       </ContentSection>

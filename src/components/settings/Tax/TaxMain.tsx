@@ -7,7 +7,8 @@ import { getErrorMessage } from '@/utils/errors';
 import { useDebounce } from '@/hooks/other/useDebounce';
 import { useTranslation } from 'react-i18next';
 import { useTaxManager } from './hooks/useTaxManager';
-import { DataTable } from './data-table/data-table';
+import { DataTable } from '@/components/shared/data-table/data-table';
+import { DataTableConfig } from '@/components/shared/data-table/types';
 import { TaxActionsContext } from './data-table/ActionDialogContext';
 import { getTaxColumns } from './data-table/columns';
 import { useRouter } from 'next/router';
@@ -34,7 +35,7 @@ const TaxMain: React.FC<TaxMainProps> = ({ className }) => {
   //set page title in the breadcrumb
   const { setRoutes } = useBreadcrumb();
   React.useEffect(() => {
-    setRoutes([
+    setRoutes?.([
       { title: tCommon('menu.settings') },
       { title: tCommon('submenu.system') },
       { title: tCommon('settings.system.tax') }
@@ -184,11 +185,9 @@ const TaxMain: React.FC<TaxMainProps> = ({ className }) => {
     isDeletePending
   );
 
-  const context = {
-    //dialogs
-    openCreateTaxSheet,
-    openUpdateTaxSheet,
-    openDeleteTaxDialog,
+  const context: DataTableConfig<Tax> = {
+    singularName: tSettings('tax.singular'),
+    pluralName: tSettings('tax.plural'),
     //search, filtering, sorting & paging
     searchTerm,
     setSearchTerm,
@@ -199,7 +198,17 @@ const TaxMain: React.FC<TaxMainProps> = ({ className }) => {
     setSize,
     order: sortDetails.order,
     sortKey: sortDetails.sortKey,
-    setSortDetails: (order: boolean, sortKey: string) => setSortDetails({ order, sortKey })
+    setSortDetails: (order: boolean, sortKey: string) => setSortDetails({ order, sortKey }),
+    //actions
+    createCallback: openCreateTaxSheet,
+    updateCallback: (tax: Tax) => {
+      taxManger.setTax(tax);
+      openUpdateTaxSheet();
+    },
+    deleteCallback: (tax: Tax) => {
+      taxManger.setTax(tax);
+      openDeleteTaxDialog();
+    }
   };
 
   const isPending =
@@ -214,7 +223,7 @@ const TaxMain: React.FC<TaxMainProps> = ({ className }) => {
 
   if (error) return 'An error has occurred: ' + error.message;
   return (
-    <TaxActionsContext.Provider value={context}>
+    <TaxActionsContext.Provider value={context as any}>
       <ContentSection
         title={tSettings('tax.singular')}
         desc={tSettings('tax.card_description')}
@@ -225,6 +234,7 @@ const TaxMain: React.FC<TaxMainProps> = ({ className }) => {
           containerClassName="overflow-auto"
           data={taxes}
           columns={getTaxColumns(tSettings, tCommon, tCurrency)}
+          context={context}
           isPending={isPending}
         />
       </ContentSection>

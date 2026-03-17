@@ -3,12 +3,12 @@ import { api } from '@/api';
 import { Tax } from '@/types';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { toast } from 'sonner';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../ui/card';
 import { getErrorMessage } from '@/utils/errors';
 import { useDebounce } from '@/hooks/other/useDebounce';
 import { useTranslation } from 'react-i18next';
 import { useTaxWithholdingManager } from './hooks/useTaxWithholdingManager';
-import { DataTable } from './data-table/data-table';
+import { DataTable } from '@/components/shared/data-table/data-table';
+import { DataTableConfig } from '@/components/shared/data-table/types';
 import { TaxWithholdingCreateDialog } from './dialogs/TaxWithholdingCreateDialog';
 import { TaxWithholdingUpdateDialog } from './dialogs/TaxWithholdingUpdateDialog';
 import { TaxWithholdingDeleteDialog } from './dialogs/TaxWithholdingDeleteDialog';
@@ -32,14 +32,14 @@ const TaxWithholdingMain: React.FC<TaxWithholdingMainProps> = ({ className }) =>
   //set page title in the breadcrumb
   const { setRoutes } = useBreadcrumb();
   React.useEffect(() => {
-    setRoutes([
+    setRoutes?.([
       { title: tCommon('menu.settings') },
       { title: tCommon('submenu.system') },
       { title: tCommon('settings.system.tax_withholding') }
     ]);
   }, [router.locale]);
 
-  const taxWithholdingManger = useTaxWithholdingManager();
+  const taxWithholdingManager = useTaxWithholdingManager();
 
   const [page, setPage] = React.useState(1);
   const { value: debouncedPage, loading: paging } = useDebounce<number>(page, 500);
@@ -78,7 +78,7 @@ const TaxWithholdingMain: React.FC<TaxWithholdingMainProps> = ({ className }) =>
       api.taxWithholding.findPaginated(
         debouncedPage,
         debouncedSize,
-        debouncedSortDetails.order ? 'DESC' : 'ASC',
+        debouncedSortDetails.order ? 'ASC' : 'DESC',
         debouncedSortDetails.sortKey,
         debouncedSearchTerm
       )
@@ -88,11 +88,9 @@ const TaxWithholdingMain: React.FC<TaxWithholdingMainProps> = ({ className }) =>
     return taxWithholdingsResp?.data || [];
   }, [taxWithholdingsResp]);
 
-  const context = {
-    //dialogs
-    openCreateDialog: () => setCreateDialog(true),
-    openUpdateDialog: () => setUpdateDialog(true),
-    openDeleteDialog: () => setDeleteDialog(true),
+  const context: DataTableConfig<Tax> = {
+    singularName: tSettings('withholding.singular'),
+    pluralName: tSettings('withholding.plural'),
     //search, filtering, sorting & paging
     searchTerm,
     setSearchTerm,
@@ -103,36 +101,50 @@ const TaxWithholdingMain: React.FC<TaxWithholdingMainProps> = ({ className }) =>
     setSize,
     order: sortDetails.order,
     sortKey: sortDetails.sortKey,
-    setSortDetails: (order: boolean, sortKey: string) => setSortDetails({ order, sortKey })
+    setSortDetails: (order: boolean, sortKey: string) => setSortDetails({ order, sortKey }),
+    //actions
+    createCallback: () => setCreateDialog(true),
+    updateCallback: (tax: Tax) => {
+      taxWithholdingManager.setTaxWithholding(tax);
+      setUpdateDialog(true);
+    },
+    deleteCallback: (tax: Tax) => {
+      taxWithholdingManager.setTaxWithholding(tax);
+      setDeleteDialog(true);
+    }
   };
 
-  //create tax-withholding
+  //create tax withholding
   const { mutate: createTaxWithholding, isPending: isCreatePending } = useMutation({
     mutationFn: (data: Tax) => api.taxWithholding.create(data),
     onSuccess: () => {
       toast.success('Retenue à la source ajoutée avec succès');
       refetchTaxWithholdings();
+      setCreateDialog(false);
     },
     onError: (error) => {
-      toast.error(getErrorMessage('', error, 'Erreur lors de la création du Retenue à la source'));
+      toast.error(
+        getErrorMessage('', error, 'Erreur lors de la création de la retenue à la source')
+      );
     }
   });
 
-  //update tax-withholding
+  //update tax withholding
   const { mutate: updateTaxWithholding, isPending: isUpdatePending } = useMutation({
     mutationFn: (data: Tax) => api.taxWithholding.update(data),
     onSuccess: () => {
       toast.success('Retenue à la source modifiée avec succès');
       refetchTaxWithholdings();
+      setUpdateDialog(false);
     },
     onError: (error) => {
       toast.error(
-        getErrorMessage('', error, 'Erreur lors de la modification du Retenue à la source')
+        getErrorMessage('', error, 'Erreur lors de la modification de la retenue à la source')
       );
     }
   });
 
-  //remove tax-withholding
+  //remove tax withholding
   const { mutate: removeTaxWithholding, isPending: isDeletePending } = useMutation({
     mutationFn: (id: number) => api.taxWithholding.remove(id),
     onSuccess: () => {
@@ -143,31 +155,22 @@ const TaxWithholdingMain: React.FC<TaxWithholdingMainProps> = ({ className }) =>
     },
     onError: (error) => {
       toast.error(
-        getErrorMessage('', error, 'Erreur lors de la suppression du Retenue à la source')
+        getErrorMessage('', error, 'Erreur lors de la suppression de la retenue à la source')
       );
     }
   });
 
-  const handleTaxCreateSubmit = () => {
-    const tax = taxWithholdingManger.getTax();
-    const validation = api.taxWithholding.validate(tax);
+  const handleTaxWithholdingSubmit = (
+    taxWithholding: Tax,
+    callback: (taxWithholding: Tax) => void
+  ): boolean => {
+    const validation = api.taxWithholding.validate(taxWithholding);
     if (validation.message) {
       toast.error(validation.message);
       return false;
     } else {
-      createTaxWithholding(tax);
-      return true;
-    }
-  };
-
-  const handleTaxUpdateSubmit = () => {
-    const tax = taxWithholdingManger.getTax();
-    const validation = api.taxWithholding.validate(tax);
-    if (validation.message) {
-      toast.error(validation.message);
-      return false;
-    } else {
-      updateTaxWithholding(tax);
+      callback(taxWithholding);
+      taxWithholdingManager.reset();
       return true;
     }
   };
@@ -183,37 +186,44 @@ const TaxWithholdingMain: React.FC<TaxWithholdingMainProps> = ({ className }) =>
     sorting;
 
   if (error) return 'An error has occurred: ' + error.message;
+
   return (
-    <TaxWithholdingActionsContext.Provider value={context}>
+    <TaxWithholdingActionsContext.Provider value={context as any}>
       <TaxWithholdingCreateDialog
         open={createDialog}
         isCreatePending={isCreatePending}
         createTaxWithholding={() => {
-          handleTaxCreateSubmit() && setCreateDialog(false);
+          handleTaxWithholdingSubmit(
+            taxWithholdingManager.getTaxWithholding(),
+            createTaxWithholding
+          );
         }}
         onClose={() => {
           setCreateDialog(false);
-          taxWithholdingManger.reset();
+          taxWithholdingManager.reset();
         }}
       />
       <TaxWithholdingUpdateDialog
         open={updateDialog}
         updateTaxWithholding={() => {
-          handleTaxUpdateSubmit() && setUpdateDialog(false);
+          handleTaxWithholdingSubmit(
+            taxWithholdingManager.getTaxWithholding(),
+            updateTaxWithholding
+          );
         }}
         isUpdatePending={isUpdatePending}
         onClose={() => {
           setUpdateDialog(false);
-          taxWithholdingManger.reset();
+          taxWithholdingManager.reset();
         }}
       />
       <TaxWithholdingDeleteDialog
         open={deleteDialog}
         deleteTaxWithholding={() => {
-          taxWithholdingManger?.id && removeTaxWithholding(taxWithholdingManger?.id);
+          taxWithholdingManager?.id && removeTaxWithholding(taxWithholdingManager?.id);
         }}
         isDeletionPending={isDeletePending}
-        label={taxWithholdingManger?.label}
+        label={taxWithholdingManager?.label}
         onClose={() => {
           setDeleteDialog(false);
         }}
@@ -228,6 +238,7 @@ const TaxWithholdingMain: React.FC<TaxWithholdingMainProps> = ({ className }) =>
           containerClassName="overflow-auto"
           data={taxWithholdings}
           columns={getTaxWithholdingColumns(tSettings)}
+          context={context}
           isPending={isPending}
         />
       </ContentSection>

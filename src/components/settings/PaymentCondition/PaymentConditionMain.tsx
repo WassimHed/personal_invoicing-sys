@@ -1,6 +1,5 @@
 import React from 'react';
 import { PaymentCondition } from '@/types';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { getErrorMessage } from '@/utils/errors';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { toast } from 'sonner';
@@ -11,13 +10,14 @@ import { PaymentConditionUpdateDialog } from './dialogs/PaymentConditionUpdateDi
 import { PaymentConditionDeleteDialog } from './dialogs/PaymentConditionDeleteDialog';
 import { usePaymentConditionManager } from './hooks/usePaymentConditionManager';
 import { api } from '@/api';
-import { PaymentConditionActionsContext } from './data-table/ActionsContext';
-import { DataTable } from './data-table/data-table';
+import { DataTable } from '@/components/shared/data-table/data-table';
+import { DataTableConfig } from '@/components/shared/data-table/types';
 import { getPayementConditionColumns } from './data-table/columns';
 import { useRouter } from 'next/router';
 import { useBreadcrumb } from '@/context/BreadcrumbContext';
 import ContentSection from '@/components/shared/ContentSection';
 import { cn } from '@/lib/utils';
+import { PaymentConditionActionsContext } from './data-table/ActionsContext';
 
 interface PaymentConditionMainProps {
   className?: string;
@@ -31,7 +31,7 @@ const PaymentConditionMain: React.FC<PaymentConditionMainProps> = ({ className }
   //set page title in the breadcrumb
   const { setRoutes } = useBreadcrumb();
   React.useEffect(() => {
-    setRoutes([
+    setRoutes?.([
       { title: tCommon('menu.settings') },
       { title: tCommon('submenu.system') },
       { title: tCommon('settings.system.payment_condition') }
@@ -87,11 +87,9 @@ const PaymentConditionMain: React.FC<PaymentConditionMainProps> = ({ className }
     return paymentConditionsResp?.data || [];
   }, [paymentConditionsResp]);
 
-  const context = {
-    //dialogs
-    openCreateDialog: () => setCreateDialog(true),
-    openUpdateDialog: () => setUpdateDialog(true),
-    openDeleteDialog: () => setDeleteDialog(true),
+  const context: DataTableConfig<PaymentCondition> = {
+    singularName: tSettings('payment_condition.singular'),
+    pluralName: tSettings('payment_condition.plural'),
     //search, filtering, sorting & paging
     searchTerm,
     setSearchTerm,
@@ -102,7 +100,17 @@ const PaymentConditionMain: React.FC<PaymentConditionMainProps> = ({ className }
     setSize,
     order: sortDetails.order,
     sortKey: sortDetails.sortKey,
-    setSortDetails: (order: boolean, sortKey: string) => setSortDetails({ order, sortKey })
+    setSortDetails: (order: boolean, sortKey: string) => setSortDetails({ order, sortKey }),
+    //actions
+    createCallback: () => setCreateDialog(true),
+    updateCallback: (paymentCondition: PaymentCondition) => {
+      paymentConditionManager.setPaymentCondition(paymentCondition);
+      setUpdateDialog(true);
+    },
+    deleteCallback: (paymentCondition: PaymentCondition) => {
+      paymentConditionManager.setPaymentCondition(paymentCondition);
+      setDeleteDialog(true);
+    }
   };
 
   //create payment condition
@@ -111,6 +119,7 @@ const PaymentConditionMain: React.FC<PaymentConditionMainProps> = ({ className }
     onSuccess: () => {
       toast.success('Condition de Paiement ajoutée avec succès');
       refetchPaymentConditions();
+      setCreateDialog(false);
     },
     onError: (error) => {
       toast.error(
@@ -125,6 +134,7 @@ const PaymentConditionMain: React.FC<PaymentConditionMainProps> = ({ className }
     onSuccess: () => {
       toast.success('Condition de Paiement modifiée avec succès');
       refetchPaymentConditions();
+      setUpdateDialog(false);
     },
     onError: (error) => {
       toast.error(
@@ -173,8 +183,9 @@ const PaymentConditionMain: React.FC<PaymentConditionMainProps> = ({ className }
     sorting;
 
   if (error) return 'An error has occurred: ' + error.message;
+
   return (
-    <PaymentConditionActionsContext.Provider value={context}>
+    <PaymentConditionActionsContext.Provider value={context as any}>
       <PaymentConditionCreateDialog
         open={createDialog}
         isCreatePending={isCreatePending}
@@ -182,10 +193,11 @@ const PaymentConditionMain: React.FC<PaymentConditionMainProps> = ({ className }
           handlePaymentConditionSubmit(
             paymentConditionManager.getPaymentCondition(),
             createPaymentCondition
-          ) && setCreateDialog(false);
+          );
         }}
         onClose={() => {
           setCreateDialog(false);
+          paymentConditionManager.reset();
         }}
       />
       <PaymentConditionUpdateDialog
@@ -194,11 +206,12 @@ const PaymentConditionMain: React.FC<PaymentConditionMainProps> = ({ className }
           handlePaymentConditionSubmit(
             paymentConditionManager.getPaymentCondition(),
             updatePaymentCondition
-          ) && setUpdateDialog(false);
+          );
         }}
         isUpdatePending={isUpdatePending}
         onClose={() => {
           setUpdateDialog(false);
+          paymentConditionManager.reset();
         }}
       />
       <PaymentConditionDeleteDialog
@@ -222,6 +235,7 @@ const PaymentConditionMain: React.FC<PaymentConditionMainProps> = ({ className }
           containerClassName="overflow-auto"
           data={paymentConditions}
           columns={getPayementConditionColumns(tSettings)}
+          context={context}
           isPending={isPending}
         />
       </ContentSection>

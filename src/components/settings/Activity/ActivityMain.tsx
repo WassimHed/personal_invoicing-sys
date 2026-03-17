@@ -10,7 +10,8 @@ import { ActivityUpdateDialog } from './dialogs/ActivityUpdateDialog';
 import { useActivityManager } from './hooks/useActivityManager';
 import { ActivityCreateDialog } from './dialogs/ActivityCreateDialog';
 import { Activity } from '@/types';
-import { DataTable } from './data-table/data-table';
+import { DataTable } from '@/components/shared/data-table/data-table';
+import { DataTableConfig } from '@/components/shared/data-table/types';
 import { ActivityActionsContext } from './data-table/ActionDialogContext';
 import { getActivityColumns } from './data-table/columns';
 import { useBreadcrumb } from '@/context/BreadcrumbContext';
@@ -31,7 +32,7 @@ const ActivityMain: React.FC<ActivityMainProps> = ({ className }) => {
   //set page title in the breadcrumb
   const { setRoutes } = useBreadcrumb();
   React.useEffect(() => {
-    setRoutes([
+    setRoutes?.([
       { title: tCommon('menu.settings') },
       { title: tCommon('submenu.system') },
       { title: tCommon('settings.system.activity') }
@@ -88,11 +89,9 @@ const ActivityMain: React.FC<ActivityMainProps> = ({ className }) => {
     return activitiesResp?.data || [];
   }, [activitiesResp]);
 
-  const context = {
-    //dialogs
-    openCreateDialog: () => setCreateDialog(true),
-    openUpdateDialog: () => setUpdateDialog(true),
-    openDeleteDialog: () => setDeleteDialog(true),
+  const context: DataTableConfig<Activity> = {
+    singularName: tSettings('activity.singular'),
+    pluralName: tSettings('activity.plural'),
     //search, filtering, sorting & paging
     searchTerm,
     setSearchTerm,
@@ -103,7 +102,17 @@ const ActivityMain: React.FC<ActivityMainProps> = ({ className }) => {
     setSize,
     order: sortDetails.order,
     sortKey: sortDetails.sortKey,
-    setSortDetails: (order: boolean, sortKey: string) => setSortDetails({ order, sortKey })
+    setSortDetails: (order: boolean, sortKey: string) => setSortDetails({ order, sortKey }),
+    //actions
+    createCallback: () => setCreateDialog(true),
+    updateCallback: (activity: Activity) => {
+      activityManager.setActivity(activity);
+      setUpdateDialog(true);
+    },
+    deleteCallback: (activity: Activity) => {
+      activityManager.setActivity(activity);
+      setDeleteDialog(true);
+    }
   };
 
   const { mutate: createActivity, isPending: isCreatePending } = useMutation({
@@ -170,12 +179,12 @@ const ActivityMain: React.FC<ActivityMainProps> = ({ className }) => {
 
   if (error) return 'An error has occurred: ' + error.message;
   return (
-    <ActivityActionsContext.Provider value={context}>
+    <ActivityActionsContext.Provider value={context as any}>
       <ActivityCreateDialog
         open={createDialog}
         isCreatePending={isCreatePending}
         createActivity={() => {
-          handleActivitySubmit(activityManager.getActivity(), createActivity) &&
+          handleActivitySubmit(activityManager.getActivity() as Activity, createActivity) &&
             setCreateDialog(false);
         }}
         onClose={() => {
@@ -185,7 +194,7 @@ const ActivityMain: React.FC<ActivityMainProps> = ({ className }) => {
       <ActivityUpdateDialog
         open={updateDialog}
         updateActivity={() => {
-          handleActivitySubmit(activityManager.getActivity(), updateActivity) &&
+          handleActivitySubmit(activityManager.getActivity() as Activity, updateActivity) &&
             setUpdateDialog(false);
         }}
         isUpdatePending={isUpdatePending}
@@ -214,6 +223,7 @@ const ActivityMain: React.FC<ActivityMainProps> = ({ className }) => {
           containerClassName="overflow-auto"
           data={activities}
           columns={getActivityColumns(tSettings)}
+          context={context}
           isPending={isPending}
         />
       </ContentSection>

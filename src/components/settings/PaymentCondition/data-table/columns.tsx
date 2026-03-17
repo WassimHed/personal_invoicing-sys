@@ -1,26 +1,22 @@
 import { PaymentCondition } from '@/types';
 import { ColumnDef } from '@tanstack/react-table';
-import { DataTableRowActions } from './data-table-row-actions';
-import { DataTableColumnHeader } from './data-table-column-header';
 import { PAYMENT_CONDITION_FILTER_ATTRIBUTES } from '@/constants/payment-condition.filter-attributes';
+import { DataTableColumnHeader } from '@/components/shared/data-table/data-table-column-header';
+import { DataTableRowActions } from '@/components/shared/data-table/data-table-row-actions';
+import { Label } from '@/components/ui/label';
 
 export const getPayementConditionColumns = (t: Function): ColumnDef<PaymentCondition>[] => {
-  const translationNamespace = 'settings';
-  const translate = (value: string, namespace: string = '') => {
-    return t(value, { ns: namespace || translationNamespace });
-  };
-
   return [
     {
       accessorKey: 'label',
       header: ({ column }) => (
         <DataTableColumnHeader
           column={column}
-          title={translate('payment_condition.attributes.label')}
+          title={t('payment_condition.attributes.label')}
           attribute={PAYMENT_CONDITION_FILTER_ATTRIBUTES.LABEL}
         />
       ),
-      cell: ({ row }) => <div>{row.original.label}</div>,
+      cell: ({ row }) => <Label>{row.original.label}</Label>,
       enableSorting: true,
       enableHiding: true
     },
@@ -29,24 +25,19 @@ export const getPayementConditionColumns = (t: Function): ColumnDef<PaymentCondi
       header: ({ column }) => (
         <DataTableColumnHeader
           column={column}
-          title={translate('payment_condition.attributes.description')}
+          title={t('payment_condition.attributes.description')}
           attribute={PAYMENT_CONDITION_FILTER_ATTRIBUTES.DESCRIPTION}
         />
       ),
-      cell: ({ row }) => (
-        <div>
-          {row.original.description || <span className="text-zinc-400">Aucune Description</span>}
-        </div>
-      ),
+      cell: ({ row }) => <Label>{row.original.description}</Label>,
       enableSorting: true,
       enableHiding: true
     },
-
     {
       id: 'actions',
-      cell: ({ row }) => (
+      cell: ({ row, table }) => (
         <div className="flex justify-end">
-          <DataTableRowActions row={row} />
+          <DataTableRowActions row={row} context={(table.options.meta as any)?.context} />
         </div>
       )
     }

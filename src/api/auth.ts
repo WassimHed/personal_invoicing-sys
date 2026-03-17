@@ -7,7 +7,7 @@ const signIn = async (payload: SigninPayload): Promise<ResponseSigninDto> => {
 };
 
 const signUp = async (payload: SignupPayload): Promise<ResponseSignupDto> => {
-  const response = await axios.post('/auth/sign-up', payload);
+  const response = await axios.post('/auth/register', payload);
   return response.data;
 };
 

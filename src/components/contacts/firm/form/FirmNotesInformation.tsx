@@ -1,24 +1,31 @@
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
 import { NotepadText } from 'lucide-react';
 import { useFirmStore } from '@/hooks/stores/useFirmStore';
 import { useTranslation } from 'react-i18next';
+import { FormBuilder } from '@/components/shared/form-builder/FormBuilder';
+import { useFirmNotesFormStructure } from './useFirmNotesFormStructure';
 
-interface FirmNotesInformation {
+interface FirmNotesInformationProps {
   className?: string;
   placeholder?: string;
   loading?: boolean;
 }
 
-const FirmNotesInformation: React.FC<FirmNotesInformation> = ({
+const FirmNotesInformation: React.FC<FirmNotesInformationProps> = ({
   className,
   placeholder = '',
   loading
 }) => {
   const { t } = useTranslation('contacts');
   const firmStore = useFirmStore();
+  const { firmNotesFormStructure } = useFirmNotesFormStructure({
+    firmStore,
+    placeholder,
+    loading
+  });
+
   return (
     <Card className={className}>
       <CardHeader className="p-5">
@@ -30,13 +37,7 @@ const FirmNotesInformation: React.FC<FirmNotesInformation> = ({
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <Textarea
-          isPending={loading || false}
-          placeholder={placeholder}
-          className="resize-none"
-          value={firmStore?.notes}
-          onChange={(e) => firmStore.set('notes', e.target.value)}
-        />
+        <FormBuilder structure={firmNotesFormStructure} />
       </CardContent>
     </Card>
   );
