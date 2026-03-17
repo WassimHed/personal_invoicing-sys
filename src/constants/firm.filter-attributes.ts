@@ -8,5 +8,6 @@ export const FIRM_FILTER_ATTRIBUTES = {
   ISPERSON: 'isPerson',
   ACTIVITY: 'activity.label',
   CURRENCY: 'currency.code',
+  EMAIL: 'email',
   CREATEDAT: 'createdAt'
 };
