@@ -1,11 +1,11 @@
 import React from 'react';
 import { SystemSettings } from '@/components/settings/SystemSettings';
-import TaxMain from '@/components/settings/Tax/TaxMain';
+import { TaxPortal } from '@/components/settings/Tax/TaxPortal';
 
 export default function Page() {
   return (
     <SystemSettings>
-      <TaxMain />
+      <TaxPortal />
     </SystemSettings>
   );
 }

@@ -11,7 +11,7 @@ export const LanguageSwitcher = ({ className }: LanguageSwitcherProps) => {
   const router = useRouter();
   const { i18n, t } = useTranslation();
 
-  const [currentLanguage, setCurrentLanguage] = React.useState<string | undefined>(undefined);
+  const [currentLanguage, setCurrentLanguage] = React.useState<string>(i18n.language);
 
   React.useEffect(() => {
     const storedLocale = localStorage.getItem('locale');
@@ -25,7 +25,7 @@ export const LanguageSwitcher = ({ className }: LanguageSwitcherProps) => {
     } else {
       setCurrentLanguage(languageToUse);
     }
-  }, [i18n]);
+  }, [i18n.language]);
 
   const onToggleLanguageClick = (newLocale: string) => {
     const { pathname, asPath, query } = router;

@@ -16,10 +16,10 @@ import { useBreadcrumb } from '@/context/BreadcrumbContext';
 import { useRouter } from 'next/router';
 import ContentSection from '@/components/shared/ContentSection';
 
-interface DefaultConditionMainProps {
+interface DefaultConditionPortalProps {
   className?: string;
 }
-export const DefaultConditionMain: React.FC<DefaultConditionMainProps> = ({ className }) => {
+export const DefaultConditionPortal: React.FC<DefaultConditionPortalProps> = ({ className }) => {
   //next-router
   const router = useRouter();
   const { t: tSettings } = useTranslation('settings');
@@ -28,11 +28,14 @@ export const DefaultConditionMain: React.FC<DefaultConditionMainProps> = ({ clas
   //set page title in the breadcrumb
   const { setRoutes } = useBreadcrumb();
   React.useEffect(() => {
-    setRoutes?.([
-      { title: tCommon('menu.settings') },
-      { title: tCommon('submenu.system') },
-      { title: tCommon('settings.system.default_condition') }
-    ]);
+    if (setRoutes) {
+      setRoutes?.([
+
+        { title: tCommon('menu.settings') },
+        { title: tCommon('submenu.system') },
+        { title: tCommon('settings.system.default_condition') }
+      ]);
+    }
   }, [router.locale]);
 
   const defaultConditionManager = useDefaultConditionManager();

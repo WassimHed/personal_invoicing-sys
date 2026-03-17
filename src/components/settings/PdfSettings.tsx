@@ -19,7 +19,7 @@ export const PdfSettings: React.FC<PdfSettingsProps> = ({ className, defaultValu
   //set page title in the breadcrumb
   const { setRoutes } = useBreadcrumb();
   React.useEffect(() => {
-    setRoutes([
+    setRoutes?.([
       { title: 'Réglages PDF', href: '/settings/pdf' },
       { title: TABS_CONFIG[defaultValue as TabKey].label }
     ]);

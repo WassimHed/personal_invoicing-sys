@@ -1,6 +1,6 @@
 import React from 'react';
 import { api } from '@/api';
-import { Tax, TaxWithholding } from '@/types';
+import { TaxWithholding } from '@/types';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { getErrorMessage } from '@/utils/errors';
@@ -12,7 +12,7 @@ import { DataTableConfig } from '@/components/shared/data-table/types';
 import { TaxWithholdingCreateDialog } from './dialogs/TaxWithholdingCreateDialog';
 import { TaxWithholdingUpdateDialog } from './dialogs/TaxWithholdingUpdateDialog';
 import { TaxWithholdingDeleteDialog } from './dialogs/TaxWithholdingDeleteDialog';
-import { getTaxWithholdingColumns } from './data-table/columns';
+import { useTaxWithholdingColumns } from './columns';
 import { useRouter } from 'next/router';
 import { useBreadcrumb } from '@/context/BreadcrumbContext';
 import ContentSection from '@/components/shared/ContentSection';
@@ -22,7 +22,7 @@ interface TaxWithholdingMainProps {
   className?: string;
 }
 
-const TaxWithholdingMain: React.FC<TaxWithholdingMainProps> = ({ className }) => {
+export const TaxWithholdingPortal: React.FC<TaxWithholdingMainProps> = ({ className }) => {
   //next-router
   const router = useRouter();
   const { t: tSettings } = useTranslation('settings');
@@ -31,12 +31,14 @@ const TaxWithholdingMain: React.FC<TaxWithholdingMainProps> = ({ className }) =>
   //set page title in the breadcrumb
   const { setRoutes } = useBreadcrumb();
   React.useEffect(() => {
-    setRoutes?.([
+    if (setRoutes) {
+      setRoutes?.([
 
-      { title: tCommon('menu.settings') },
-      { title: tCommon('submenu.system') },
-      { title: tCommon('settings.system.tax_withholding') }
-    ]);
+        { title: tCommon('menu.settings') },
+        { title: tCommon('submenu.system') },
+        { title: tCommon('settings.system.tax_withholding') }
+      ]);
+    }
   }, [router.locale]);
 
   const taxWithholdingManager = useTaxWithholdingManager();
@@ -88,7 +90,7 @@ const TaxWithholdingMain: React.FC<TaxWithholdingMainProps> = ({ className }) =>
     return taxWithholdingsResp?.data || [];
   }, [taxWithholdingsResp]);
 
-  const context: DataTableConfig<Tax> = {
+  const context: DataTableConfig<TaxWithholding> = {
     singularName: tSettings('withholding.singular'),
     pluralName: tSettings('withholding.plural'),
     //search, filtering, sorting & paging
@@ -104,19 +106,21 @@ const TaxWithholdingMain: React.FC<TaxWithholdingMainProps> = ({ className }) =>
     setSortDetails: (order: boolean, sortKey: string) => setSortDetails({ order, sortKey }),
     //actions
     createCallback: () => setCreateDialog(true),
-    updateCallback: (tax: Tax) => {
+    updateCallback: (tax: TaxWithholding) => {
       taxWithholdingManager.setTax(tax);
       setUpdateDialog(true);
     },
-    deleteCallback: (tax: Tax) => {
+    deleteCallback: (tax: TaxWithholding) => {
       taxWithholdingManager.setTax(tax);
       setDeleteDialog(true);
     }
   };
 
+  const columns = useTaxWithholdingColumns(context);
+
   //create tax withholding
   const { mutate: createTaxWithholding, isPending: isCreatePending } = useMutation({
-    mutationFn: (data: Tax) => api.taxWithholding.create(data),
+    mutationFn: (data: TaxWithholding) => api.taxWithholding.create(data),
     onSuccess: () => {
       toast.success('Retenue à la source ajoutée avec succès');
       refetchTaxWithholdings();
@@ -131,7 +135,7 @@ const TaxWithholdingMain: React.FC<TaxWithholdingMainProps> = ({ className }) =>
 
   //update tax withholding
   const { mutate: updateTaxWithholding, isPending: isUpdatePending } = useMutation({
-    mutationFn: (data: Tax) => api.taxWithholding.update(data),
+    mutationFn: (data: TaxWithholding) => api.taxWithholding.update(data),
     onSuccess: () => {
       toast.success('Retenue à la source modifiée avec succès');
       refetchTaxWithholdings();
@@ -161,10 +165,10 @@ const TaxWithholdingMain: React.FC<TaxWithholdingMainProps> = ({ className }) =>
   });
 
   const handleTaxWithholdingSubmit = (
-    taxWithholding: Partial<TaxWithholding>,
-    callback: (taxWithholding: any) => void
+    taxWithholding: TaxWithholding,
+    callback: (taxWithholding: TaxWithholding) => void
   ): boolean => {
-    const validation = api.taxWithholding.validate(taxWithholding as any);
+    const validation = api.taxWithholding.validate(taxWithholding);
     if (validation.message) {
       toast.error(validation.message);
       return false;
@@ -194,7 +198,7 @@ const TaxWithholdingMain: React.FC<TaxWithholdingMainProps> = ({ className }) =>
         isCreatePending={isCreatePending}
         createTaxWithholding={() => {
           handleTaxWithholdingSubmit(
-            taxWithholdingManager.getTax(),
+            taxWithholdingManager.getTax() as TaxWithholding,
             createTaxWithholding
           );
         }}
@@ -207,7 +211,7 @@ const TaxWithholdingMain: React.FC<TaxWithholdingMainProps> = ({ className }) =>
         open={updateDialog}
         updateTaxWithholding={() => {
           handleTaxWithholdingSubmit(
-            taxWithholdingManager.getTax(),
+            taxWithholdingManager.getTax() as TaxWithholding,
             updateTaxWithholding
           );
         }}
@@ -237,7 +241,7 @@ const TaxWithholdingMain: React.FC<TaxWithholdingMainProps> = ({ className }) =>
           className="flex flex-col flex-1 overflow-hidden p-1"
           containerClassName="overflow-auto"
           data={taxWithholdings}
-          columns={getTaxWithholdingColumns(tSettings)}
+          columns={columns}
           context={context}
           isPending={isPending}
         />
@@ -245,5 +249,3 @@ const TaxWithholdingMain: React.FC<TaxWithholdingMainProps> = ({ className }) =>
     </>
   );
 };
-
-export default TaxWithholdingMain;

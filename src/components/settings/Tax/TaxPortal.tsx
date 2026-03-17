@@ -9,8 +9,7 @@ import { useTranslation } from 'react-i18next';
 import { useTaxManager } from './hooks/useTaxManager';
 import { DataTable } from '@/components/shared/data-table/data-table';
 import { DataTableConfig } from '@/components/shared/data-table/types';
-import { TaxActionsContext } from './data-table/ActionDialogContext';
-import { getTaxColumns } from './data-table/columns';
+import { getTaxColumns } from './columns';
 import { useRouter } from 'next/router';
 import { useBreadcrumb } from '@/context/BreadcrumbContext';
 import ContentSection from '@/components/shared/ContentSection';
@@ -25,7 +24,7 @@ interface TaxMainProps {
   className?: string;
 }
 
-const TaxMain: React.FC<TaxMainProps> = ({ className }) => {
+export const TaxPortal: React.FC<TaxMainProps> = ({ className }) => {
   //next-router
   const router = useRouter();
   const { t: tCommon } = useTranslation('common');
@@ -35,12 +34,14 @@ const TaxMain: React.FC<TaxMainProps> = ({ className }) => {
   //set page title in the breadcrumb
   const { setRoutes } = useBreadcrumb();
   React.useEffect(() => {
-    setRoutes?.([
+    if (setRoutes) {
+      setRoutes?.([
 
-      { title: tCommon('menu.settings') },
-      { title: tCommon('submenu.system') },
-      { title: tCommon('settings.system.tax') }
-    ]);
+        { title: tCommon('menu.settings') },
+        { title: tCommon('submenu.system') },
+        { title: tCommon('settings.system.tax') }
+      ]);
+    }
   }, [router.locale]);
 
   const taxManger = useTaxManager();
@@ -90,6 +91,29 @@ const TaxMain: React.FC<TaxMainProps> = ({ className }) => {
   const taxes = React.useMemo(() => {
     return taxesResp?.data || [];
   }, [taxesResp]);
+
+  const columns = React.useMemo(() => {
+    const context: DataTableConfig<Tax> = {
+      singularName: tSettings('tax.singular'),
+      pluralName: tSettings('tax.plural'),
+      //search, filtering, sorting & paging
+      searchTerm,
+      setSearchTerm,
+      page,
+      totalPageCount: taxesResp?.meta.pageCount || 1,
+      setPage,
+      size,
+      setSize,
+      order: sortDetails.order,
+      sortKey: sortDetails.sortKey,
+      setSortDetails: (order: boolean, sortKey: string) => setSortDetails({ order, sortKey }),
+      //actions
+      createCallback: () => {},
+      updateCallback: () => {},
+      deleteCallback: () => {}
+    };
+    return getTaxColumns(tSettings, tCommon, tCurrency, context);
+  }, [tSettings, tCommon, tCurrency, searchTerm, page, taxesResp, size, sortDetails]);
 
   //create tax
   const { mutate: createTax, isPending: isCreatePending } = useMutation({
@@ -155,9 +179,9 @@ const TaxMain: React.FC<TaxMainProps> = ({ className }) => {
 
   const handleTaxUpdateSubmit = () => {
     const tax = taxManger.getTax();
-    const validation = api.tax.validate(tax);
-    if (validation.message) {
-      toast.error(validation.message);
+    const result = updateTaxSchema.safeParse(tax);
+    if (!result.success) {
+      taxManger.set('errors', result.error.flatten().fieldErrors);
       return false;
     } else {
       updateTax(tax);
@@ -224,7 +248,7 @@ const TaxMain: React.FC<TaxMainProps> = ({ className }) => {
 
   if (error) return 'An error has occurred: ' + error.message;
   return (
-    <TaxActionsContext.Provider value={context as any}>
+    <>
       <ContentSection
         title={tSettings('tax.singular')}
         desc={tSettings('tax.card_description')}
@@ -234,7 +258,7 @@ const TaxMain: React.FC<TaxMainProps> = ({ className }) => {
           className="flex flex-col flex-1 overflow-hidden p-1"
           containerClassName="overflow-auto"
           data={taxes}
-          columns={getTaxColumns(tSettings, tCommon, tCurrency)}
+          columns={columns}
           context={context}
           isPending={isPending}
         />
@@ -242,8 +266,6 @@ const TaxMain: React.FC<TaxMainProps> = ({ className }) => {
       {createTaxSheet}
       {updateTaxSheet}
       {deleteTaxDialog}
-    </TaxActionsContext.Provider>
+    </>
   );
 };
-
-export default TaxMain;

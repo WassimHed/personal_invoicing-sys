@@ -5,25 +5,25 @@ import { DataTableRowActions } from '@/components/shared/data-table/data-table-r
 import { X } from 'lucide-react';
 import { DataTableColumnHeader } from '@/components/shared/data-table/data-table-column-header';
 import { BANK_ACCOUNT_FILTER_ATTRIBUTES } from '@/constants/bank-account.filter-attributes';
+import { DataTableConfig } from '@/components/shared/data-table/types';
+import { useTranslation } from 'react-i18next';
 
-export const getBankAccountColumns = (
-  t: Function,
-  tCurrency: Function
+export const useBankAccountColumns = (
+  context: DataTableConfig<BankAccount>
 ): ColumnDef<BankAccount>[] => {
-  const translationNamespace = 'settings';
-  const translate = (value: string, namespace: string = '') => {
-    return t(value, { ns: namespace || translationNamespace });
-  };
+  const { t } = useTranslation('settings');
+  const { t: tCurrency } = useTranslation('currency');
+  const { t: tCommon } = useTranslation('common');
 
   return [
     {
       accessorKey: 'name',
-      header: ({ column, table }) => (
+      header: ({ column }) => (
         <DataTableColumnHeader
           column={column}
-          title={translate('bank_account.attributes.name')}
+          context={context}
+          title={t('bank_account.attributes.name')}
           attribute={BANK_ACCOUNT_FILTER_ATTRIBUTES.NAME}
-          context={(table.options.meta as any)?.context}
         />
       ),
       cell: ({ row }) => <div>{row.original.name}</div>,
@@ -32,12 +32,12 @@ export const getBankAccountColumns = (
     },
     {
       accessorKey: 'bic',
-      header: ({ column, table }) => (
+      header: ({ column }) => (
         <DataTableColumnHeader
           column={column}
-          title={translate('bank_account.attributes.bic')}
+          context={context}
+          title={t('bank_account.attributes.bic')}
           attribute={BANK_ACCOUNT_FILTER_ATTRIBUTES.BIC}
-          context={(table.options.meta as any)?.context}
         />
       ),
       cell: ({ row }) => <div>{row.original.bic}</div>,
@@ -46,12 +46,12 @@ export const getBankAccountColumns = (
     },
     {
       accessorKey: 'rib',
-      header: ({ column, table }) => (
+      header: ({ column }) => (
         <DataTableColumnHeader
           column={column}
-          title={translate('bank_account.attributes.rib')}
+          context={context}
+          title={t('bank_account.attributes.rib')}
           attribute={BANK_ACCOUNT_FILTER_ATTRIBUTES.RIB}
-          context={(table.options.meta as any)?.context}
         />
       ),
       cell: ({ row }) => <div>{row.original.rib}</div>,
@@ -60,12 +60,12 @@ export const getBankAccountColumns = (
     },
     {
       accessorKey: 'iban',
-      header: ({ column, table }) => (
+      header: ({ column }) => (
         <DataTableColumnHeader
           column={column}
-          title={translate('bank_account.attributes.iban')}
+          context={context}
+          title={t('bank_account.attributes.iban')}
           attribute={BANK_ACCOUNT_FILTER_ATTRIBUTES.IBAN}
-          context={(table.options.meta as any)?.context}
         />
       ),
       cell: ({ row }) => <div>{row.original.iban}</div>,
@@ -74,22 +74,22 @@ export const getBankAccountColumns = (
     },
     {
       accessorKey: 'currency',
-      header: ({ column, table }) => (
+      header: ({ column }) => (
         <DataTableColumnHeader
           column={column}
-          title={translate('bank_account.attributes.currency')}
+          context={context}
+          title={t('bank_account.attributes.currency')}
           attribute={BANK_ACCOUNT_FILTER_ATTRIBUTES.CURRENCY}
-          context={(table.options.meta as any)?.context}
         />
       ),
       cell: ({ row }) =>
         row.original.currency ? (
           <div>
-            {tCurrency(row.original.currency?.code)} ({row.original.currency?.symbol})
+            {tCurrency(row.original.currency.code || '')} ({row.original.currency?.symbol})
           </div>
         ) : (
-          <div className="flex items-center gap-2 font-bold">
-            <X className="h-5 w-5" /> <span>No Currency</span>
+          <div className="flex items-center gap-2 font-bold text-muted-foreground">
+            <X className="h-4 w-4" /> <span>No Currency</span>
           </div>
         ),
       enableSorting: true,
@@ -97,23 +97,19 @@ export const getBankAccountColumns = (
     },
     {
       accessorKey: 'isMain',
-      header: ({ column, table }) => (
+      header: ({ column }) => (
         <DataTableColumnHeader
           column={column}
-          title={translate('bank_account.attributes.isMain')}
+          context={context}
+          title={t('bank_account.attributes.isMain')}
           attribute={BANK_ACCOUNT_FILTER_ATTRIBUTES.ISMAIN}
-          context={(table.options.meta as any)?.context}
         />
       ),
       cell: ({ row }) => (
         <div>
-          {
-            <Badge className="px-5">
-              {row.original.isMain
-                ? translate('answer.yes', 'common')
-                : translate('answer.no', 'common')}
-            </Badge>
-          }
+          <Badge variant={row.original.isMain ? 'default' : 'secondary'} className="px-3">
+            {row.original.isMain ? tCommon('answer.yes') : tCommon('answer.no')}
+          </Badge>
         </div>
       ),
       enableSorting: false,
@@ -121,9 +117,9 @@ export const getBankAccountColumns = (
     },
     {
       id: 'actions',
-      cell: ({ row, table }) => (
+      cell: ({ row }) => (
         <div className="flex justify-end">
-          <DataTableRowActions row={row} context={(table.options.meta as any)?.context} />
+          <DataTableRowActions row={row} context={context} />
         </div>
       )
     }

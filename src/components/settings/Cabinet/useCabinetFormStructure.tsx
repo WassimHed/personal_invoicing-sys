@@ -35,7 +35,7 @@ export const useCabinetFormStructure = ({
     variant: FieldVariant.TEXT,
     placeholder: 'Ex. Zedney Creative',
     props: {
-      value: cabinetManager.enterpriseName,
+      value: cabinetManager.enterpriseName || '',
       onChange: (value) => cabinetManager.set('enterpriseName', value),
       disabled: isPending
     }
@@ -47,7 +47,7 @@ export const useCabinetFormStructure = ({
     variant: FieldVariant.TEL,
     placeholder: 'Ex. +216 72 398 389',
     props: {
-      value: cabinetManager.phone,
+      value: cabinetManager.phone || '',
       onChange: (value) => cabinetManager.set('phone', value),
       disabled: isPending
     }
@@ -59,7 +59,7 @@ export const useCabinetFormStructure = ({
     variant: FieldVariant.TEXT,
     placeholder: 'Ex. johndoe@zedneycreative.com',
     props: {
-      value: cabinetManager.email,
+      value: cabinetManager.email || '',
       onChange: (value) => cabinetManager.set('email', value),
       disabled: isPending
     }
@@ -71,7 +71,7 @@ export const useCabinetFormStructure = ({
     variant: FieldVariant.TEXT,
     placeholder: 'Ex. 188 Avenue 14 Janvier',
     props: {
-      value: cabinetManager.address?.address,
+      value: cabinetManager.address?.address || '',
       onChange: (value) =>
         cabinetManager.set('address', {
           ...cabinetManager.address,
@@ -87,7 +87,7 @@ export const useCabinetFormStructure = ({
     variant: FieldVariant.TEXT,
     placeholder: 'Ex. Nabeul',
     props: {
-      value: cabinetManager.address?.city,
+      value: cabinetManager.address?.city || '',
       onChange: (value) =>
         cabinetManager.set('address', {
           ...cabinetManager.address,
@@ -103,7 +103,7 @@ export const useCabinetFormStructure = ({
     variant: FieldVariant.TEXT,
     placeholder: 'Ex. Bizerte',
     props: {
-      value: cabinetManager.address?.region,
+      value: cabinetManager.address?.region || '',
       onChange: (value) =>
         cabinetManager.set('address', {
           ...cabinetManager.address,
@@ -119,7 +119,7 @@ export const useCabinetFormStructure = ({
     variant: FieldVariant.TEXT,
     placeholder: 'Ex. 7000',
     props: {
-      value: cabinetManager.address?.zipcode,
+      value: cabinetManager.address?.zipcode || '',
       onChange: (value) =>
         cabinetManager.set('address', {
           ...cabinetManager.address,
@@ -142,8 +142,8 @@ export const useCabinetFormStructure = ({
           countryId: value
         }),
       options: countries.map((country) => ({
-        label: country?.alpha2Code ? tCountry(country.alpha2Code) : country.name,
-        value: country.id.toString()
+        label: country?.alpha2Code ? tCountry(country.alpha2Code) : (country.alpha3Code || ''),
+        value: country.id!.toString()
       })),
       disabled: isPending
     }
@@ -155,7 +155,7 @@ export const useCabinetFormStructure = ({
     variant: FieldVariant.TEXT,
     placeholder: 'Ex. 1538414/L/A/M/0000',
     props: {
-      value: cabinetManager.taxIdNumber,
+      value: cabinetManager.taxIdNumber || '',
       onChange: (value) => cabinetManager.set('taxIdNumber', value),
       disabled: isPending
     }
@@ -171,7 +171,7 @@ export const useCabinetFormStructure = ({
       onValueChange: (value) => cabinetManager.set('activity', { id: parseInt(value) } as Activity),
       options: activities.map((activity) => ({
         label: activity.label || '',
-        value: activity.id.toString()
+        value: activity.id!.toString()
       })),
       disabled: isPending
     }
@@ -187,7 +187,7 @@ export const useCabinetFormStructure = ({
       onValueChange: (value) => cabinetManager.set('currency', { id: parseInt(value) } as Currency),
       options: currencies.map((currency) => ({
         label: `${currency?.code ? tCurrency(currency?.code) : currency.label} (${currency.symbol})`,
-        value: currency.id.toString()
+        value: currency.id!.toString()
       })),
       disabled: isPending
     }

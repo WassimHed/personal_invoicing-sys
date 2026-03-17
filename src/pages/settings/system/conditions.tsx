@@ -1,11 +1,11 @@
 import React from 'react';
 import { SystemSettings } from '@/components/settings/SystemSettings';
-import { DefaultConditionMain } from '@/components/settings/DefaultCondition/DefaultConditionMain';
+import { DefaultConditionPortal } from '@/components/settings/DefaultCondition/DefaultConditionPortal';
 
 export default function Page() {
   return (
     <SystemSettings>
-      <DefaultConditionMain />
+      <DefaultConditionPortal />
     </SystemSettings>
   );
 }

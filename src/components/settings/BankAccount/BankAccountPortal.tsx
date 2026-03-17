@@ -10,11 +10,10 @@ import { BankAccountCreateDialog } from './dialogs/BankAccountCreateDialog';
 import { BankAccountUpdateDialog } from './dialogs/BankAccountUpdateDialog';
 import { BankAccountDeleteDialog } from './dialogs/BankAccountDeleteDialog';
 import { BankAccountPromoteDialog } from './dialogs/BankAccountPromoteDialog';
-import { getBankAccountColumns } from './data-table/columns';
+import { useBankAccountColumns } from './columns';
 import { DataTable } from '@/components/shared/data-table/data-table';
 import { DataTableConfig } from '@/components/shared/data-table/types';
 import { api } from '@/api';
-import { BankAccountActionsContext } from './data-table/ActionsContext';
 import ContentSection from '@/components/shared/ContentSection';
 import { cn } from '@/lib/utils';
 import { useBreadcrumb } from '@/context/BreadcrumbContext';
@@ -25,7 +24,7 @@ interface BankAccountMainProps {
   className?: string;
 }
 
-export const BankAccountMain: React.FC<BankAccountMainProps> = ({ className }) => {
+export const BankAccountPortal: React.FC<BankAccountMainProps> = ({ className }) => {
   //next-router
   const router = useRouter();
 
@@ -134,6 +133,8 @@ export const BankAccountMain: React.FC<BankAccountMainProps> = ({ className }) =
     }
   };
 
+  const columns = useBankAccountColumns(context);
+
   // determine if there are bank accounts available so we let the client decide to switch its main account
   const [hasToCreateMainByDefault, setHasToCreateMainByDefault] = React.useState<boolean>(false);
   const [hasToUpdateMainByDefault, setHasToUpdateMainByDefault] = React.useState<boolean>(false);
@@ -238,7 +239,7 @@ export const BankAccountMain: React.FC<BankAccountMainProps> = ({ className }) =
 
   if (error) return 'An error has occurred: ' + error.message;
   return (
-    <BankAccountActionsContext.Provider value={context as any}>
+    <>
       <BankAccountCreateDialog
         open={createDialog}
         isCreatePending={isCreatePending}
@@ -265,8 +266,8 @@ export const BankAccountMain: React.FC<BankAccountMainProps> = ({ className }) =
         }}
         isDeletionPending={isDeletePending}
         label={
-          `${bankAccountManager.name}` +
-          (bankAccountManager?.iban ? `(${bankAccountManager?.iban}) ` : ``)
+          `${bankAccountManager.name} ` +
+          (bankAccountManager?.iban ? `(${bankAccountManager?.iban})` : ``)
         }
         onClose={() => {
           setDeleteDialog(false);
@@ -278,7 +279,7 @@ export const BankAccountMain: React.FC<BankAccountMainProps> = ({ className }) =
           bankAccountManager?.id && promoteBankAccount(bankAccountManager.getBankAccount());
         }}
         isPromotingPending={isPromotionPending}
-        label={bankAccountManager.name}
+        label={bankAccountManager.name || ''}
         onClose={() => {
           setPromoteDialog(false);
         }}
@@ -292,11 +293,11 @@ export const BankAccountMain: React.FC<BankAccountMainProps> = ({ className }) =
           className="flex flex-col flex-1 overflow-hidden p-1"
           containerClassName="overflow-auto"
           data={bankAccounts}
-          columns={getBankAccountColumns(tSettings, tCurrency)}
+          columns={columns}
           context={context}
           isPending={isPending}
         />
       </ContentSection>
-    </BankAccountActionsContext.Provider>
+    </>
   );
 };

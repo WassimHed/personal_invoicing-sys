@@ -4,17 +4,21 @@ import { PAYMENT_CONDITION_FILTER_ATTRIBUTES } from '@/constants/payment-conditi
 import { DataTableColumnHeader } from '@/components/shared/data-table/data-table-column-header';
 import { DataTableRowActions } from '@/components/shared/data-table/data-table-row-actions';
 import { Label } from '@/components/ui/label';
+import { DataTableConfig } from '@/components/shared/data-table/types';
+import { useTranslation } from 'react-i18next';
 
-export const getPayementConditionColumns = (t: Function): ColumnDef<PaymentCondition>[] => {
+export const usePayementConditionColumns = (context: DataTableConfig<PaymentCondition>): ColumnDef<PaymentCondition>[] => {
+  const { t } = useTranslation('settings');
+
   return [
     {
       accessorKey: 'label',
-      header: ({ column, table }) => (
+      header: ({ column }) => (
         <DataTableColumnHeader
           column={column}
+          context={context}
           title={t('payment_condition.attributes.label')}
           attribute={PAYMENT_CONDITION_FILTER_ATTRIBUTES.LABEL}
-          context={(table.options.meta as any)?.context}
         />
       ),
       cell: ({ row }) => <Label>{row.original.label}</Label>,
@@ -23,12 +27,12 @@ export const getPayementConditionColumns = (t: Function): ColumnDef<PaymentCondi
     },
     {
       accessorKey: 'description',
-      header: ({ column, table }) => (
+      header: ({ column }) => (
         <DataTableColumnHeader
           column={column}
+          context={context}
           title={t('payment_condition.attributes.description')}
           attribute={PAYMENT_CONDITION_FILTER_ATTRIBUTES.DESCRIPTION}
-          context={(table.options.meta as any)?.context}
         />
       ),
       cell: ({ row }) => <Label>{row.original.description}</Label>,
@@ -37,9 +41,9 @@ export const getPayementConditionColumns = (t: Function): ColumnDef<PaymentCondi
     },
     {
       id: 'actions',
-      cell: ({ row, table }) => (
+      cell: ({ row }) => (
         <div className="flex justify-end">
-          <DataTableRowActions row={row} context={(table.options.meta as any)?.context} />
+          <DataTableRowActions row={row} context={context} />
         </div>
       )
     }

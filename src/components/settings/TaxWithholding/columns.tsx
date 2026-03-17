@@ -4,17 +4,23 @@ import { TAX_WITHHOLDING_FILTER_ATTRIBUTES } from '@/constants/tax-withholding-a
 import { DataTableColumnHeader } from '@/components/shared/data-table/data-table-column-header';
 import { DataTableRowActions } from '@/components/shared/data-table/data-table-row-actions';
 import { Label } from '@/components/ui/label';
+import { DataTableConfig } from '@/components/shared/data-table/types';
+import { useTranslation } from 'react-i18next';
 
-export const getTaxWithholdingColumns = (t: Function): ColumnDef<TaxWithholding>[] => {
+export const useTaxWithholdingColumns = (
+  context: DataTableConfig<TaxWithholding>
+): ColumnDef<TaxWithholding>[] => {
+  const { t } = useTranslation('settings');
+
   return [
     {
       accessorKey: 'label',
-      header: ({ column, table }) => (
+      header: ({ column }) => (
         <DataTableColumnHeader
           column={column}
+          context={context}
           title={t('withholding.attributes.label')}
           attribute={TAX_WITHHOLDING_FILTER_ATTRIBUTES.LABEL}
-          context={(table.options.meta as any)?.context}
         />
       ),
       cell: ({ row }) => <Label>{row.original.label}</Label>,
@@ -23,12 +29,12 @@ export const getTaxWithholdingColumns = (t: Function): ColumnDef<TaxWithholding>
     },
     {
       accessorKey: 'rate',
-      header: ({ column, table }) => (
+      header: ({ column }) => (
         <DataTableColumnHeader
           column={column}
+          context={context}
           title={t('withholding.attributes.rate')}
           attribute={TAX_WITHHOLDING_FILTER_ATTRIBUTES.RATE}
-          context={(table.options.meta as any)?.context}
         />
       ),
       cell: ({ row }) => (
@@ -42,9 +48,9 @@ export const getTaxWithholdingColumns = (t: Function): ColumnDef<TaxWithholding>
     },
     {
       id: 'actions',
-      cell: ({ row, table }) => (
+      cell: ({ row }) => (
         <div className="flex justify-end">
-          <DataTableRowActions row={row} context={(table.options.meta as any)?.context} />
+          <DataTableRowActions row={row} context={context} />
         </div>
       )
     }

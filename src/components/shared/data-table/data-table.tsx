@@ -76,6 +76,9 @@ export function DataTable<TData, TValue>({
       rowSelection,
       columnFilters
     },
+    meta: {
+      context
+    },
     enableRowSelection: true,
     onRowSelectionChange: setRowSelection,
     onSortingChange: setSorting,

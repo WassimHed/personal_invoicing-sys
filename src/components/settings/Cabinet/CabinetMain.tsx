@@ -32,7 +32,8 @@ const CabinetMain: React.FC<CabinetMainProps> = ({ className }) => {
   //set page title in the breadcrumb
   const { setRoutes } = useBreadcrumb();
   React.useEffect(() => {
-    setRoutes([
+    setRoutes?.([
+
       { title: tCommon('menu.settings') },
       { title: tCommon('submenu.account') },
       { title: tCommon('settings.account.my_cabinet') }
@@ -83,7 +84,7 @@ const CabinetMain: React.FC<CabinetMainProps> = ({ className }) => {
 
   if (error) return 'An error has occurred: ' + error.message;
   return (
-    <div className={cn(className)}>
+    <div className={cn('flex-1 overflow-y-auto p-1', className)}>
       <div className="flex flex-col 2xl:flex-row gap-5">
         <GeneralInformation
           className="w-full 2xl:w-3/4"

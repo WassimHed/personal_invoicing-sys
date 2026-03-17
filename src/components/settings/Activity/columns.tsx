@@ -3,17 +3,18 @@ import { ColumnDef } from '@tanstack/react-table';
 import { DataTableColumnHeader } from '@/components/shared/data-table/data-table-column-header';
 import { DataTableRowActions } from '@/components/shared/data-table/data-table-row-actions';
 import { DataTableConfig } from '@/components/shared/data-table/types';
+import { useTranslation } from 'react-i18next';
 
-export const getActivityColumns = (t: Function): ColumnDef<Activity>[] => {
+export const useActivityColumns = (
+  context: DataTableConfig<Activity>
+): ColumnDef<Activity>[] => {
+  const { t } = useTranslation('common');
+  
   return [
     {
       accessorKey: 'id',
-      header: ({ column, table }) => (
-        <DataTableColumnHeader
-          column={column}
-          title={t('activity.attributes.id')}
-          context={(table.options.meta as any)?.context}
-        />
+      header: ({ column }) => (
+        <DataTableColumnHeader column={column} context={context} title={t('activity.attributes.id')} />
       ),
       cell: ({ row }) => <div className="w-[80px]">{row.getValue('id')}</div>,
       enableSorting: true,
@@ -21,12 +22,8 @@ export const getActivityColumns = (t: Function): ColumnDef<Activity>[] => {
     },
     {
       accessorKey: 'label',
-      header: ({ column, table }) => (
-        <DataTableColumnHeader
-          column={column}
-          title={t('activity.attributes.label')}
-          context={(table.options.meta as any)?.context}
-        />
+      header: ({ column }) => (
+        <DataTableColumnHeader column={column} context={context} title={t('activity.attributes.label')} />
       ),
       cell: ({ row }) => {
         return (
@@ -38,8 +35,7 @@ export const getActivityColumns = (t: Function): ColumnDef<Activity>[] => {
     },
     {
       id: 'actions',
-      cell: ({ row, table }) => {
-        const context = (table.options.meta as any)?.context as DataTableConfig<Activity>;
+      cell: ({ row }) => {
         return (
           <div className="flex justify-end">
             <DataTableRowActions row={row} context={context} />

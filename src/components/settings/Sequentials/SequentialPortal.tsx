@@ -16,11 +16,11 @@ import { useRouter } from 'next/router';
 import { useBreadcrumb } from '@/context/BreadcrumbContext';
 import ContentSection from '@/components/shared/ContentSection';
 
-interface SequentialMainProps {
+interface SequentialPortalProps {
   className?: string;
 }
 
-export const SequentialMain: React.FC<SequentialMainProps> = ({ className }) => {
+export const SequentialPortal: React.FC<SequentialPortalProps> = ({ className }) => {
   //next-router
   const router = useRouter();
   const { t: tSettings } = useTranslation('settings');

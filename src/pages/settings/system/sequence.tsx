@@ -1,11 +1,11 @@
 import React from 'react';
 import { SystemSettings } from '@/components/settings/SystemSettings';
-import { SequentialMain } from '@/components/settings/Sequentials/SequentialMain';
+import { SequentialPortal } from '@/components/settings/Sequentials/SequentialPortal';
 
 export default function Page() {
   return (
     <SystemSettings>
-      <SequentialMain />
+      <SequentialPortal />
     </SystemSettings>
   );
 }
