@@ -20,7 +20,6 @@
     "attributes": {
       "activity": "Activity",
       "created_at": "Date of Creation",
-      "email": "Email",
       "currency": "Currency",
       "delivery_address": "Delivery Address",
       "entreprise_name": "Enterprise Name",
@@ -64,8 +63,7 @@
       "website": "No Website",
       "activity": "No Activity",
       "currency": "No Currency",
-      "tax_number": "No Tax Number",
-      "email": "No Email"
+      "tax_number": "No Tax Number"
     },
     "new": "New Firm",
     "plural": "Firms",

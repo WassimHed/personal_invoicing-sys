@@ -88,31 +88,6 @@ export const useFirmColumns = (context: DataTableConfig<Firm>): ColumnDef<Firm>[
       enableSorting: true,
       enableHiding: true
     },
-        {
-      accessorKey: 'email',
-      header: ({ column }) => (
-        <DataTableColumnHeader
-          column={column}
-          context={context}
-          title={t('firm.attributes.email')}
-          attribute={FIRM_FILTER_ATTRIBUTES.EMAIL}
-        />
-      ),
-      cell: ({ row }) => {
-        const mainInterlocutor = row.original.interlocutorsToFirm?.find(
-          (entry) => entry.isMain
-        )?.interlocutor;
-        return (
-          <div className="font-medium">
-            {mainInterlocutor?.email || (
-              <span className="text-zinc-400">{t('firm.empty_cells.email')}</span>
-            )}
-          </div>
-        );
-      },
-      enableSorting: true,
-      enableHiding: true
-    },
     {
       accessorKey: 'website',
       header: ({ column }) => (

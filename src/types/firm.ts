@@ -15,7 +15,6 @@ export interface Firm extends DatabaseEntity {
   website?: string;
   phone?: string;
   name?: string;
-  email?: string;
   taxIdNumber?: string;
   isPerson?: boolean;
   invoicingAddress?: Address;

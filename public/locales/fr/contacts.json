@@ -20,7 +20,6 @@
     "attributes": {
       "activity": "Activité",
       "created_at": "Date de Création",
-      "email": "Email",
       "currency": "Devise",
       "delivery_address": "Adresse de livraison",
       "entreprise_name": "Nom de l'entreprise",
@@ -64,8 +63,7 @@
       "website": "Aucun Site Web",
       "activity": "Aucune Activité",
       "currency": "Aucun Devise",
-      "tax_number": "Aucun Numéro d'Identification Fiscale",
-      "email": "Aucun Email"
+      "tax_number": "Aucun Numéro d'Identification Fiscale"
     },
     "new": "Nouvelle Entreprise",
     "presented_by": "présenté par",
