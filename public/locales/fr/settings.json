@@ -50,6 +50,24 @@
       "create_dialog_hint": "Introduisez les détails pour créer une nouveau compte bancaire. Assurez-vous que tous les champs obligatoires sont remplis avant d'enregistrer.",
       "update_dialog_hint": "Introduisez les détails pour mettre à jour le compte bancaire. Assurez-vous que tous les champs obligatoires sont remplis avant d'enregistrer."
     },
+    "sheet": {
+      "create": {
+        "title": "Nouveau Compte Bancaire",
+        "description": "Introduisez les détails pour créer une nouveau compte bancaire. Assurez-vous que tous les champs obligatoires sont remplis avant d'enregistrer."
+      },
+      "update": {
+        "title": "Mise à jour du Compte Bancaire",
+        "description": "Introduisez les détails pour mettre à jour le compte bancaire. Assurez-vous que tous les champs obligatoires sont remplis avant d'enregistrer."
+      }
+    },
+    "dialogs": {
+      "delete": {
+        "title": "Supprimer le Compte Bancaire",
+        "description": "Êtes-vous sûr de vouloir supprimer ce compte bancaire ? Cette action ne peut pas être annulée.",
+        "confirm": "Confirmer",
+        "cancel": "Annuler"
+      }
+    },
     "new": "Nouveau Compte Bancaire",
     "update": "Mise à jour d'un Compte Bancaire",
     "singular": "Compte Bancaire",

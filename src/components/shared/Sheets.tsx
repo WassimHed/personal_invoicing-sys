@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import ReactDOM from 'react-dom';
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from '../ui/sheet';
 import { cn } from '@/lib/utils';
-import { useMediaQuery } from '@/hooks/other/useMediaQuery';
+import { useMediaQuery } from '@/hooks/useMediaQuery';
 
 const SHEET_SIDES = ['top', 'right', 'bottom', 'left'] as const;
 type SheetSide = (typeof SHEET_SIDES)[number];

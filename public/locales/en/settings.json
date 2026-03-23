@@ -50,6 +50,24 @@
             "create_dialog_hint": "Enter the details to create a new bank account. Make sure all the required fields are filled before saving.",
             "update_dialog_hint": "Enter the details to update the bank account. Make sure all the required fields are filled before saving."
         },
+        "sheet": {
+            "create": {
+                "title": "New Bank Account",
+                "description": "Enter the details to create a new bank account. Make sure all the required fields are filled before saving."
+            },
+            "update": {
+                "title": "Bank Account Update",
+                "description": "Enter the details to update the bank account. Make sure all the required fields are filled before saving."
+            }
+        },
+        "dialogs": {
+            "delete": {
+                "title": "Delete Bank Account",
+                "description": "Are you sure you want to delete this bank account? This action cannot be undone.",
+                "confirm": "Confirm",
+                "cancel": "Cancel"
+            }
+        },
         "new": "New Bank Account",
         "update": "Bank Account Update",
         "singular": "Bank Account",
