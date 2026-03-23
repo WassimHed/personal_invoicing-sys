@@ -276,7 +276,7 @@ export const InterlocutorPortal: React.FC<InterlocutorProps> = ({ className, fir
     sortKey: sortDetails.sortKey,
     setSortDetails: (order: boolean, sortKey: string) => setSortDetails({ order, sortKey }),
     //actions
-    createCallback: openCreateInterlocutorSheet,
+    createCallback: firmId ? openCreateInterlocutorSheet : undefined,
     inspectCallback: (interlocutor: Interlocutor) => {
       router.push(`/contacts/interlocutor/${interlocutor.id}`);
     },
