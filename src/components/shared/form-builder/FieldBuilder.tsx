@@ -183,7 +183,7 @@ export const FieldBuilder = ({ field }: FieldBuilderProps) => {
           <Switch
             {...field.props}
             id={field.label}
-            checked={field?.props?.value}
+            checked={field?.props?.checked}
             defaultChecked={field?.props?.defaultChecked}
             onCheckedChange={(value) => field?.props?.onCheckedChange?.(value)}
           />{' '}

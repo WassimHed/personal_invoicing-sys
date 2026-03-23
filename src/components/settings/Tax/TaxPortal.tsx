@@ -6,19 +6,17 @@ import { toast } from 'sonner';
 import { getErrorMessage } from '@/utils/errors';
 import { useDebounce } from '@/hooks/other/useDebounce';
 import { useTranslation } from 'react-i18next';
-import { useTaxManager } from './hooks/useTaxManager';
+import { useTaxStore } from '@/hooks/stores/useTaxStore';
 import { DataTable } from '@/components/shared/data-table/data-table';
 import { DataTableConfig } from '@/components/shared/data-table/types';
 import { getTaxColumns } from './columns';
 import { useRouter } from 'next/router';
 import { useBreadcrumb } from '@/context/BreadcrumbContext';
-import ContentSection from '@/components/shared/ContentSection';
 import { cn } from '@/lib/utils';
 import { useTaxDeleteDialog } from './modals/TaxDeleteDialog';
 import { useTaxCreateSheet } from './modals/TaxCreateSheet';
 import { useTaxUpdateSheet } from './modals/TaxUpdateSheet';
 import { TAX_FILTER_ATTRIBUTES } from '@/constants/tax.filter-attributes';
-import { createTaxSchema, updateTaxSchema } from '@/types/validations/tax.validation';
 
 interface TaxMainProps {
   className?: string;
@@ -42,9 +40,9 @@ export const TaxPortal: React.FC<TaxMainProps> = ({ className }) => {
         { title: tCommon('settings.system.tax') }
       ]);
     }
-  }, [router.locale]);
+  }, [router.locale, setRoutes, tCommon]);
 
-  const taxManger = useTaxManager();
+  const taxStore = useTaxStore();
 
   const [page, setPage] = React.useState(1);
   const { value: debouncedPage, loading: paging } = useDebounce<number>(page, 500);
@@ -63,7 +61,6 @@ export const TaxPortal: React.FC<TaxMainProps> = ({ className }) => {
 
   const {
     isPending: isFetchPending,
-    error,
     data: taxesResp,
     refetch: refetchTaxes
   } = useQuery({
@@ -92,127 +89,80 @@ export const TaxPortal: React.FC<TaxMainProps> = ({ className }) => {
     return taxesResp?.data || [];
   }, [taxesResp]);
 
-  const columns = React.useMemo(() => {
-    const context: DataTableConfig<Tax> = {
-      singularName: tSettings('tax.singular'),
-      pluralName: tSettings('tax.plural'),
-      //search, filtering, sorting & paging
-      searchTerm,
-      setSearchTerm,
-      page,
-      totalPageCount: taxesResp?.meta.pageCount || 1,
-      setPage,
-      size,
-      setSize,
-      order: sortDetails.order,
-      sortKey: sortDetails.sortKey,
-      setSortDetails: (order: boolean, sortKey: string) => setSortDetails({ order, sortKey }),
-      //actions
-      createCallback: () => {},
-      updateCallback: () => {},
-      deleteCallback: () => {}
-    };
-    return getTaxColumns(tSettings, tCommon, tCurrency, context);
-  }, [tSettings, tCommon, tCurrency, searchTerm, page, taxesResp, size, sortDetails]);
-
   //create tax
   const { mutate: createTax, isPending: isCreatePending } = useMutation({
-    mutationFn: (data: Tax) => api.tax.create(data),
+    mutationFn: () => api.tax.create(taxStore.createDto),
     onSuccess: () => {
-      toast.success('Taxe ajoutée avec succès');
+      toast.success(tSettings('tax.action_add_success'));
       refetchTaxes();
+      taxStore.reset();
+      closeCreateTaxSheet();
     },
     onError: (error) => {
-      toast.error(getErrorMessage('', error, 'Erreur lors de la création du taxe'));
+      const message = getErrorMessage('settings', error, 'tax.action_add_failure');
+      toast.error(message);
     }
   });
 
   //update tax
   const { mutate: updateTax, isPending: isUpdatePending } = useMutation({
-    mutationFn: (data: Tax) => api.tax.update(data),
+    mutationFn: () => api.tax.update(taxStore.updateDto!),
     onSuccess: () => {
-      toast.success('Taxe modifiée avec succès');
+      toast.success(tSettings('tax.action_update_success'));
       refetchTaxes();
+      taxStore.reset();
+      closeUpdateTaxSheet();
     },
     onError: (error) => {
-      toast.error(getErrorMessage('', error, 'Erreur lors de la modification du taxe'));
+      const message = getErrorMessage('settings', error, 'tax.action_update_failure');
+      toast.error(message);
     }
   });
 
   //remove tax
   const { mutate: removeTax, isPending: isDeletePending } = useMutation({
-    mutationFn: (id?: number) => api.tax.remove(id),
+    mutationFn: (id: number) => api.tax.remove(id),
     onSuccess: () => {
       if (taxes?.length == 1 && page > 1) setPage(page - 1);
-      toast.success('Taxe supprimée avec succès');
+      toast.success(tSettings('tax.action_remove_success'));
       refetchTaxes();
-      closeDeleteTaxDialog();
     },
     onError: (error) => {
-      toast.error(getErrorMessage('', error, 'Erreur lors de la suppression du taxe'));
+      toast.error(getErrorMessage('settings', error, 'tax.action_remove_failure'));
     }
   });
 
-  // const handleValidation = (result: any) => {
-  //   const errorMessage = Object.values(result.error.flatten().fieldErrors)
-  //     .flat()
-  //     .map((error) => `<li>${error}</li>`)
-  //     .join('');
-  //   toast('⛔ Validation Errors', {
-  //     description: <ul dangerouslySetInnerHTML={{ __html: errorMessage }} />
-  //   });
-  // };
-
-  const handleTaxCreateSubmit = () => {
-    const tax = taxManger.getTax();
-    const result = createTaxSchema.safeParse(tax);
-    if (!result.success) {
-      taxManger.set('errors', result.error.flatten().fieldErrors);
-      return false;
-    } else {
-      createTax(tax);
-      closeCreateTaxSheet();
-      taxManger.reset();
-      return true;
-    }
-  };
-
-  const handleTaxUpdateSubmit = () => {
-    const tax = taxManger.getTax();
-    const result = updateTaxSchema.safeParse(tax);
-    if (!result.success) {
-      taxManger.set('errors', result.error.flatten().fieldErrors);
-      return false;
-    } else {
-      updateTax(tax);
-      closeUpdateTaxSheet();
-      taxManger.reset();
-      return true;
-    }
-  };
-
-  const { createTaxSheet, openCreateTaxSheet, closeCreateTaxSheet } = useTaxCreateSheet(
-    handleTaxCreateSubmit,
+  const { createTaxSheet, openCreateTaxSheet, closeCreateTaxSheet } = useTaxCreateSheet({
+    createTax,
     isCreatePending,
-    taxManger.reset
-  );
+    resetTax: taxStore.reset
+  });
 
-  const { updateTaxSheet, openUpdateTaxSheet, closeUpdateTaxSheet } = useTaxUpdateSheet(
-    handleTaxUpdateSubmit,
+  const { updateTaxSheet, openUpdateTaxSheet, closeUpdateTaxSheet } = useTaxUpdateSheet({
+    updateTax,
     isUpdatePending,
-    !taxManger.isChanged(),
-    taxManger.reset
-  );
+    resetTax: taxStore.reset
+  });
 
   const { deleteTaxDialog, openDeleteTaxDialog, closeDeleteTaxDialog } = useTaxDeleteDialog(
-    taxManger.label,
-    () => removeTax(taxManger.id),
+    taxStore.response?.label,
+    () => removeTax(taxStore.response?.id || 0),
     isDeletePending
   );
 
   const context: DataTableConfig<Tax> = {
     singularName: tSettings('tax.singular'),
     pluralName: tSettings('tax.plural'),
+    //dialogs
+    createCallback: () => {
+      openCreateTaxSheet();
+    },
+    updateCallback: () => {
+      openUpdateTaxSheet();
+    },
+    deleteCallback: () => {
+      openDeleteTaxDialog();
+    },
     //search, filtering, sorting & paging
     searchTerm,
     setSearchTerm,
@@ -224,17 +174,20 @@ export const TaxPortal: React.FC<TaxMainProps> = ({ className }) => {
     order: sortDetails.order,
     sortKey: sortDetails.sortKey,
     setSortDetails: (order: boolean, sortKey: string) => setSortDetails({ order, sortKey }),
-    //actions
-    createCallback: openCreateTaxSheet,
-    updateCallback: (tax: Tax) => {
-      taxManger.setTax(tax);
-      openUpdateTaxSheet();
-    },
-    deleteCallback: (tax: Tax) => {
-      taxManger.setTax(tax);
-      openDeleteTaxDialog();
+    targetEntity: (entity) => {
+      taxStore.set('response', entity);
+      taxStore.set('updateDto', {
+        id: entity.id,
+        label: entity.label,
+        value: entity.value,
+        isRate: entity.isRate,
+        isSpecial: entity.isSpecial,
+        currencyId: entity.currencyId
+      });
     }
   };
+
+  const columns = getTaxColumns(tSettings, tCommon, tCurrency, context);
 
   const isPending =
     isFetchPending ||
@@ -246,26 +199,19 @@ export const TaxPortal: React.FC<TaxMainProps> = ({ className }) => {
     searching ||
     sorting;
 
-  if (error) return 'An error has occurred: ' + error.message;
   return (
-    <>
-      <ContentSection
-        title={tSettings('tax.singular')}
-        desc={tSettings('tax.card_description')}
-        className="w-full"
-        childrenClassName={cn('overflow-hidden', className)}>
-        <DataTable
-          className="flex flex-col flex-1 overflow-hidden p-1"
-          containerClassName="overflow-auto"
-          data={taxes}
-          columns={columns}
-          context={context}
-          isPending={isPending}
-        />
-      </ContentSection>
+    <div className={cn('flex flex-col flex-1 overflow-hidden', className)}>
+      <DataTable
+        className="flex flex-col flex-1 overflow-hidden p-1"
+        containerClassName="overflow-auto"
+        data={taxes}
+        columns={columns}
+        context={context}
+        isPending={isPending}
+      />
       {createTaxSheet}
       {updateTaxSheet}
       {deleteTaxDialog}
-    </>
+    </div>
   );
 };

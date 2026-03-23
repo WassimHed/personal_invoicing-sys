@@ -1,17 +1,21 @@
 import { WalletCards } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useSheet } from '@/components/shared/Sheets';
-import { Button } from '@/components/ui/button';
-import { Spinner } from '@/components/shared';
-import { TaxForm } from '../TaxForm';
+import { CreateTaxForm } from '../forms/CreateTaxForm';
 
-export const useTaxCreateSheet = (
-  createTax?: () => void,
-  isCreatePending?: boolean,
-  resetTax?: () => void
-) => {
-  const { t: tCommon } = useTranslation('common');
+interface TaxCreateSheet {
+  createTax: () => void;
+  isCreatePending?: boolean;
+  resetTax?: () => void;
+}
+
+export const useTaxCreateSheet = ({
+  createTax,
+  isCreatePending = false,
+  resetTax
+}: TaxCreateSheet) => {
   const { t: tSettings } = useTranslation('settings');
+
   const {
     SheetFragment: createTaxSheet,
     openSheet: openCreateTaxSheet,
@@ -24,28 +28,8 @@ export const useTaxCreateSheet = (
       </div>
     ),
     description: tSettings('tax.create_dialog_description'),
-    children: (
-      <div>
-        <TaxForm className="my-4" />
-        <div className="flex gap-2 justify-end">
-          <Button
-            onClick={() => {
-              createTax?.();
-            }}>
-            {tCommon('commands.save')}
-            <Spinner show={isCreatePending} />
-          </Button>
-          <Button
-            variant={'secondary'}
-            onClick={() => {
-              closeCreateTaxSheet();
-            }}>
-            {tCommon('commands.cancel')}
-          </Button>
-        </div>
-      </div>
-    ),
-    className: 'min-w-[25vw]',
+    children: <CreateTaxForm createTax={createTax} isCreatePending={isCreatePending} />,
+    className: 'min-w-[50vw] flex flex-col flex-1 overflow-hidden',
     onToggle: resetTax
   });
 
