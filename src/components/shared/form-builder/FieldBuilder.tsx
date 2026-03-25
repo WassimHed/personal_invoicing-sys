@@ -22,6 +22,7 @@ import { ImageUploader } from './ImageUploader';
 import { PasswordField } from './PasswordField';
 import { PhoneInput } from '@/components/ui/phone-input';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Editor } from '@/components/blocks/editor-x/editor';
 
 interface FieldBuilderProps {
   field?: Field<any>;
@@ -117,6 +118,7 @@ export const FieldBuilder = ({ field }: FieldBuilderProps) => {
     case 'date':
       return (
         <DatePicker
+          {...field.props}
           className={cn(
             'w-full',
             field?.className,
@@ -127,9 +129,8 @@ export const FieldBuilder = ({ field }: FieldBuilderProps) => {
             undefined
           }
           onChange={(value: Date | null) => field?.props?.onDateChange?.(value)}
-          placeholder={t('pick_date')}
-          // nullable={field?.props?.nullable}
-          // disabled={field?.props?.disabled}
+          nullable={field?.props?.nullable}
+          disabled={field?.props?.disabled}
         />
       );
     case 'checkbox':
@@ -203,6 +204,30 @@ export const FieldBuilder = ({ field }: FieldBuilderProps) => {
             field?.props?.onChange?.(e.target.value)
           }
         />
+      );
+      case 'editor':
+      return (
+        <Editor
+          {...field.props}
+          editorSerializedState={field?.props?.value}
+          onSerializedChange={(value) => field?.props?.onChange?.(value)}
+        />
+      );
+    case 'checkbox':
+      return (
+        <div className="flex flex-col gap-2 my-1">
+          {field.props?.selectOptions?.map((option: SelectOption) => (
+            <div key={option.label} className="flex items-center gap-2">
+              <Checkbox
+                id={option.label}
+                className={field?.className}
+                checked={field.props?.value as CheckedState}
+                onCheckedChange={(value: CheckedState) => field?.props?.onCheckedChange?.(value)}
+              />
+              <Label className="text-sm font-semibold">{option.label}</Label>
+            </div>
+          ))}
+        </div>
       );
     case 'file':
       return (
