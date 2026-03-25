@@ -1,38 +1,22 @@
-import * as React from 'react';
+import * as React from "react"
 
-import { cn } from '@/lib/utils';
+import { cn } from "@/lib/utils"
 
-interface InputPropsShimmer extends React.ComponentProps<'input'> {
-  isPending?: boolean;
-}
-
-const Input = React.forwardRef<HTMLInputElement, InputPropsShimmer>(
-  ({ className, type, isPending, ...props }, ref) => {
-    if (isPending) {
-      return (
-        <div
-          className={cn(
-            'flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 opacity-10 animate-pulse',
-            className
-          )}>
-          <div className="h-4 w-full bg-muted rounded my-auto" />
-        </div>
-      );
-    }
+const Input = React.forwardRef<HTMLInputElement, React.ComponentProps<"input">>(
+  ({ className, type, ...props }, ref) => {
     return (
       <input
         type={type}
         className={cn(
-          'flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-base shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 md:text-sm',
+          "flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-base shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 md:text-sm",
           className
         )}
         ref={ref}
         {...props}
       />
-    );
+    )
   }
-);
-Input.displayName = 'Input';
+)
+Input.displayName = "Input"
 
-export { Input };
-export type { InputPropsShimmer as InputProps };
+export { Input }
