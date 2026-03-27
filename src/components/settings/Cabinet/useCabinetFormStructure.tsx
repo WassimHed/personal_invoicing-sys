@@ -9,8 +9,10 @@ import {
 import { useTranslation } from 'react-i18next';
 import { Activity, Country, Currency } from '@/types';
 
+import { CabinetStore } from '@/hooks/stores/useCabinetStore';
+
 interface UseCabinetFormStructureProps {
-  cabinetManager: any;
+  cabinetManager: CabinetStore;
   countries?: Country[];
   activities?: Activity[];
   currencies?: Currency[];
@@ -81,17 +83,17 @@ export const useCabinetFormStructure = ({
     }
   };
 
-  const cityField: Field<TextFieldProps> = {
-    id: 'city',
-    label: tContacts('common.address.city'),
+  const address2Field: Field<TextFieldProps> = {
+    id: 'address2',
+    label: tContacts('common.address.address2'),
     variant: FieldVariant.TEXT,
-    placeholder: 'Ex. Nabeul',
+    placeholder: 'Ex. Apt. 855',
     props: {
-      value: cabinetManager.address?.city || '',
+      value: cabinetManager.address?.address2 || '',
       onChange: (value) =>
         cabinetManager.set('address', {
           ...cabinetManager.address,
-          city: value
+          address2: value
         }),
       disabled: isPending
     }
@@ -208,7 +210,7 @@ export const useCabinetFormStructure = ({
             fields: [addressField]
           },
           {
-            fields: [cityField]
+            fields: [address2Field]
           },
           {
             fields: [regionField, zipCodeField, countryField]

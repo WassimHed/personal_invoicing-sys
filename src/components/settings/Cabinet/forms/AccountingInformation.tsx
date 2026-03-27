@@ -1,10 +1,10 @@
 import React from 'react';
 import { Activity, Currency } from '@/types';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { useCabinetManager } from '@/components/settings/Cabinet/hooks/useCabinetManager';
+import { useCabinetStore } from '@/hooks/stores/useCabinetStore';
 import { Calculator } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { useCabinetFormStructure } from './useCabinetFormStructure';
+import { useCabinetFormStructure } from '../useCabinetFormStructure';
 import { FormBuilder } from '@/components/shared/form-builder/FormBuilder';
 
 interface AccountingInformationProps {
@@ -21,9 +21,9 @@ export const AccountingInformation = ({
   isPending
 }: AccountingInformationProps) => {
   const { t: tSettings } = useTranslation('settings');
-  const cabinetManager = useCabinetManager();
+  const cabinetStore = useCabinetStore();
   const { accountingFormStructure } = useCabinetFormStructure({
-    cabinetManager,
+    cabinetManager: cabinetStore,
     activities,
     currencies,
     isPending
@@ -34,7 +34,7 @@ export const AccountingInformation = ({
       <CardHeader>
         <CardTitle>
           <div className="flex items-center gap-2">
-            <Calculator />
+            <Calculator className="size-5" />
             {tSettings('cabinet.financial_information')}
           </div>
         </CardTitle>

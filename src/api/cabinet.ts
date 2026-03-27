@@ -29,30 +29,23 @@ const findOne = async (
 };
 
 const update = async (cabinet: UpdateCabinetDto): Promise<Cabinet> => {
-  const logoId = cabinet.logo ? (await upload.uploadFile(cabinet.logo)).id : undefined;
-  const signatureId = cabinet.signature
+  const logoId = cabinet.logo && typeof cabinet.logo !== 'string' 
+    ? (await upload.uploadFile(cabinet.logo)).id 
+    : undefined;
+    
+  const signatureId = cabinet.signature && typeof cabinet.signature !== 'string'
     ? (await upload.uploadFile(cabinet.signature)).id
     : undefined;
+
   const { logo, signature, ...payload } = cabinet;
+  
   const response = await axios.put<Cabinet>(`public/cabinet/${cabinet.id}`, {
     ...payload,
-    logoId: logoId || null,
-    signatureId: signatureId || null
+    logoId: logoId || undefined,
+    signatureId: signatureId || undefined
   });
+  
   return response.data;
 };
 
-const validate = (cabinet: Partial<Cabinet>): ToastValidation => {
-  if (!cabinet.enterpriseName) return { message: 'Nom du Cabinet est obligatoire' };
-  if (!cabinet.email)
-    return { message: 'Il est préférable que le champ e-mail soit présent', type: 'warning' };
-  if (!isEmail(cabinet?.email || '')) return { message: 'E-mail invalide' };
-
-  if (!cabinet.taxIdNumber) return { message: "Numéro d'idnetification fiscale est obligatoire" };
-
-  const addressValidation = cabinet?.address ? address.validate(cabinet?.address) : undefined;
-  if (addressValidation?.message) return addressValidation;
-  return { message: '' };
-};
-
-export const cabinet = { findOne, update, validate };
+export const cabinet = { findOne, update };

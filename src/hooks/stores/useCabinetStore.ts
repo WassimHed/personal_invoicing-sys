@@ -1,9 +1,7 @@
 import { Activity, Address, Cabinet, Currency } from '@/types';
-import { log } from 'console';
 import { create } from 'zustand';
 
-type CabinetManager = {
-  // data
+interface CabinetStoreData {
   id?: number;
   enterpriseName?: string;
   email?: string;
@@ -14,14 +12,16 @@ type CabinetManager = {
   address?: Address;
   logo?: File;
   signature?: File;
-  // methods
-  set: (name: keyof CabinetManager, value: any) => void;
+}
+
+export interface CabinetStore extends CabinetStoreData {
+  set: (name: keyof CabinetStoreData, value: any) => void;
   reset: () => void;
   setCabinet: (cabinet: Partial<Cabinet>) => void;
   getCabinet: () => Partial<Cabinet>;
-};
+}
 
-const initialState: Omit<CabinetManager, 'set' | 'reset' | 'setCabinet' | 'getCabinet'> = {
+const initialState: CabinetStoreData = {
   id: undefined,
   enterpriseName: '',
   email: '',
@@ -34,17 +34,20 @@ const initialState: Omit<CabinetManager, 'set' | 'reset' | 'setCabinet' | 'getCa
   signature: undefined
 };
 
-export const useCabinetManager = create<CabinetManager>((set, get) => ({
+export const useCabinetStore = create<CabinetStore>((set, get) => ({
   ...initialState,
-  set: (name: keyof CabinetManager, value: any) => {
+
+  set: (name: keyof CabinetStoreData, value: any) => {
     set((state) => ({
       ...state,
       [name]: value
     }));
   },
+
   reset: () => {
     set({ ...initialState });
   },
+
   setCabinet: (cabinet: Partial<Cabinet>) => {
     set((state) => ({
       ...state,
@@ -60,8 +63,9 @@ export const useCabinetManager = create<CabinetManager>((set, get) => ({
       signature: cabinet?.signature
     }));
   },
+
   getCabinet: () => {
-    const { set, reset, setCabinet, getCabinet, ...data } = get();
+    const data = get();
     return {
       id: data.id,
       enterpriseName: data.enterpriseName,

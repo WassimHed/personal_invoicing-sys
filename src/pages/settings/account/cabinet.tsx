@@ -1,11 +1,11 @@
 import React from 'react';
 import { InformationalSettings } from '@/components/settings/InformationalSettings';
-import CabinetMain from '@/components/settings/Cabinet/CabinetMain';
+import CabinetPortal from '@/components/settings/Cabinet/CabinetPortal';
 
 export default function Page() {
   return (
     <InformationalSettings>
-      <CabinetMain />
+      <CabinetPortal />
     </InformationalSettings>
   );
 }

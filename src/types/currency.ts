@@ -7,3 +7,5 @@ export interface ResponseCurrencyDto extends DatabaseEntity {
   symbol?: string;
   digitAfterComma?: number;
 }
+
+export type Currency = ResponseCurrencyDto;

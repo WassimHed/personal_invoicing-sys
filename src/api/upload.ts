@@ -33,7 +33,7 @@ const uploadFiles = async (files: File[]): Promise<number[]> => {
 
 const fetchBlobBySlug = async (slug?: string): Promise<Blob | null> => {
   try {
-    const response = await axios.get(`public/storage/file/slug/${slug}`, {
+    const response = await axios.get(`public/storage/view/slug/${slug}`, {
       responseType: 'blob'
     });
     return response.data;
@@ -44,7 +44,7 @@ const fetchBlobBySlug = async (slug?: string): Promise<Blob | null> => {
 
 const fetchBlobById = async (id?: number): Promise<Blob | null> => {
   try {
-    const response = await axios.get(`public/storage/file/id/${id}`, {
+    const response = await axios.get(`public/storage/view/id/${id}`, {
       responseType: 'blob'
     });
     return response.data;
@@ -54,7 +54,7 @@ const fetchBlobById = async (id?: number): Promise<Blob | null> => {
 };
 
 const downloadFile = async (slug: string): Promise<void> => {
-  const response = await axios.get(`public/storage/file/${slug}`, {
+  const response = await axios.get(`public/storage/download/slug/${slug}`, {
     responseType: 'blob'
   });
   const url = window.URL.createObjectURL(new Blob([response.data]));

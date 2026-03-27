@@ -2,9 +2,9 @@ import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Building2 } from 'lucide-react';
 import { Country } from '@/types';
-import { useCabinetManager } from '@/components/settings/Cabinet/hooks/useCabinetManager';
+import { useCabinetStore } from '@/hooks/stores/useCabinetStore';
 import { useTranslation } from 'react-i18next';
-import { useCabinetFormStructure } from './useCabinetFormStructure';
+import { useCabinetFormStructure } from '../useCabinetFormStructure';
 import { FormBuilder } from '@/components/shared/form-builder/FormBuilder';
 
 interface GeneralInformationProps {
@@ -18,10 +18,10 @@ export const GeneralInformation: React.FC<GeneralInformationProps> = ({
   isPending,
   countries = []
 }) => {
-  const cabinetManager = useCabinetManager();
+  const cabinetStore = useCabinetStore();
   const { t: tSettings } = useTranslation('settings');
   const { cabinetFormStructure } = useCabinetFormStructure({
-    cabinetManager,
+    cabinetManager: cabinetStore,
     countries,
     isPending
   });
@@ -31,7 +31,7 @@ export const GeneralInformation: React.FC<GeneralInformationProps> = ({
       <CardHeader>
         <CardTitle>
           <div className="flex items-center gap-2">
-            <Building2 />
+            <Building2 className="size-5" />
             {tSettings('cabinet.general_information')}
           </div>
         </CardTitle>
