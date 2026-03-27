@@ -48,7 +48,7 @@ export interface ResponseUserDto {
   email?: string;
   dateOfBirth?: string;
   role?: Role;
-  roleId?: number;
+  roleId?: string;
   picture?: Upload;
   pictureId?: number;
   isActive?: boolean;

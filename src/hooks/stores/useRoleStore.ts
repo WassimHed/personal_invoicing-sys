@@ -1,35 +1,34 @@
-import { Role } from '@/types';
-import { Permission } from '@/types/permission';
+import { Role, RolePermissionEntry, Permission } from '@/types';
 import { create } from 'zustand';
 
-interface RoleManagerData {
-  id?: number;
+interface RoleStoreData {
+  id?: string;
   label?: string;
   description?: string;
-  permissions?: Permission[];
+  permissions?: (Permission & { relationId?: string })[];
 }
 
-interface RoleManager extends RoleManagerData {
-  set: (name: keyof RoleManagerData, value: any) => void;
+export interface RoleStore extends RoleStoreData {
+  set: (name: keyof RoleStoreData, value: any) => void;
   reset: () => void;
   getRole: () => Partial<Role>;
   setRole: (data: Partial<Role>) => void;
   addPermission: (permission: Permission) => void;
-  removePermission: (index?: number) => void;
-  isPermissionSelected: (permissionId?: number) => boolean;
+  removePermission: (permissionId?: string) => void;
+  isPermissionSelected: (permissionId?: string) => boolean;
 }
 
-const initialState: RoleManagerData = {
+const initialState: RoleStoreData = {
   id: undefined,
   label: '',
   description: '',
   permissions: []
 };
 
-export const useRoleManager = create<RoleManager>((set, get) => ({
+export const useRoleStore = create<RoleStore>((set, get) => ({
   ...initialState,
 
-  set: (name: keyof RoleManagerData, value: any) => {
+  set: (name: keyof RoleStoreData, value: any) => {
     set((state) => ({
       ...state,
       [name]: value
@@ -46,7 +45,11 @@ export const useRoleManager = create<RoleManager>((set, get) => ({
       id: data.id,
       label: data.label,
       description: data.description,
-      permissions: data.permissions
+      permissions: data.permissions?.map((p) => ({
+        id: p.relationId,
+        permission: p,
+        permissionId: p.id
+      })) as RolePermissionEntry[]
     };
   },
 
@@ -56,9 +59,13 @@ export const useRoleManager = create<RoleManager>((set, get) => ({
       id: data.id,
       label: data.label,
       description: data.description,
-      permissions: data?.permissions?.map((entry) => entry.permission || ({} as Permission))
+      permissions: data?.permissions?.map((entry) => ({
+        ...(entry.permission || ({} as Permission)),
+        relationId: entry.id
+      }))
     }));
   },
+
   addPermission: (permission: Permission) => {
     const { permissions } = get();
     if (!permissions?.some((p) => p.id === permission.id)) {
@@ -69,14 +76,14 @@ export const useRoleManager = create<RoleManager>((set, get) => ({
     }
   },
 
-  removePermission: (permissionId?: number) => {
+  removePermission: (permissionId?: string) => {
     set((state) => ({
       ...state,
       permissions: state?.permissions?.filter((p) => p.id !== permissionId)
     }));
   },
 
-  isPermissionSelected: (permissionId?: number) => {
+  isPermissionSelected: (permissionId?: string) => {
     const { permissions } = get();
     return permissions?.some((p) => p.id === permissionId) || false;
   }

@@ -8,7 +8,7 @@ interface UserStoreData {
   firstName?: string;
   lastName?: string;
   dateOfBirth?: Date;
-  roleId?: string | number;
+  roleId?: string;
   password?: string;
   confirmPassword?: string;
 }
@@ -56,7 +56,7 @@ export const useUserStore = create<UserStore>((set, get) => ({
       lastName: data.lastName,
       dateOfBirth: data.dateOfBirth?.toString(),
       password: data.password,
-      roleId: data.roleId as number | undefined
+      roleId: data.roleId
     };
   },
 

@@ -1,8 +1,6 @@
 import { BookUser } from 'lucide-react';
 import { useSheet } from '@/components/shared/Sheets';
-import { Button } from '@/components/ui/button';
-import { Spinner } from '@/components/shared/Spinner';
-import { RoleForm } from '../RoleForm';
+import { UpdateRoleForm } from '../forms/UpdateRoleForm';
 import { usePermissions } from '@/hooks/content/usePermissions';
 import { useTranslation } from 'react-i18next';
 
@@ -13,9 +11,9 @@ interface RoleUpdateSheet {
 }
 
 export const useRoleUpdateSheet = ({ updateRole, isUpdatePending, resetRole }: RoleUpdateSheet) => {
-  const { t: tCommon } = useTranslation('common');
   const { t: tSettings } = useTranslation('settings');
-  const { permissions, isFetchPermissionsPending } = usePermissions();
+  const { permissions } = usePermissions();
+
   const {
     SheetFragment: updateRoleSheet,
     openSheet: openUpdateRoleSheet,
@@ -29,28 +27,15 @@ export const useRoleUpdateSheet = ({ updateRole, isUpdatePending, resetRole }: R
     ),
     description: tSettings('roles.hints.update_dialog_hint'),
     children: (
-      <div>
-        <RoleForm className="my-4" permissions={permissions} />
-        <div className="flex gap-2 justify-end">
-          <Button
-            onClick={() => {
-              updateRole?.();
-            }}>
-            {tCommon('commands.save')}
-
-            <Spinner show={isUpdatePending} />
-          </Button>
-          <Button
-            variant={'secondary'}
-            onClick={() => {
-              closeUpdateRoleSheet();
-            }}>
-            {tCommon('commands.cancel')}
-          </Button>
-        </div>
-      </div>
+      <UpdateRoleForm
+        className="my-4"
+        permissions={permissions}
+        updateRole={() => updateRole?.()}
+        isUpdatePending={isUpdatePending ?? false}
+      />
     ),
-    className: 'min-w-[25vw]',
+    canScroll: true,
+    className: 'sm:min-w-[40vw]',
     onToggle: resetRole
   });
 

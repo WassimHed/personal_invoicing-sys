@@ -1,8 +1,6 @@
 import { BookUser } from 'lucide-react';
 import { useSheet } from '@/components/shared/Sheets';
-import { Button } from '@/components/ui/button';
-import { Spinner } from '@/components/shared/Spinner';
-import { RoleForm } from '../RoleForm';
+import { CreateRoleForm } from '../forms/CreateRoleForm';
 import { usePermissions } from '@/hooks/content/usePermissions';
 import { useTranslation } from 'react-i18next';
 
@@ -13,9 +11,8 @@ interface RoleCreateSheet {
 }
 
 export const useRoleCreateSheet = ({ createRole, isCreatePending, resetRole }: RoleCreateSheet) => {
-  const { t: tCommon } = useTranslation('common');
   const { t: tSettings } = useTranslation('settings');
-  const { permissions, isFetchPermissionsPending } = usePermissions();
+  const { permissions } = usePermissions();
 
   const {
     SheetFragment: createRoleSheet,
@@ -30,27 +27,15 @@ export const useRoleCreateSheet = ({ createRole, isCreatePending, resetRole }: R
     ),
     description: tSettings('roles.hints.create_dialog_hint'),
     children: (
-      <div>
-        <RoleForm className="my-4" permissions={permissions} />
-        <div className="flex gap-2 justify-end">
-          <Button
-            onClick={() => {
-              createRole?.();
-            }}>
-            {tCommon('commands.save')}
-            <Spinner show={isCreatePending} />
-          </Button>
-          <Button
-            variant={'secondary'}
-            onClick={() => {
-              closeCreateRoleSheet();
-            }}>
-            {tCommon('commands.cancel')}
-          </Button>
-        </div>
-      </div>
+      <CreateRoleForm
+        className="my-4"
+        permissions={permissions}
+        createRole={() => createRole?.()}
+        isCreatePending={isCreatePending ?? false}
+      />
     ),
-    className: 'min-w-[25vw]',
+    canScroll: true,
+    className: 'sm:min-w-[40vw]',
     onToggle: resetRole
   });
 

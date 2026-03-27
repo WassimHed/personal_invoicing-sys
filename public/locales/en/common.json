@@ -184,6 +184,11 @@
       "tax_withholding": "Tax Withholding",
       "tax": "Tax Synthesis",
       "default_condition": "Default Condition"
+    },
+    "user_management": {
+      "users": "Users",
+      "roles": "Roles",
+      "permissions": "Permissions"
     }
   },
   "table": {

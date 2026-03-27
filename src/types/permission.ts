@@ -1,7 +1,7 @@
 import { DatabaseEntity } from './response/DatabaseEntity';
 
 export interface Permission extends DatabaseEntity {
-  id?: number;
+  id?: string;
   label?: string;
   description?: string;
 }

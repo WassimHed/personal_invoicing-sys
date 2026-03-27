@@ -2,7 +2,7 @@ import { Permission } from './permission';
 import { DatabaseEntity } from './response/DatabaseEntity';
 
 export interface Role extends DatabaseEntity {
-  id?: number;
+  id?: string;
   label?: string;
   description?: string;
   permissions?: RolePermissionEntry[];
@@ -11,14 +11,19 @@ export interface Role extends DatabaseEntity {
 export interface CreateRoleDto {
   label?: string;
   description?: string;
-  permissionsIds?: (number | undefined)[];
+  permissions?: { permissionId: string }[];
 }
 
-export interface UpdateRoleDto extends CreateRoleDto {}
+export interface UpdateRoleDto {
+  label?: string;
+  description?: string;
+  permissions?: { id?: string; permissionId: string }[];
+}
 
 export interface RolePermissionEntry extends DatabaseEntity {
+  id?: string;
   role?: Role;
-  roleId?: number;
+  roleId?: string;
   permission?: Permission;
-  permissionId?: number;
+  permissionId?: string;
 }

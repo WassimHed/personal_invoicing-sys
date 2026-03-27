@@ -8,9 +8,10 @@ import {
 } from '@/components/shared/form-builder/types';
 import { useTranslation } from 'react-i18next';
 import React from 'react';
+import { RoleStore } from '@/hooks/stores/useRoleStore';
 
 interface UseRoleFormStructureProps {
-  roleManager: any;
+  roleManager: RoleStore;
   permissionFormFragment: React.ReactNode;
 }
 
@@ -48,7 +49,11 @@ export const useRoleFormStructure = ({
     label: `${tSettings('roles.attributes.permissions')} (*)`,
     variant: FieldVariant.CUSTOM,
     props: {
-      children: permissionFormFragment
+        children: (
+            <div className="flex flex-col gap-2">
+                {permissionFormFragment}
+            </div>
+        )
     }
   };
 

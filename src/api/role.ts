@@ -32,7 +32,7 @@ const findAll = async (): Promise<Role[]> => {
   return response.data;
 };
 
-const findById = async (id?: number): Promise<Role> => {
+const findById = async (id?: string): Promise<Role> => {
   const response = await axios.get<Role>(`public/role/${id}`);
   return response.data;
 };
@@ -42,17 +42,17 @@ const create = async (createRoleDto: CreateRoleDto): Promise<Role> => {
   return response.data;
 };
 
-const duplicate = async (id?: number): Promise<Role> => {
+const duplicate = async (id?: string): Promise<Role> => {
   const response = await axios.post<Role>(`public/role/duplicate/${id}`);
   return response.data;
 };
 
-const update = async (id?: number, updateRoleDto?: UpdateRoleDto): Promise<Role> => {
+const update = async (id?: string, updateRoleDto?: UpdateRoleDto): Promise<Role> => {
   const response = await axios.put<Role>(`public/role/${id}`, updateRoleDto);
   return response.data;
 };
 
-const remove = async (id?: number): Promise<void> => {
+const remove = async (id?: string): Promise<void> => {
   await axios.delete(`public/role/${id}`);
 };
 

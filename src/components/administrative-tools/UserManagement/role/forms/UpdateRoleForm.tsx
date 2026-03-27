@@ -1,4 +1,4 @@
-import { useRoleManager } from './hooks/useRoleManager';
+import { useRoleStore } from '@/hooks/stores/useRoleStore';
 import { cn } from '@/lib/utils';
 import { Permission } from '@/types/permission';
 import React from 'react';
@@ -10,20 +10,28 @@ import {
   AccordionTrigger
 } from '@/components/ui/accordion';
 import { useTranslation } from 'react-i18next';
-import { getPermissionTranslation } from '../permission/utils/getPermissionTranslation';
+import { getPermissionTranslation } from '../../permission/utils/getPermissionTranslation';
 import { FormBuilder } from '@/components/shared/form-builder/FormBuilder';
 import { useRoleFormStructure } from './useRoleFormStructure';
+import { Button } from '@/components/ui/button';
+import { Spinner } from '@/components/shared/Spinner';
 
-interface RoleFormProps {
+interface UpdateRoleFormProps {
   className?: string;
   permissions?: Permission[];
-  loading?: boolean;
+  updateRole: () => void;
+  isUpdatePending: boolean;
 }
 
-export const RoleForm: React.FC<RoleFormProps> = ({ className, permissions, loading }) => {
+export const UpdateRoleForm: React.FC<UpdateRoleFormProps> = ({
+  className,
+  permissions,
+  updateRole,
+  isUpdatePending
+}) => {
   const { t: tPermission } = useTranslation('permissions');
-
-  const roleManager = useRoleManager();
+  const { t: tCommon } = useTranslation('common');
+  const roleManager = useRoleStore();
 
   const groupedPermissions = permissions?.reduce(
     (groups, permission) => {
@@ -52,7 +60,7 @@ export const RoleForm: React.FC<RoleFormProps> = ({ className, permissions, load
     return Object.entries(sortedGroupedPermissions).map(([entity, permissions]) => (
       <Accordion type="multiple" key={entity} className="mt-0">
         <AccordionItem value={entity}>
-          <AccordionTrigger className="text-sm font-extrabold">
+          <AccordionTrigger className="text-sm font-extrabold pb-2">
             {tPermission(`${entity}.singular`)}
           </AccordionTrigger>
           <AccordionContent>
@@ -64,6 +72,7 @@ export const RoleForm: React.FC<RoleFormProps> = ({ className, permissions, load
                     <Toggle
                       key={permission.id}
                       defaultPressed={isSelected}
+                      pressed={isSelected}
                       value={permission?.id?.toString()}
                       onClick={() => {
                         if (isSelected) {
@@ -72,7 +81,7 @@ export const RoleForm: React.FC<RoleFormProps> = ({ className, permissions, load
                           roleManager.addPermission(permission);
                         }
                       }}
-                      className="border">
+                      className="border size-sm px-3 py-1 h-auto text-xs">
                       {tPermission(`${getPermissionTranslation(permission?.label)}.value`)}
                     </Toggle>
                   );
@@ -83,7 +92,7 @@ export const RoleForm: React.FC<RoleFormProps> = ({ className, permissions, load
         </AccordionItem>
       </Accordion>
     ));
-  }, [roleManager.permissions]);
+  }, [roleManager.permissions, sortedGroupedPermissions, tPermission]);
 
   const { roleFormStructure } = useRoleFormStructure({
     roleManager,
@@ -91,8 +100,14 @@ export const RoleForm: React.FC<RoleFormProps> = ({ className, permissions, load
   });
 
   return (
-    <div className={cn('flex flex-col gap-2', className)}>
+    <div className={cn('flex flex-col gap-4', className)}>
       <FormBuilder structure={roleFormStructure} />
+      <div className="flex gap-2 justify-end mt-4">
+        <Button onClick={updateRole} disabled={isUpdatePending}>
+          {tCommon('commands.save')}
+          <Spinner show={isUpdatePending} />
+        </Button>
+      </div>
     </div>
   );
 };

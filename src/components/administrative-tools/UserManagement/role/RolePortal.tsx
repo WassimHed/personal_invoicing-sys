@@ -1,38 +1,32 @@
 import { api } from '@/api';
-import ContentSection from '@/components/shared/ContentSection';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import React from 'react';
+import { toast } from 'sonner';
+import { useRoleColumns } from './columns';
 import { DataTable } from '@/components/shared/data-table/data-table';
 import { DataTableConfig } from '@/components/shared/data-table/types';
-import { getRoleColumns } from './data-table/columns';
+import { useRoleStore } from '@/hooks/stores/useRoleStore';
 import { useRoleCreateSheet } from './modals/RoleCreateSheet';
-import { useRoleManager } from './hooks/useRoleManager';
 import { useRoleUpdateSheet } from './modals/RoleUpdateSheet';
 import { useRoleDeleteDialog } from './modals/RoleDeleteDialog';
 import { useRoleDuplicateDialog } from './modals/RoleDuplicateDialog';
-import { toast } from 'sonner';
-import { useDebounce } from '@/hooks/other/useDebounce';
 import { useBreadcrumb } from '@/context/BreadcrumbContext';
+import { useDebounce } from '@/hooks/other/useDebounce';
 import { CreateRoleDto, UpdateRoleDto, Role } from '@/types';
 import { useRouter } from 'next/router';
 import { useTranslation } from 'react-i18next';
-import { cn } from '@/lib/utils';
 import { CopyIcon } from 'lucide-react';
-import { RoleActionsContext } from './data-table/action-context';
+import { cn } from '@/lib/utils';
+import ContentSection from '@/components/shared/ContentSection';
 
-interface RoleMainProps {
-  className?: string;
-}
-
-export default function RoleMain({ className }: RoleMainProps) {
-  //next-router
+export const RolePortal = ({ className }: { className?: string }) => {
   const router = useRouter();
   const { t: tCommon } = useTranslation('common');
   const { t: tSettings } = useTranslation('settings');
   const { t: tPermission } = useTranslation('permissions');
 
-  //set page title in the breadcrumb
   const { setRoutes } = useBreadcrumb();
+
   React.useEffect(() => {
     setRoutes?.([
       { title: tCommon('menu.administrative_tools') },
@@ -41,7 +35,8 @@ export default function RoleMain({ className }: RoleMainProps) {
     ]);
   }, [router.locale]);
 
-  const roleManager = useRoleManager();
+  const roleManager = useRoleStore();
+
   const [page, setPage] = React.useState(1);
   const { value: debouncedPage, loading: paging } = useDebounce<number>(page, 500);
 
@@ -91,72 +86,78 @@ export default function RoleMain({ className }: RoleMainProps) {
   const { mutate: createRole, isPending: isCreationPending } = useMutation({
     mutationFn: (role: CreateRoleDto) => api.role.create(role),
     onSuccess: () => {
-      toast('Role Created Successfully');
+      toast.success('Role Created Successfully');
       refetchRoles();
       roleManager.reset();
       closeCreateRoleSheet();
     },
-    onError: (error) => {
-      toast(error.message);
+    onError: (error: any) => {
+      toast.error(error.message);
     }
   });
 
   const { mutate: updateRole, isPending: isUpdatePending } = useMutation({
-    mutationFn: (data: { id?: number; role?: UpdateRoleDto }) =>
+    mutationFn: (data: { id?: string; role?: UpdateRoleDto }) =>
       api.role.update(data.id, data.role),
     onSuccess: () => {
-      toast('Role Updated Successfully');
+      toast.success('Role Updated Successfully');
       refetchRoles();
       roleManager.reset();
       closeUpdateRoleSheet();
     },
-    onError: (error) => {
-      toast(error.message);
+    onError: (error: any) => {
+      toast.error(error.message);
     }
   });
 
   const { mutate: deleteRole, isPending: isDeletionPending } = useMutation({
-    mutationFn: (id?: number) => api.role.remove(id),
+    mutationFn: (id?: string) => api.role.remove(id),
     onSuccess: () => {
-      toast('Role Deleted Successfully');
+      toast.success('Role Deleted Successfully');
       refetchRoles();
       roleManager.reset();
       closeDeleteRoleDialog();
     },
-    onError: (error) => {
-      toast(error.message);
+    onError: (error: any) => {
+      toast.error(error.message);
     }
   });
 
   const { mutate: duplicateRole, isPending: isDuplicationPending } = useMutation({
-    mutationFn: (id?: number) => api.role.duplicate(id),
+    mutationFn: (id?: string) => api.role.duplicate(id),
     onSuccess: () => {
-      toast('Role Duplicated Successfully');
+      toast.success('Role Duplicated Successfully');
       refetchRoles();
       roleManager.reset();
       closeDuplicateRoleDialog();
     },
-    onError: (error) => {
-      toast(error.message);
+    onError: (error: any) => {
+      toast.error(error.message);
     }
   });
 
   const handleCreateSubmit = () => {
     const { permissions, ...data } = roleManager.getRole();
     createRole({
-      ...data,
-      permissionsIds: roleManager?.permissions?.map((permission) => permission.id || undefined)
+      label: data.label,
+      description: data.description,
+      permissions: permissions?.map((p) => ({
+        permissionId: p.permissionId!
+      }))
     });
   };
 
   const handleUpdateSubmit = () => {
     const { permissions, ...data } = roleManager.getRole();
     updateRole({
-      id: data.id,
+      id: data.id!,
       role: {
         label: data.label,
         description: data.description,
-        permissionsIds: roleManager?.permissions?.map((permission) => permission.id)
+        permissions: permissions?.map((p) => ({
+          id: p.id!,
+          permissionId: p.permissionId!
+        }))
       }
     });
   };
@@ -191,7 +192,6 @@ export default function RoleMain({ className }: RoleMainProps) {
   const context: DataTableConfig<Role> = {
     singularName: tSettings('roles.singular'),
     pluralName: tSettings('roles.plural'),
-    //search, filtering, sorting & paging
     searchTerm,
     setSearchTerm,
     page,
@@ -202,7 +202,6 @@ export default function RoleMain({ className }: RoleMainProps) {
     order: sortDetails.order,
     sortKey: sortDetails.sortKey,
     setSortDetails: (order: boolean, sortKey: string) => setSortDetails({ order, sortKey }),
-    //actions
     createCallback: openCreateRoleSheet,
     updateCallback: (role: Role) => {
       roleManager.setRole(role);
@@ -237,20 +236,20 @@ export default function RoleMain({ className }: RoleMainProps) {
       desc={tSettings('roles.description')}
       className="w-full"
       childrenClassName={cn('overflow-hidden', className)}>
-      <RoleActionsContext.Provider value={context as any}>
-        {createRoleSheet}
-        {updateRoleSheet}
-        {deleteRoleDialog}
-        {duplicateRoleDialog}
+      <>
         <DataTable
           className="flex flex-col flex-1 overflow-hidden p-1"
           containerClassName="overflow-auto"
-          columns={getRoleColumns(tSettings, tPermission)}
+          columns={useRoleColumns(tSettings, tPermission, context)}
           data={roles}
           context={context}
           isPending={isPending}
         />
-      </RoleActionsContext.Provider>
+        {createRoleSheet}
+        {updateRoleSheet}
+        {deleteRoleDialog}
+        {duplicateRoleDialog}
+      </>
     </ContentSection>
   );
-}
+};

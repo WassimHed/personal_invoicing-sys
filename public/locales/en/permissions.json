@@ -28,6 +28,7 @@
   },
   "permission": {
     "singular": "Permission",
+    "label": "Permissions",
     "create_permission": {
       "value": "Create Permission",
       "description": "Permission to create permission"

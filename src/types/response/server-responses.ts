@@ -28,6 +28,8 @@ export interface Paginated<T> {
   meta: PageMeta;
 }
 
+export interface PagedResponse<T> extends Paginated<T> {}
+
 export interface QueryParams {
   select?: string;
   join?: string;
