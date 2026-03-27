@@ -1,26 +1,26 @@
 import { ResponseUserDto } from '@/types';
 import { create } from 'zustand';
 
-interface UserManagerData {
+interface UserStoreData {
   id?: string;
   username?: string;
   email?: string;
   firstName?: string;
   lastName?: string;
   dateOfBirth?: Date;
-  roleId?: number;
+  roleId?: string | number;
   password?: string;
   confirmPassword?: string;
 }
 
-interface UserManager extends UserManagerData {
-  set: (name: keyof UserManagerData, value: any) => void;
+export interface UserStore extends UserStoreData {
+  set: (name: keyof UserStoreData, value: any) => void;
   reset: () => void;
   getUser: () => Partial<ResponseUserDto> & { password?: string; confirmPassword?: string };
   setUser: (data: Partial<ResponseUserDto>) => void;
 }
 
-const initialState: UserManagerData = {
+const initialState: UserStoreData = {
   id: undefined,
   username: '',
   email: '',
@@ -32,10 +32,10 @@ const initialState: UserManagerData = {
   confirmPassword: ''
 };
 
-export const useUserManager = create<UserManager>((set, get) => ({
+export const useUserStore = create<UserStore>((set, get) => ({
   ...initialState,
 
-  set: (name: keyof UserManager, value: any) => {
+  set: (name: keyof UserStoreData, value: any) => {
     set((state) => ({
       ...state,
       [name]: value
@@ -56,7 +56,7 @@ export const useUserManager = create<UserManager>((set, get) => ({
       lastName: data.lastName,
       dateOfBirth: data.dateOfBirth?.toString(),
       password: data.password,
-      roleId: data.roleId
+      roleId: data.roleId as number | undefined
     };
   },
 

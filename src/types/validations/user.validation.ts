@@ -25,7 +25,7 @@ const baseUserSchema = z.object({
     .regex(/^[a-zA-Z\s]+$/, {
       message: 'Lastname must contain only letters and spaces'
     }),
-  dateOfBirth: z.string().refine(
+  dateOfBirth: z.union([z.string(), z.date()]).refine(
     (date) => {
       const birthDate = new Date(date);
       const today = new Date();
@@ -41,7 +41,7 @@ const baseUserSchema = z.object({
       message: 'User must be at least 13 years old'
     }
   ),
-  roleId: z.number({ message: 'Please select a role' })
+  roleId: z.union([z.number(), z.string()]).optional().refine((val) => val !== undefined && val !== '', { message: 'Please select a role' })
 });
 
 const createUserSchema = baseUserSchema
@@ -64,9 +64,10 @@ const updateUserSchema = baseUserSchema
   .extend({
     password: z
       .string()
-      .min(8, { message: 'Password must be at least 8 characters long' }) // Apply constraints first
-      .optional(), // Then make it optional
-    confirmPassword: z.string().optional()
+      .min(8, { message: 'Password must be at least 8 characters long' })
+      .optional()
+      .or(z.literal('')),
+    confirmPassword: z.string().optional().or(z.literal(''))
   })
   .refine(isPasswordValid, {
     message: 'Passwords do not match',

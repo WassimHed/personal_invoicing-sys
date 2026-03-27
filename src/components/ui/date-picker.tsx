@@ -106,7 +106,7 @@ export function DatePicker({
             <SelectTrigger className="w-[110px]">
               <SelectValue placeholder="Month" />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className="overflow-y-auto max-h-[15rem]">
               {months.map((month) => (
                 <SelectItem key={month} value={month}>
                   {month}
@@ -118,7 +118,7 @@ export function DatePicker({
             <SelectTrigger className="w-[110px]">
               <SelectValue placeholder="Year" />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className="overflow-y-auto max-h-[15rem]">
               {years.map((year) => (
                 <SelectItem key={year} value={year.toString()}>
                   {year}

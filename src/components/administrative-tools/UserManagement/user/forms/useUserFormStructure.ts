@@ -10,9 +10,10 @@ import {
 } from '@/components/shared/form-builder/types';
 import { useTranslation } from 'react-i18next';
 import { Role } from '@/types/role';
+import { UserStore } from '@/hooks/stores/useUserStore';
 
 interface UseUserFormStructureProps {
-  userManager: any;
+  store: UserStore;
   roles?: Role[];
   forceShowPasswordInputs?: boolean;
   showPasswordInputs: boolean;
@@ -21,7 +22,7 @@ interface UseUserFormStructureProps {
 }
 
 export const useUserFormStructure = ({
-  userManager,
+  store,
   roles = [],
   forceShowPasswordInputs = true,
   showPasswordInputs,
@@ -35,8 +36,8 @@ export const useUserFormStructure = ({
     variant: FieldVariant.TEXT,
     placeholder: 'Ex. John',
     props: {
-      value: userManager.firstName,
-      onChange: (value) => userManager.set('firstName', value)
+      value: store.firstName,
+      onChange: (value) => store.set('firstName', value)
     }
   };
 
@@ -46,8 +47,8 @@ export const useUserFormStructure = ({
     variant: FieldVariant.TEXT,
     placeholder: 'Ex. Doe',
     props: {
-      value: userManager.lastName,
-      onChange: (value) => userManager.set('lastName', value)
+      value: store.lastName,
+      onChange: (value) => store.set('lastName', value)
     }
   };
 
@@ -55,10 +56,10 @@ export const useUserFormStructure = ({
     id: 'email',
     label: `${tSettings('users.attributes.email')} (*)`,
     variant: FieldVariant.EMAIL,
-    placeholder: 'Ex. This is awesome!',
+    placeholder: 'Ex. john@example.com',
     props: {
-      value: userManager.email,
-      onChange: (value) => userManager.set('email', value)
+      value: store.email,
+      onChange: (value) => store.set('email', value)
     }
   };
 
@@ -67,8 +68,8 @@ export const useUserFormStructure = ({
     label: tSettings('users.attributes.date_of_birth'),
     variant: FieldVariant.DATE,
     props: {
-      value: userManager.dateOfBirth,
-      onDateChange: (value) => userManager.set('dateOfBirth', value)
+      value: store.dateOfBirth,
+      onDateChange: (value) => store.set('dateOfBirth', value)
     }
   };
 
@@ -76,10 +77,10 @@ export const useUserFormStructure = ({
     id: 'username',
     label: `${tSettings('users.attributes.username')} (*)`,
     variant: FieldVariant.TEXT,
-    placeholder: 'Ex. Awesome Administrator',
+    placeholder: 'Ex. john_doe',
     props: {
-      value: userManager.username,
-      onChange: (value) => userManager.set('username', value)
+      value: store.username,
+      onChange: (value) => store.set('username', value)
     }
   };
 
@@ -88,8 +89,8 @@ export const useUserFormStructure = ({
     label: tSettings('users.update_password'),
     variant: FieldVariant.CHECKBOX,
     description: tSettings('users.hints.update_password_hint', {
-      name: userManager.lastName,
-      surname: userManager.firstName
+      name: store.lastName,
+      surname: store.firstName
     }),
     hidden: forceShowPasswordInputs,
     props: {
@@ -104,8 +105,8 @@ export const useUserFormStructure = ({
     variant: FieldVariant.PASSWORD,
     hidden: !(forceShowPasswordInputs || showPasswordInputs),
     props: {
-      value: userManager.password,
-      onChange: (value) => userManager.set('password', value)
+      value: store.password,
+      onChange: (value) => store.set('password', value)
     }
   };
 
@@ -115,8 +116,8 @@ export const useUserFormStructure = ({
     variant: FieldVariant.PASSWORD,
     hidden: !(forceShowPasswordInputs || showPasswordInputs),
     props: {
-      value: userManager.confirmPassword,
-      onChange: (value) => userManager.set('confirmPassword', value)
+      value: store.confirmPassword,
+      onChange: (value) => store.set('confirmPassword', value)
     }
   };
 
@@ -126,11 +127,11 @@ export const useUserFormStructure = ({
     variant: FieldVariant.SELECT,
     placeholder: 'Role...',
     props: {
-      value: userManager.roleId?.toString(),
-      onValueChange: (value) => userManager.set('roleId', parseInt(value)),
+      value: store.roleId ? String(store.roleId) : undefined,
+      onValueChange: (value) => store.set('roleId', value),
       options: roles.map((role) => ({
         label: role.label || '',
-        value: role.id?.toString() || ''
+        value: role.id ? String(role.id) : ''
       }))
     }
   };
@@ -140,10 +141,7 @@ export const useUserFormStructure = ({
     label: tSettings('users.require_password'),
     variant: FieldVariant.CHECKBOX,
     description: tSettings('users.require_password_hint'),
-    props: {
-      // Note: userManager currently doesn't have a field for this in the provided snippet
-      // but let's keep it for UI consistency if needed
-    }
+    props: {}
   };
 
   const userFormStructure: FormStructure = {
@@ -153,39 +151,21 @@ export const useUserFormStructure = ({
         title: tSettings('users.attributes.general'),
         includeHeader: true,
         rows: [
-          {
-            fields: [firstNameField, lastNameField]
-          },
-          {
-            fields: [emailField]
-          },
-          {
-            fields: [dateOfBirthField]
-          }
+          { fields: [firstNameField, lastNameField] },
+          { fields: [emailField] },
+          { fields: [dateOfBirthField] }
         ]
       },
       {
         title: tSettings('users.attributes.account'),
         includeHeader: true,
         rows: [
-          {
-            fields: [usernameField]
-          },
-          {
-            fields: [updatePasswordCheckbox]
-          },
-          {
-            fields: [passwordField]
-          },
-          {
-            fields: [confirmPasswordField]
-          },
-          {
-            fields: [roleField]
-          },
-          {
-            fields: [requirePasswordCheckbox]
-          }
+          { fields: [usernameField] },
+          { fields: [updatePasswordCheckbox] },
+          { fields: [passwordField] },
+          { fields: [confirmPasswordField] },
+          { fields: [roleField] },
+          { fields: [requirePasswordCheckbox] }
         ]
       }
     ]

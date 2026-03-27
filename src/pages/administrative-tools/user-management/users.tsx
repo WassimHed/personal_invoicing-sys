@@ -1,11 +1,11 @@
 import React from 'react';
 import UserManagementSettings from '@/components/administrative-tools/UserManagementSettings';
-import UserMain from '@/components/administrative-tools/UserManagement/user/UserMain';
+import { UserPortal } from '@/components/administrative-tools/UserManagement/user/UserPortal';
 
 export default function Page() {
   return (
     <UserManagementSettings>
-      <UserMain />
+      <UserPortal />
     </UserManagementSettings>
   );
 }

@@ -1,12 +1,11 @@
 import { api } from '@/api';
-import ContentSection from '@/components/shared/ContentSection';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import React from 'react';
 import { toast } from 'sonner';
-import { getUserColumns } from './data-table/columns';
+import { useUserColumns } from './columns';
 import { DataTable } from '@/components/shared/data-table/data-table';
 import { DataTableConfig } from '@/components/shared/data-table/types';
-import { useUserManager } from './hooks/useUserManager';
+import { useUserStore } from '@/hooks/stores/useUserStore';
 import { useUserCreateSheet } from './modals/UserCreateSheet';
 import { useUserUpdateSheet } from './modals/UserUpdateSheet';
 import { useActivateUserDialog } from './modals/UserActivateDialog';
@@ -17,29 +16,40 @@ import { CreateAbstractUserDto, UpdateAbstractUserDto, ResponseUserDto as User }
 import { updateUserSchema } from '@/types/validations/user.validation';
 import { useRouter } from 'next/router';
 import { useTranslation } from 'react-i18next';
-import { UserActionsContext } from './data-table/action-context';
 import { CheckCircle, XCircle } from 'lucide-react';
+import { cn } from '@/lib/utils';
+import { useIntro } from '@/context/IntroContext';
 
-interface UserMainProps {
+interface UserPortalProps {
   className?: string;
 }
 
-export default function UserMain({ className }: UserMainProps) {
+export function UserPortal({ className }: UserPortalProps) {
   //next-router
   const router = useRouter();
   const { t: tCommon } = useTranslation('common');
   const { t: tSettings } = useTranslation('settings');
 
-  const { setRoutes } = useBreadcrumb();
+  const { setRoutes, clearRoutes } = useBreadcrumb();
+  const { setIntro, clearIntro } = useIntro();
+
   React.useEffect(() => {
+    setIntro?.(
+      tSettings('users.singular'),
+      tSettings('users.description')
+    );
     setRoutes?.([
       { title: tCommon('menu.administrative_tools') },
       { title: tCommon('submenu.user_management') },
       { title: tCommon('settings.user_management.users') }
     ]);
+    return () => {
+      clearIntro?.();
+      clearRoutes?.();
+    };
   }, [router.locale]);
 
-  const userManager = useUserManager();
+  const userManager = useUserStore();
 
   const [page, setPage] = React.useState(1);
   const { value: debouncedPage, loading: paging } = useDebounce<number>(page, 500);
@@ -161,10 +171,16 @@ export default function UserMain({ className }: UserMainProps) {
 
   const handleUpdateSubmit = () => {
     const { id, ...user } = userManager.getUser();
-    const result = updateUserSchema.safeParse({
+    // Strip empty password so it doesn't trigger validation or overwrite existing password
+    const userPayload = {
       ...user,
-      dateOfBirth: userManager.dateOfBirth && new Date(userManager.dateOfBirth),
-      confirmPassword: userManager.confirmPassword
+      password: user.password || undefined,
+      confirmPassword: user.confirmPassword || undefined,
+      dateOfBirth: userManager.dateOfBirth && new Date(userManager.dateOfBirth)
+    };
+    const result = updateUserSchema.safeParse({
+      ...userPayload,
+      confirmPassword: userManager.confirmPassword || undefined
     });
     if (!result.success) {
       handleValidation(result);
@@ -173,6 +189,7 @@ export default function UserMain({ className }: UserMainProps) {
         id,
         user: {
           ...user,
+          password: user.password || undefined,
           dateOfBirth: user.dateOfBirth ? new Date(user.dateOfBirth) : undefined,
         } as UpdateAbstractUserDto
       });
@@ -221,8 +238,7 @@ export default function UserMain({ className }: UserMainProps) {
     setSortDetails: (order: boolean, sortKey: string) => setSortDetails({ order, sortKey }),
     //actions
     createCallback: openCreateUserSheet,
-    updateCallback: (user: User) => {
-      userManager.setUser(user);
+    updateCallback: () => {
       openUpdateUserSheet();
     },
     targetEntity: (user: User) => userManager.setUser(user),
@@ -232,6 +248,7 @@ export default function UserMain({ className }: UserMainProps) {
           actionLabel: tCommon('commands.activate'),
           actionIcon: <CheckCircle className="size-4" />,
           actionCallback: (user: User) => {
+            // no need to setUser here because targetEntity is already called on row action hover/click usually
             userManager.setUser(user);
             openActivateUserDialog();
           },
@@ -250,27 +267,23 @@ export default function UserMain({ className }: UserMainProps) {
     }
   };
 
+  const columns = useUserColumns(context);
   const isPending = isUsersPending || paging || resizing || searching || sorting;
 
   return (
-    <ContentSection
-      title={tSettings('users.singular')}
-      desc={tSettings('users.description')}
-      className="w-full">
-      <UserActionsContext.Provider value={context as any}>
-        {createUserSheet}
-        {updateUserSheet}
-        {activateUserDialog}
-        {deactivateUserDialog}
-        <DataTable
-          className="flex flex-col flex-1 overflow-hidden p-1"
-          containerClassName="overflow-auto"
-          columns={getUserColumns(tSettings, tCommon, context)}
-          data={users}
-          context={context}
-          isPending={isPending}
-        />
-      </UserActionsContext.Provider>
-    </ContentSection>
+    <div className={cn('flex flex-col flex-1 overflow-hidden', className)}>
+      <DataTable
+        className="flex flex-col flex-1 overflow-hidden p-1"
+        containerClassName="overflow-auto"
+        columns={columns}
+        data={users}
+        context={context}
+        isPending={isPending}
+      />
+      {createUserSheet}
+      {updateUserSheet}
+      {activateUserDialog}
+      {deactivateUserDialog}
+    </div>
   );
 }

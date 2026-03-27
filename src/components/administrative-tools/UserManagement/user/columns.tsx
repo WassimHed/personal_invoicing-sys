@@ -5,18 +5,15 @@ import { ResponseUserDto as User } from '@/types';
 import { transformDate } from '@/utils/date.utils';
 import { DataTableColumnHeader } from '@/components/shared/data-table/data-table-column-header';
 import { DataTableRowActions } from '@/components/shared/data-table/data-table-row-actions';
-
+import { useTranslation } from 'react-i18next';
 import { DataTableConfig } from '@/components/shared/data-table/types';
 
-export const getUserColumns = (
-  t: Function,
-  tCommon: Function,
+export const useUserColumns = (
   context: DataTableConfig<User>
 ): ColumnDef<User>[] => {
-  const translationNamespace = 'settings';
-  const translate = (value: string, namespace: string = '') => {
-    return t(value, { ns: namespace || translationNamespace });
-  };
+  const { t } = useTranslation('settings');
+  const { t: tCommon } = useTranslation('common');
+
   return [
     {
       accessorKey: 'id',
@@ -29,7 +26,7 @@ export const getUserColumns = (
       header: ({ column }) => (
         <DataTableColumnHeader
           column={column}
-          title={translate('users.attributes.username')}
+          title={t('users.attributes.username')}
           attribute="username"
           context={context}
         />
@@ -43,7 +40,7 @@ export const getUserColumns = (
       header: ({ column }) => (
         <DataTableColumnHeader
           column={column}
-          title={translate('users.attributes.email')}
+          title={t('users.attributes.email')}
           attribute="email"
           context={context}
         />
@@ -57,7 +54,7 @@ export const getUserColumns = (
       header: ({ column }) => (
         <DataTableColumnHeader
           column={column}
-          title={translate('users.attributes.first_name')}
+          title={t('users.attributes.first_name')}
           attribute="firstName"
           context={context}
         />
@@ -77,7 +74,7 @@ export const getUserColumns = (
       header: ({ column }) => (
         <DataTableColumnHeader
           column={column}
-          title={translate('users.attributes.last_name')}
+          title={t('users.attributes.last_name')}
           attribute="lastName"
           context={context}
         />
@@ -97,7 +94,7 @@ export const getUserColumns = (
       header: ({ column }) => (
         <DataTableColumnHeader
           column={column}
-          title={translate('users.attributes.date_of_birth')}
+          title={t('users.attributes.date_of_birth')}
           attribute="dateOfBirth"
           context={context}
         />
@@ -119,7 +116,7 @@ export const getUserColumns = (
       header: ({ column }) => (
         <DataTableColumnHeader
           column={column}
-          title={translate('users.attributes.role')}
+          title={t('users.attributes.role')}
           attribute="role.label"
           context={context}
         />
@@ -139,7 +136,7 @@ export const getUserColumns = (
       header: ({ column }) => (
         <DataTableColumnHeader
           column={column}
-          title={translate('users.attributes.active')}
+          title={t('users.attributes.active')}
           attribute="isActive"
           context={context}
         />
@@ -158,9 +155,9 @@ export const getUserColumns = (
     },
     {
       id: 'actions',
-      cell: ({ row, table }) => (
+      cell: ({ row }) => (
         <div className="flex justify-center">
-          <DataTableRowActions row={row} context={(table.options.meta as any)?.context} />
+          <DataTableRowActions row={row} context={context} />
         </div>
       )
     }

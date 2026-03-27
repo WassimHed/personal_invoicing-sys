@@ -1,10 +1,8 @@
 import { User } from 'lucide-react';
 import { useSheet } from '@/components/shared/Sheets';
-import { Button } from '@/components/ui/button';
-import { Spinner } from '@/components/shared/Spinner';
-import { UserForm } from '../UserForm';
 import { useRoles } from '@/hooks/content/useRoles';
 import { useTranslation } from 'react-i18next';
+import { UpdateUserForm } from '../forms/UpdateUserForm';
 
 interface UserUpdateSheet {
   updateUser?: () => void;
@@ -13,9 +11,9 @@ interface UserUpdateSheet {
 }
 
 export const useUserUpdateSheet = ({ updateUser, isUpdatePending, resetUser }: UserUpdateSheet) => {
-  const { t: tCommon } = useTranslation('common');
   const { t: tSettings } = useTranslation('settings');
-  const { roles, isFetchRolesPending } = useRoles();
+  const { roles } = useRoles();
+
   const {
     SheetFragment: updateUserSheet,
     openSheet: openUpdateUserSheet,
@@ -29,27 +27,14 @@ export const useUserUpdateSheet = ({ updateUser, isUpdatePending, resetUser }: U
     ),
     description: tSettings('users.hints.update_dialog_hint'),
     children: (
-      <div>
-        <UserForm className="my-4" roles={roles} forceShowPasswordInputs={false} />
-        <div className="flex gap-2 justify-end">
-          <Button
-            onClick={() => {
-              updateUser?.();
-            }}>
-            {tCommon('commands.save')}
-            <Spinner show={isUpdatePending} />
-          </Button>
-          <Button
-            variant={'secondary'}
-            onClick={() => {
-              closeUpdateUserSheet();
-            }}>
-            {tCommon('commands.cancel')}
-          </Button>
-        </div>
-      </div>
+      <UpdateUserForm
+        className="my-4"
+        roles={roles}
+        updateUser={() => updateUser?.()}
+        isUpdatePending={isUpdatePending ?? false}
+      />
     ),
-    className: 'min-w-[25vw]',
+    className: 'sm:min-w-[40vw]',
     onToggle: resetUser
   });
 

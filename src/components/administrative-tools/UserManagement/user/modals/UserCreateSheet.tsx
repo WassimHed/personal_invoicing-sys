@@ -1,10 +1,8 @@
 import { User } from 'lucide-react';
 import { useSheet } from '@/components/shared/Sheets';
-import { Button } from '@/components/ui/button';
-import { Spinner } from '@/components/shared/Spinner';
-import { UserForm } from '../UserForm';
 import { useRoles } from '@/hooks/content/useRoles';
 import { useTranslation } from 'react-i18next';
+import { CreateUserForm } from '../forms/CreateUserForm';
 
 interface UserCreateSheet {
   createUser?: () => void;
@@ -13,9 +11,9 @@ interface UserCreateSheet {
 }
 
 export const useUserCreateSheet = ({ createUser, isCreatePending, resetUser }: UserCreateSheet) => {
-  const { t: tCommon } = useTranslation('common');
   const { t: tSettings } = useTranslation('settings');
-  const { roles, isFetchRolesPending } = useRoles();
+  const { roles } = useRoles();
+
   const {
     SheetFragment: createUserSheet,
     openSheet: openCreateUserSheet,
@@ -29,27 +27,14 @@ export const useUserCreateSheet = ({ createUser, isCreatePending, resetUser }: U
     ),
     description: tSettings('users.hints.create_dialog_hint'),
     children: (
-      <div>
-        <UserForm className="my-4" roles={roles} />
-        <div className="flex gap-2 justify-end">
-          <Button
-            onClick={() => {
-              createUser?.();
-            }}>
-            {tCommon('commands.save')}
-            <Spinner show={isCreatePending} />
-          </Button>
-          <Button
-            variant={'secondary'}
-            onClick={() => {
-              closeCreateUserSheet();
-            }}>
-            {tCommon('commands.cancel')}
-          </Button>
-        </div>
-      </div>
+      <CreateUserForm
+        className="my-4"
+        roles={roles}
+        createUser={() => createUser?.()}
+        isCreatePending={isCreatePending ?? false}
+      />
     ),
-    className: 'min-w-[25vw]',
+    className: 'sm:min-w-[40vw]',
     onToggle: resetUser
   });
 

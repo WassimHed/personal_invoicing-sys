@@ -42,7 +42,7 @@ const CabinetMain: React.FC<CabinetMainProps> = ({ className }) => {
 
   const { cabinet, isFetchCabinetPending, error, refetchCabinet } = useCabinet();
   const { activities, isFetchActivitiesPending } = useActivities();
-  const { currencies, isFetchCurrenciesPending } = useCurrency();
+  const { currencies, isCurrenciesPending } = useCurrency();
   const { countries, isFetchCountriesPending } = useCountry();
 
   const cabinetManager = useCabinetManager();
@@ -60,7 +60,7 @@ const CabinetMain: React.FC<CabinetMainProps> = ({ className }) => {
 
   const loading =
     isFetchCabinetPending ||
-    isFetchCurrenciesPending ||
+    isCurrenciesPending ||
     isFetchActivitiesPending ||
     isFetchCountriesPending ||
     isUpdatePending;
