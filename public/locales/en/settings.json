@@ -12,6 +12,24 @@
         "description": "Manage user accounts, roles, and permissions effortlessly to ensure secure and efficient access control."
     },
     "pdf": {},
+    "profile": {
+        "general_information": "General Information",
+        "security_information": "Security & Password",
+        "profile_information": "Profile Information",
+        "picture": "Profile Picture",
+        "action_update_success": "Profile updated successfully",
+        "action_update_failure": "Error updating profile",
+        "attributes": {
+            "phone": "Phone",
+            "cin": "National ID (CIN)",
+            "bio": "Bio",
+            "gender": "Gender",
+            "gender_male": "Male",
+            "gender_female": "Female",
+            "is_private": "Private Profile",
+            "is_private_description": "Hide your profile from other users"
+        }
+    },
     "cabinet": {
         "general_information": "General Information",
         "financial_information": "Financial Information",
@@ -157,6 +175,12 @@
         "add_button_label": "New Tax Withholding"
     },
     "tax": {
+        "action_add_failure": "Error while creating tax",
+        "action_add_success": "Tax added successfully",
+        "action_update_failure": "Error while updating tax",
+        "action_update_success": "Tax updated successfully",
+        "action_remove_failure": "Error while deleting tax",
+        "action_remove_success": "Tax deleted successfully",
         "attributes": {
             "label": "Label",
             "label_description": "Enter a unique name for the tax (e.g., VAT, FODEC)",

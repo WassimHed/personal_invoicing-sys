@@ -2,6 +2,25 @@ import { DatabaseEntity } from './response/DatabaseEntity';
 import { Role } from './role';
 import { Upload } from './upload';
 
+// Gender enum matching backend
+export enum Gender {
+  Male = 'Male',
+  Female = 'Female'
+}
+
+// Profile sub-entity
+export interface Profile {
+  id?: number;
+  phone?: string;
+  cin?: string;
+  bio?: string;
+  gender?: Gender;
+  isPrivate?: boolean;
+  regionId?: number;
+  pictureId?: number;
+  picture?: Upload;
+}
+
 //abstract user dtos *****************************************************************************
 
 export interface ResponseAbstractUserDto extends DatabaseEntity {
@@ -28,6 +47,7 @@ export interface CreateAbstractUserDto {
   username: string;
   email: string;
   roleId?: string;
+  profile?: Partial<Profile>;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-empty-object-type
@@ -53,4 +73,6 @@ export interface ResponseUserDto {
   pictureId?: number;
   isActive?: boolean;
   isApproved?: boolean;
+  profile?: Profile;
+  profileId?: number;
 }

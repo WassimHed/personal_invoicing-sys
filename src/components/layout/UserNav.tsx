@@ -33,12 +33,29 @@ export function UserNav({ className }: UserNavProps) {
   const identity = React.useMemo(() => identifyUser(user), [user]);
   const avatarIdentity = React.useMemo(() => identifyUserAvatar(user), [user]);
 
-  // const { data: profilePicture } = useQuery({
-  //   queryKey: ['profile-picture', user?.pictureId],
-  //   queryFn: () => api.upload.getUploadById(user?.pictureId as number),
-  //   enabled: !!user?.pictureId,
-  //   staleTime: Infinity
-  // });
+  const [profilePictureUrl, setProfilePictureUrl] = React.useState<string | null>(
+    null
+  );
+
+  React.useEffect(() => {
+    const slug = user?.profile?.picture?.slug;
+    if (!slug) {
+      setProfilePictureUrl(null);
+      return;
+    }
+
+    let objectUrl: string | null = null;
+    api.upload.fetchBlobBySlug(slug).then((blob) => {
+      if (blob) {
+        objectUrl = URL.createObjectURL(blob);
+        setProfilePictureUrl(objectUrl);
+      }
+    });
+
+    return () => {
+      if (objectUrl) URL.revokeObjectURL(objectUrl);
+    };
+  }, [user?.profile?.picture?.slug]);
 
   const handleSignOut = async () => {
     authPersistStore.logout();
@@ -49,7 +66,13 @@ export function UserNav({ className }: UserNavProps) {
     <DropdownMenu>
       <DropdownMenuTrigger className={cn(className)}>
         <Avatar className="h-8 w-8 rounded-full">
-          {/* <AvatarImage src={profilePicture} alt={identity} /> */}
+          {profilePictureUrl && (
+            <AvatarImage
+              src={profilePictureUrl}
+              alt={identity}
+              className="object-cover"
+            />
+          )}
 
           <AvatarFallback>{avatarIdentity}</AvatarFallback>
         </Avatar>
@@ -62,7 +85,13 @@ export function UserNav({ className }: UserNavProps) {
         <DropdownMenuLabel className="p-0 font-normal">
           <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
             <Avatar className="h-8 w-8 rounded-lg">
-              {/* <AvatarImage src={profilePicture} alt={identity} /> */}
+              {profilePictureUrl && (
+                <AvatarImage
+                  src={profilePictureUrl}
+                  alt={identity}
+                  className="object-cover"
+                />
+              )}
               <AvatarFallback className="rounded-lg">{avatarIdentity}</AvatarFallback>
             </Avatar>
             <div className="grid flex-1 text-left text-sm leading-tight">
@@ -73,7 +102,7 @@ export function UserNav({ className }: UserNavProps) {
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
-          <DropdownMenuItem onClick={() => router.push('/profile')}>
+          <DropdownMenuItem onClick={() => router.push('/settings/account/profile')}>
             <User />
             {t('buttons.profile')}
           </DropdownMenuItem>

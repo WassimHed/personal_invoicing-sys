@@ -63,17 +63,13 @@ export function DatePicker({
   const years = Array.from({ length: endYear - startYear + 1 }, (_, i) => startYear + i);
 
   const handleMonthChange = (month: string) => {
-    if (date) {
-      const newDate = setMonth(date, months.indexOf(month));
-      onChange(newDate);
-    }
+    const newDate = setMonth(date || new Date(), months.indexOf(month));
+    onChange(newDate);
   };
 
   const handleYearChange = (year: string) => {
-    if (date) {
-      const newDate = setYear(date, parseInt(year));
-      onChange(newDate);
-    }
+    const newDate = setYear(date || new Date(), parseInt(year));
+    onChange(newDate);
   };
 
   const handleSelect = (selectedData: Date | undefined) => {

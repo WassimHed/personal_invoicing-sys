@@ -1,4 +1,4 @@
-import { ResponseUserDto } from '@/types';
+import { Gender, Profile, ResponseUserDto } from '@/types';
 import { create } from 'zustand';
 
 interface UserStoreData {
@@ -11,6 +11,14 @@ interface UserStoreData {
   roleId?: string;
   password?: string;
   confirmPassword?: string;
+  // profile fields
+  phone?: string;
+  cin?: string;
+  bio?: string;
+  gender?: Gender;
+  isPrivate?: boolean;
+  picture?: File;
+  pictureId?: number;
 }
 
 export interface UserStore extends UserStoreData {
@@ -26,10 +34,18 @@ const initialState: UserStoreData = {
   email: '',
   firstName: '',
   lastName: '',
-  dateOfBirth: new Date(),
+  dateOfBirth: undefined,
   roleId: undefined,
   password: '',
-  confirmPassword: ''
+  confirmPassword: '',
+  // profile fields
+  phone: '',
+  cin: '',
+  bio: '',
+  gender: undefined,
+  isPrivate: false,
+  picture: undefined,
+  pictureId: undefined
 };
 
 export const useUserStore = create<UserStore>((set, get) => ({
@@ -54,9 +70,18 @@ export const useUserStore = create<UserStore>((set, get) => ({
       email: data.email,
       firstName: data.firstName,
       lastName: data.lastName,
-      dateOfBirth: data.dateOfBirth?.toString(),
+      dateOfBirth: data.dateOfBirth?.toISOString(),
       password: data.password,
-      roleId: data.roleId
+      confirmPassword: data.confirmPassword,
+      roleId: data.roleId,
+      profile: {
+        phone: data.phone,
+        cin: data.cin,
+        bio: data.bio,
+        gender: data.gender,
+        isPrivate: data.isPrivate,
+        pictureId: data.pictureId
+      } as Partial<Profile>
     };
   },
 
@@ -69,7 +94,14 @@ export const useUserStore = create<UserStore>((set, get) => ({
       firstName: data.firstName,
       lastName: data.lastName,
       dateOfBirth: data?.dateOfBirth ? new Date(data?.dateOfBirth) : undefined,
-      roleId: data.roleId
+      roleId: data.roleId,
+      // profile fields
+      phone: data.profile?.phone ?? '',
+      cin: data.profile?.cin ?? '',
+      bio: data.profile?.bio ?? '',
+      gender: data.profile?.gender,
+      isPrivate: data.profile?.isPrivate ?? false,
+      pictureId: data.profile?.pictureId
     }));
   }
 }));

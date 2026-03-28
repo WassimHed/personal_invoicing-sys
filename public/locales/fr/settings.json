@@ -12,6 +12,24 @@
     "description": "Gérez les comptes d'utilisateurs, les rôles et les autorisations sans effort pour garantir un contrôle d'accès sécurisé et efficace."
   },
   "pdf": {},
+  "profile": {
+    "general_information": "Informations Générales",
+    "security_information": "Sécurité et Mot de Passe",
+    "profile_information": "Informations du Profil",
+    "picture": "Photo de Profil",
+    "action_update_success": "Profil mis à jour avec succès",
+    "action_update_failure": "Erreur lors de la mise à jour du profil",
+    "attributes": {
+      "phone": "Téléphone",
+      "cin": "CIN (Carte Nationale)",
+      "bio": "Biographie",
+      "gender": "Genre",
+      "gender_male": "Homme",
+      "gender_female": "Femme",
+      "is_private": "Profil Privé",
+      "is_private_description": "Masquer votre profil aux autres utilisateurs"
+    }
+  },
   "cabinet": {
     "general_information": "Informations générales",
     "financial_information": "Information Comptable",
@@ -157,6 +175,12 @@
     "add_button_label": "Nouvelle Retenue à la source"
   },
   "tax": {
+    "action_add_failure": "Erreur lors de la création de la taxe",
+    "action_add_success": "Taxe ajoutée avec succès",
+    "action_update_failure": "Erreur lors de la modification de la taxe",
+    "action_update_success": "Taxe modifiée avec succès",
+    "action_remove_failure": "Erreur lors de la suppression de la taxe",
+    "action_remove_success": "Taxe supprimée avec succès",
     "attributes": {
       "label": "Etiquette",
       "label_description": "Saisissez un nom unique pour la taxe (par exemple, TVA, FODEC)",

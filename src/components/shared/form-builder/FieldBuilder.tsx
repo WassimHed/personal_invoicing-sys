@@ -127,7 +127,7 @@ export const FieldBuilder = ({ field }: FieldBuilderProps) => {
             undefined
           }
           onChange={(value: Date | null) => field?.props?.onDateChange?.(value)}
-          placeholder={t('common.placeholders.selectDate')}
+          placeholder={t('pick_date')}
           // nullable={field?.props?.nullable}
           // disabled={field?.props?.disabled}
         />

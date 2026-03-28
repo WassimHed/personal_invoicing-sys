@@ -41,7 +41,7 @@ export const SystemSettings: React.FC<SystemSettingsProps> = ({ className, child
     {
       title: tCommon('settings.system.payment_condition'),
       icon: <Receipt size={18} />,
-      href: 'payment-conditions'
+      href: '/settings/system/payment-conditions'
     },
     {
       title: tCommon('settings.system.tax_withholding'),
