@@ -6,8 +6,6 @@ import {
   ToastValidation,
   UpdateActivityDto
 } from '@/types';
-import { isAlphabeticOrSpace } from '@/utils/validations/string.validations';
-
 const findPaginated = async (
   page: number = 1,
   size: number = 5,
@@ -42,16 +40,9 @@ const update = async (activity: UpdateActivityDto): Promise<Activity> => {
   return response.data;
 };
 
-const validate = (activity: CreateActivityDto | UpdateActivityDto): ToastValidation => {
-  if (activity?.label && activity.label.length > 3 && isAlphabeticOrSpace(activity?.label)) {
-    return { message: '' };
-  }
-  return { message: "Etiquette de l'activité est invalide" };
-};
-
 const remove = async (id: number) => {
   const { data, status } = await axios.delete<Activity>(`public/activity/${id}`);
   return { data, status };
 };
 
-export const activity = { find, findOne, findPaginated, create, update, validate, remove };
+export const activity = { find, findOne, findPaginated, create, update, remove };

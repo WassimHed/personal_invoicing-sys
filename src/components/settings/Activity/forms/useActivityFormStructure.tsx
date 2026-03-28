@@ -4,12 +4,12 @@ import {
   FormStructure,
   TextFieldProps
 } from '@/components/shared/form-builder/types';
-import { useActivityManager } from './hooks/useActivityManager';
+import { useActivityStore } from '@/hooks/stores/useActivityStore';
 import { useTranslation } from 'react-i18next';
 
 export const useActivityFormStructure = () => {
   const { t: tSettings } = useTranslation('settings');
-  const activityManager = useActivityManager();
+  const activityStore = useActivityStore();
 
   const labelField: Field<TextFieldProps> = {
     id: 'activity-label',
@@ -18,8 +18,8 @@ export const useActivityFormStructure = () => {
     variant: FieldVariant.TEXT,
     placeholder: 'Ex. Service',
     props: {
-      value: activityManager.label,
-      onChange: (e: string) => activityManager.set('label', e)
+      value: activityStore.label,
+      onChange: (e: string) => activityStore.set('label', e)
     }
   };
 

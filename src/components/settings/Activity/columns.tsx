@@ -8,13 +8,14 @@ import { useTranslation } from 'react-i18next';
 export const useActivityColumns = (
   context: DataTableConfig<Activity>
 ): ColumnDef<Activity>[] => {
-  const { t } = useTranslation('common');
-  
+  const { t: tCommon } = useTranslation('common');
+  const { t: tSettings } = useTranslation('settings');
+
   return [
     {
       accessorKey: 'id',
       header: ({ column }) => (
-        <DataTableColumnHeader column={column} context={context} title={t('activity.attributes.id')} />
+        <DataTableColumnHeader column={column} context={context} title={tCommon('attributes.id')} />
       ),
       cell: ({ row }) => <div className="w-[80px]">{row.getValue('id')}</div>,
       enableSorting: true,
@@ -23,7 +24,11 @@ export const useActivityColumns = (
     {
       accessorKey: 'label',
       header: ({ column }) => (
-        <DataTableColumnHeader column={column} context={context} title={t('activity.attributes.label')} />
+        <DataTableColumnHeader
+          column={column}
+          context={context}
+          title={tSettings('activity.attributes.label')}
+        />
       ),
       cell: ({ row }) => {
         return (

@@ -90,14 +90,35 @@
         "singular": "Default Conditions"
     },
     "activity": {
+        "action_add_failure": "Error while creating activity",
+        "action_add_success": "Activity added successfully",
+        "action_edit_failure": "Error while updating activity",
+        "action_edit_success": "Activity modified successfully",
+        "action_remove_failure": "Error while deleting activity",
+        "action_remove_success": "Activity deleted successfully",
         "attributes": {
             "label": "Label"
         },
         "add_button_label": "New Activity",
         "card_description": "This section allows users to efficiently manage activities by performing the key actions related to saved activities",
         "new": "New Activity",
+        "update": "Update an Activity",
         "singular": "Activity",
-        "plural": "Activities"
+        "plural": "Activities",
+        "dialogs": {
+          "create": {
+            "title": "New Activity",
+            "description": "Enter the details to create a new activity. Make sure all required fields are filled before saving."
+          },
+          "update": {
+            "title": "Edit Activity",
+            "description": "Modify the activity details. Ensure all required fields are filled before saving."
+          },
+          "delete": {
+            "title": "Delete Activity",
+            "description": "Are you sure you want to delete the activity \"<label>{{label}}</label>\"? This action is irreversible."
+          }
+        }
     },
     "sequence": {
         "attributes": {
@@ -146,7 +167,7 @@
             "type": "Type",
             "type_description": "Choose percentage or a fixed value per transaction",
             "is_special": "Special",
-            "is_special_description": "Une taxe spéciale est appliquée sur le montant après que les taxes normales ont déjà été calculées.",
+            "is_special_description": "A special tax is applied to the amount after normal taxes have already been calculated.",
             "currency": "Currency",
             "currency_description": "Choose the currency of the tax",
             "currency_checkbox": "Set a specific currency for this tax",
@@ -157,8 +178,8 @@
             "currency_required": "Please select a currency for the tax"
         },
         "types": {
-            "rate": "Pourcentage",
-            "fixed": "Fixed Ammount"
+            "rate": "Percentage",
+            "fixed": "Fixed Amount"
         },
         "create_prompt": "Create Tax",
         "create_dialog_description": "Please enter the required values to create a new tax",

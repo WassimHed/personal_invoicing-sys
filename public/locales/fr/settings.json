@@ -90,14 +90,35 @@
     "singular": "Conditions Par défaut"
   },
   "activity": {
+    "action_add_failure": "Erreur lors de la création de l'activité",
+    "action_add_success": "Activité ajoutée avec succès",
+    "action_edit_failure": "Erreur lors de la modification de l'activité",
+    "action_edit_success": "Activité modifiée avec succès",
+    "action_remove_failure": "Erreur lors de la suppression de l'activité",
+    "action_remove_success": "Activité supprimée avec succès",
     "attributes": {
       "label": "Etiquette"
     },
     "add_button_label": "Nouvelle Activité",
     "card_description": "Cette section permet aux utilisateurs de gérer efficacement les activités en réalisant les principales actions liées aux activités enregistrées.",
     "new": "Nouvelle Activité",
+    "update": "Mise à jour d'une Activité",
     "singular": "Activité",
-    "plural": "Activités"
+    "plural": "Activités",
+    "dialogs": {
+      "create": {
+        "title": "Nouvelle Activité",
+        "description": "Entrez les détails pour créer une nouvelle activité. Assurez-vous que tous les champs obligatoires sont remplis avant de sauvegarder."
+      },
+      "update": {
+        "title": "Modifier l'Activité",
+        "description": "Modifiez les détails de l'activité. Assurez-vous que tous les champs obligatoires sont remplis avant de sauvegarder."
+      },
+      "delete": {
+        "title": "Supprimer l'Activité",
+        "description": "Êtes-vous sûr de vouloir supprimer l'activité \"<label>{{label}}</label>\" ? Cette action est irréversible."
+      }
+    }
   },
   "sequence": {
     "attributes": {

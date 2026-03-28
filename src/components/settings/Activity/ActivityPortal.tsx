@@ -4,44 +4,51 @@ import { useMutation, useQuery } from '@tanstack/react-query';
 import { api } from '@/api';
 import { getErrorMessage } from '@/utils/errors';
 import { useDebounce } from '@/hooks/other/useDebounce';
-import { ActivityDeleteDialog } from './dialogs/ActivityDeleteDialog';
 import { useTranslation } from 'react-i18next';
-import { ActivityUpdateDialog } from './dialogs/ActivityUpdateDialog';
-import { useActivityManager } from './hooks/useActivityManager';
-import { ActivityCreateDialog } from './dialogs/ActivityCreateDialog';
 import { Activity } from '@/types';
 import { DataTable } from '@/components/shared/data-table/data-table';
 import { DataTableConfig } from '@/components/shared/data-table/types';
 import { useActivityColumns } from './columns';
 import { useBreadcrumb } from '@/context/BreadcrumbContext';
+import { useIntro } from '@/context/IntroContext';
 import { useRouter } from 'next/router';
 import ContentSection from '@/components/shared/ContentSection';
 import { cn } from '@/lib/utils';
+import { useActivityStore } from '@/hooks/stores/useActivityStore';
+import { activitySchema } from '@/types/validations/activity.validation';
+import { useActivityCreateSheet } from './modals/ActivityCreateSheet';
+import { useActivityUpdateSheet } from './modals/ActivityUpdateSheet';
+import { useActivityDeleteDialog } from './modals/ActivityDeleteDialog';
 
-interface ActivityMainProps {
+interface ActivityPortalProps {
   className?: string;
 }
 
-export const ActivityPortal: React.FC<ActivityMainProps> = ({ className }) => {
-  //next-router
+export const ActivityPortal: React.FC<ActivityPortalProps> = ({ className }) => {
   const router = useRouter();
   const { t: tSettings } = useTranslation('settings');
   const { t: tCommon } = useTranslation('common');
 
-  //set page title in the breadcrumb
-  const { setRoutes } = useBreadcrumb();
-  React.useEffect(() => {
-    if (setRoutes) {
-      setRoutes?.([
+  const { setIntro, clearIntro } = useIntro();
+  const { setRoutes, clearRoutes } = useBreadcrumb();
 
-        { title: tCommon('menu.settings') },
-        { title: tCommon('submenu.system') },
-        { title: tCommon('settings.system.activity') }
-      ]);
-    }
+  React.useEffect(() => {
+    setIntro?.(
+      'Activities',
+      'Manage your business activities to categorize your operations.'
+    );
+    setRoutes?.([
+      { title: tCommon('menu.settings') },
+      { title: tCommon('submenu.system') },
+      { title: tCommon('settings.system.activity') }
+    ]);
+    return () => {
+      clearIntro?.();
+      clearRoutes?.();
+    };
   }, [router.locale]);
 
-  const activityManager = useActivityManager();
+  const activityStore = useActivityStore();
 
   const [page, setPage] = React.useState(1);
   const { value: debouncedPage, loading: paging } = useDebounce<number>(page, 500);
@@ -57,10 +64,6 @@ export const ActivityPortal: React.FC<ActivityMainProps> = ({ className }) => {
 
   const [searchTerm, setSearchTerm] = React.useState('');
   const { value: debouncedSearchTerm, loading: searching } = useDebounce<string>(searchTerm, 500);
-
-  const [createDialog, setCreateDialog] = React.useState(false);
-  const [updateDialog, setUpdateDialog] = React.useState(false);
-  const [deleteDialog, setDeleteDialog] = React.useState(false);
 
   const {
     isPending: isFetchPending,
@@ -91,10 +94,91 @@ export const ActivityPortal: React.FC<ActivityMainProps> = ({ className }) => {
     return activitiesResp?.data || [];
   }, [activitiesResp]);
 
+  const { mutate: createActivity, isPending: isCreatePending } = useMutation({
+    mutationFn: (data: Activity) => api.activity.create(data),
+    onSuccess: () => {
+      toast.success(tSettings('activity.action_add_success'));
+      refetchActivities();
+      activityStore.reset();
+      closeCreateActivitySheet();
+    },
+    onError: (error) => {
+      toast.error(getErrorMessage('', error, tSettings('activity.action_add_failure')));
+    }
+  });
+
+  const { mutate: updateActivity, isPending: isUpdatePending } = useMutation({
+    mutationFn: (data: Activity) => api.activity.update(data),
+    onSuccess: () => {
+      toast.success(tSettings('activity.action_edit_success'));
+      refetchActivities();
+      activityStore.reset();
+      closeUpdateActivitySheet();
+    },
+    onError: (error) => {
+      toast.error(getErrorMessage('', error, tSettings('activity.action_edit_failure')));
+    }
+  });
+
+  const { mutate: removeActivity, isPending: isDeletePending } = useMutation({
+    mutationFn: (id: number) => api.activity.remove(id),
+    onSuccess: () => {
+      if (activities?.length == 1 && page > 1) setPage(page - 1);
+      toast.success(tSettings('activity.action_remove_success'));
+      refetchActivities();
+      closeDeleteActivityDialog();
+    },
+    onError: (error) => {
+      toast.error(getErrorMessage('', error, tSettings('activity.action_remove_failure')));
+    }
+  });
+
+  const handleActivitySubmit = (
+    activity: Activity,
+    callback: (activity: Activity) => void
+  ): void => {
+    const result = activitySchema.safeParse(activity);
+    if (!result.success) {
+      toast.error(result.error.errors[0].message);
+      return;
+    }
+    callback(activity);
+  };
+
+  const { createActivitySheet, openCreateActivitySheet, closeCreateActivitySheet } =
+    useActivityCreateSheet({
+      createActivity: () => {
+        handleActivitySubmit(activityStore.getActivity() as Activity, createActivity);
+      },
+      isCreatePending,
+      resetActivity: () => activityStore.reset()
+    });
+
+  const { updateActivitySheet, openUpdateActivitySheet, closeUpdateActivitySheet } =
+    useActivityUpdateSheet({
+      updateActivity: () => {
+        handleActivitySubmit(activityStore.getActivity() as Activity, updateActivity);
+      },
+      isUpdatePending,
+      resetActivity: () => activityStore.reset()
+    });
+
+  const {
+    deleteActivityDialog,
+    openDeleteActivityDialog,
+    closeDeleteActivityDialog
+  } = useActivityDeleteDialog({
+    label: activityStore.label,
+    deleteActivity: () => {
+      activityStore.id && removeActivity(activityStore.id);
+    },
+    isDeletionPending: isDeletePending,
+    reset: () => activityStore.reset()
+  });
+
   const context: DataTableConfig<Activity> = {
     singularName: tSettings('activity.singular'),
     pluralName: tSettings('activity.plural'),
-    //search, filtering, sorting & paging
     searchTerm,
     setSearchTerm,
     page,
@@ -105,71 +189,18 @@ export const ActivityPortal: React.FC<ActivityMainProps> = ({ className }) => {
     order: sortDetails.order,
     sortKey: sortDetails.sortKey,
     setSortDetails: (order: boolean, sortKey: string) => setSortDetails({ order, sortKey }),
-    //actions
-    createCallback: () => setCreateDialog(true),
+    createCallback: openCreateActivitySheet,
     updateCallback: (activity: Activity) => {
-      activityManager.setActivity(activity);
-      setUpdateDialog(true);
+      activityStore.setActivity(activity);
+      openUpdateActivitySheet();
     },
     deleteCallback: (activity: Activity) => {
-      activityManager.setActivity(activity);
-      setDeleteDialog(true);
+      activityStore.setActivity(activity);
+      openDeleteActivityDialog();
     }
   };
 
   const columns = useActivityColumns(context);
-
-  const { mutate: createActivity, isPending: isCreatePending } = useMutation({
-    mutationFn: (data: Activity) => api.activity.create(data),
-    onSuccess: () => {
-      toast.success('Activité ajoutée avec succès');
-      refetchActivities();
-      activityManager.reset();
-    },
-    onError: (error) => {
-      toast.error(getErrorMessage('', error, "Erreur lors de la création de l'activité"));
-    }
-  });
-
-  const { mutate: updateActivity, isPending: isUpdatePending } = useMutation({
-    mutationFn: (data: Activity) => api.activity.update(data),
-    onSuccess: () => {
-      toast.success('Activité modifiée avec succès');
-      refetchActivities();
-      activityManager.reset();
-    },
-    onError: (error) => {
-      toast.error(getErrorMessage('', error, "Erreur lors de la modification de l'activité"));
-    }
-  });
-
-  const { mutate: removeActivity, isPending: isDeletePending } = useMutation({
-    mutationFn: (id: number) => api.activity.remove(id),
-    onSuccess: () => {
-      if (activities?.length == 1 && page > 1) setPage(page - 1);
-      toast.success('Activité supprimée avec succès');
-      refetchActivities();
-      setDeleteDialog(false);
-    },
-    onError: (error) => {
-      toast.error(getErrorMessage('', error, "Erreur lors de la suppression de l'activité"));
-    }
-  });
-
-  const handleActivitySubmit = (
-    activity: Activity,
-    callback: (activity: Activity) => void
-  ): boolean => {
-    const validation = api.activity.validate(activity);
-    if (validation.message) {
-      toast.error(validation.message);
-      return false;
-    } else {
-      callback(activity);
-      activityManager.reset();
-      return true;
-    }
-  };
 
   const isPending =
     isFetchPending ||
@@ -182,41 +213,12 @@ export const ActivityPortal: React.FC<ActivityMainProps> = ({ className }) => {
     sorting;
 
   if (error) return 'An error has occurred: ' + error.message;
+
   return (
     <>
-      <ActivityCreateDialog
-        open={createDialog}
-        isCreatePending={isCreatePending}
-        createActivity={() => {
-          handleActivitySubmit(activityManager.getActivity() as Activity, createActivity) &&
-            setCreateDialog(false);
-        }}
-        onClose={() => {
-          setCreateDialog(false);
-        }}
-      />
-      <ActivityUpdateDialog
-        open={updateDialog}
-        updateActivity={() => {
-          handleActivitySubmit(activityManager.getActivity() as Activity, updateActivity) &&
-            setUpdateDialog(false);
-        }}
-        isUpdatePending={isUpdatePending}
-        onClose={() => {
-          setUpdateDialog(false);
-        }}
-      />
-      <ActivityDeleteDialog
-        open={deleteDialog}
-        deleteActivity={() => {
-          activityManager?.id && removeActivity(activityManager?.id);
-        }}
-        isDeletionPending={isDeletePending}
-        label={activityManager?.label}
-        onClose={() => {
-          setDeleteDialog(false);
-        }}
-      />
+      {createActivitySheet}
+      {updateActivitySheet}
+      {deleteActivityDialog}
       <ContentSection
         title={tSettings('activity.singular')}
         desc={tSettings('activity.card_description')}

@@ -36,6 +36,9 @@
     "note1": "Il manque quelque chose...",
     "note2": "Désolé, nous ne pouvons pas trouver cette page. Vous trouverez beaucoup de choses à explorer sur la page d'accueil."
   },
+  "attributes": {
+    "id": "ID"
+  },
   "add_joints": "Ajouter des Pièces Jointes",
   "answer": {
     "yes": "Oui",
@@ -158,6 +161,14 @@
     "system": "Système",
     "withholding": "Retenue à la source",
     "pdf": "PDF"
+  },
+  "administrative-tools": {
+    "logger": {},
+    "user_management": {
+      "users": "Utilisateurs",
+      "roles": "Rôles",
+      "permissions": "Permissions"
+    }
   },
   "settings": {
     "account": {

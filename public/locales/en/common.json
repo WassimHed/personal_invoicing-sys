@@ -36,6 +36,9 @@
     "note1": "Something is missing...",
     "note2": "Sorry, we can't find this page. You'll find plenty of things to explore on the homepage."
   },
+  "attributes": {
+    "id": "ID"
+  },
   "add_joints": "Add Attachments",
   "answer": {
     "yes": "Yes",
