@@ -2,7 +2,7 @@ import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { NotepadText } from 'lucide-react';
-import { useFirmStore } from '@/hooks/stores/useFirmStore';
+import { useFirmStore } from '@/hooks/stores/useEnterpriseStore';
 import { useTranslation } from 'react-i18next';
 import { FormBuilder } from '@/components/shared/form-builder/FormBuilder';
 import { useFirmNotesFormStructure } from './useFirmNotesFormStructure';
