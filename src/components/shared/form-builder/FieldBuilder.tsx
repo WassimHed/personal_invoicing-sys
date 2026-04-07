@@ -104,7 +104,7 @@ export const FieldBuilder = ({ field }: FieldBuilderProps) => {
             )}>
             <SelectValue placeholder={field.placeholder} />
           </SelectTrigger>
-          <SelectContent className="overflow-y-auto max-h-[15rem]">
+          <SelectContent className="overflow-y-auto max-h-60">
             {field?.props?.options?.map((option: SelectOption) => {
               return (
                 <SelectItem key={option.value} value={option.value}>
@@ -151,16 +151,25 @@ export const FieldBuilder = ({ field }: FieldBuilderProps) => {
     case 'radio':
       return (
         <RadioGroup
-          value={field.props?.value}
-          onValueChange={field.props?.onValueChange}
-          disabled={field.props?.disabled}
-          className={cn('flex flex-wrap gap-4', field.className)}>
-          {field.props?.options?.map((option: RadioOption) => (
-            <div key={option.value} className="flex items-center space-x-2">
-              <RadioGroupItem value={option.value} id={`${field.id}-${option.value}`} />
-              <Label htmlFor={`${field.id}-${option.value}`} className="text-xs font-normal">
-                {option.label}
-              </Label>
+          defaultValue={field.props?.value}
+          className={cn(
+            'flex w-fit my-2.5',
+            field?.props?.spread === 'horizontal' ? 'flex-row' : 'flex-col',
+            field?.className
+          )}
+          onValueChange={(value) => {
+            console.log('radio changed', value);
+            field?.props?.onValueChange?.(value);
+          }}>
+          {field.props?.options?.map((option: SelectOption) => (
+            <div key={option.value} className="flex items-center gap-3">
+              <RadioGroupItem
+                value={option.value}
+                id={`${field.id}-${option.value}`}
+                disabled={field?.props?.disabled}
+                className={cn(field?.className)}
+              />
+              <Label htmlFor={`${field.id}-${option.value}`}>{option.label}</Label>
             </div>
           ))}
         </RadioGroup>
