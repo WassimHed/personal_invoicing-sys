@@ -1,7 +1,7 @@
 {
   "routes": {
     "contacts": {
-      "firm": {
+      "enterprise": {
         "title": "Gestion des entreprises",
         "description": "Gérez vos entreprises et leurs détails"
       },
@@ -40,6 +40,12 @@
     "id": "ID"
   },
   "add_joints": "Ajouter des Pièces Jointes",
+  "coming_soon": {
+    "coming_soon": "Bientôt disponible",
+    "go_back": "Retour au tableau de bord",
+    "note1": "Quelque chose d'incroyable arrive bientôt !",
+    "note2": "Nous travaillons dur pour vous apporter de nouvelles fonctionnalités. Restez à l'écoute !"
+  },
   "answer": {
     "yes": "Oui",
     "no": "Non"
@@ -49,13 +55,7 @@
     "dark": "Sombre",
     "light": "Clair",
     "system": "Système",
-    "theme": "Theme"
-  },
-  "coming_soon": {
-    "coming_soon": "Bientôt disponible",
-    "go_back": "Retour au tableau de bord",
-    "note1": "Quelque chose d'incroyable arrive bientôt !",
-    "note2": "Nous travaillons dur pour vous apporter de nouvelles fonctionnalités. Restez à l'écoute !"
+    "theme": "Thème"
   },
   "commands": {
     "apply": "Appliquer",
