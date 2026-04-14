@@ -20,14 +20,17 @@ export const AuthenticationLayout = () => {
   const [target, setTarget] = React.useState<Screen>('login');
 
   React.useEffect(() => {
-    if (screenParam === 'forgot-password' || screenParam === 'reset-password') {
+    if (tokenParam) {
+      setTarget('reset-password');
+    } else if (screenParam === 'forgot-password' || screenParam === 'reset-password') {
       setTarget(screenParam);
     }
+    
     if (!tokenParam && screenParam === 'reset-password') {
       setTarget('login');
       clearQueryParams(router);
     }
-  }, [screenParam, tokenParam]);
+  }, [screenParam, tokenParam, router]);
 
   return (
     <div className="grid min-h-svh lg:grid-cols-2 no-select">

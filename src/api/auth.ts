@@ -7,7 +7,20 @@ const signIn = async (payload: SigninPayload): Promise<ResponseSigninDto> => {
 };
 
 const signUp = async (payload: SignupPayload): Promise<ResponseSignupDto> => {
-  const response = await axios.post('/auth/register', payload);
+  const response = await axios.post('/auth/register', {
+    username: payload.username,
+    email: payload.email,
+    password: payload.password,
+    firstName: payload.firstName,
+    lastName: payload.lastName,
+    dateOfBirth: payload.dateOfBirth,
+    profilePictureId: payload.profilePictureId,
+    phone: payload.phone,
+    cin: payload.cin,
+    bio: payload.bio,
+    gender: payload.gender,
+    isPrivate: payload.isPrivate
+  });
   return response.data;
 };
 
@@ -18,8 +31,14 @@ const resetPassword = async (token: string, password: string): Promise<{ message
   return response.data;
 };
 
+const forgetPassword = async (payload: { usernameOrEmail: string }): Promise<{ message: string }> => {
+  const response = await axios.post<{ message: string }>('/auth/forgot-password', payload);
+  return response.data;
+};
+
 export const auth = {
   signIn,
   signUp,
-  resetPassword
+  resetPassword,
+  forgetPassword
 };

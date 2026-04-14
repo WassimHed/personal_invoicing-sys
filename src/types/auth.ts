@@ -9,6 +9,15 @@ export interface SignupPayload {
   username: string;
   email: string;
   password: string;
+  firstName?: string;
+  lastName?: string;
+  dateOfBirth?: Date | string;
+  profilePictureId?: number;
+  phone?: string;
+  cin?: string;
+  bio?: string;
+  gender?: string;
+  isPrivate?: boolean;
 }
 
 export interface ResponseSigninDto {
@@ -26,9 +35,4 @@ export interface SigninPayload {
   password: string;
 }
 
-export interface SignupPayload {
-  // your signup payload fields
-  username: string;
-  email: string;
-  password: string;
-}
+

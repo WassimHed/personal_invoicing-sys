@@ -18,7 +18,7 @@ export const ForgotPasswordForm = ({
   className,
   goToAuthentication,
 }: ForgotPasswordFormProps) => {
-  const [usernameOrEmail, setEmailOrUsername] = React.useState("");
+  const [usernameOrEmail, setUsernameOrEmail] = React.useState("");
 
   const { mutate: sendResetLink, isPending } = useMutation({
     mutationFn: async () => api.auth.forgetPassword({ usernameOrEmail }),
@@ -28,12 +28,12 @@ export const ForgotPasswordForm = ({
     },
     onError: (error: ServerErrorResponse) => {
       toast.error(error.response?.data.error);
-      setEmailOrUsername("");
+      setUsernameOrEmail("");
     },
   });
 
   const handleSubmit = async () => {
-    if (!emailOrUsername) {
+    if (!usernameOrEmail) {
       toast.error(
         "Please enter your email or username to receive a reset link."
       );
@@ -58,8 +58,8 @@ export const ForgotPasswordForm = ({
             id="email"
             type="text"
             placeholder="Please enter your email or username"
-            value={emailOrUsername}
-            onChange={(e) => setEmailOrUsername(e.target.value)}
+            value={usernameOrEmail}
+            onChange={(e) => setUsernameOrEmail(e.target.value)}
             disabled={isPending}
           />
         </div>
