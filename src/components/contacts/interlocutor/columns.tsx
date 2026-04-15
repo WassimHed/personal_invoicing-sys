@@ -1,17 +1,17 @@
 import { Interlocutor } from '@/types';
+import { Badge } from '@/components/ui/badge';
 import { ColumnDef } from '@tanstack/react-table';
 import { transformDateTime } from '@/utils/date.utils';
 import { INTERLOCUTOR_FILTER_ATTRIBUTES } from '@/constants/interlocutor.filter-attributes';
-import { Badge } from '@/components/ui/badge';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { DataTableColumnHeader } from '@/components/shared/data-table/data-table-column-header';
 import { DataTableRowActions } from '@/components/shared/data-table/data-table-row-actions';
 import { DataTableConfig } from '@/components/shared/data-table/types';
 import { useTranslation } from 'react-i18next';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 export const useInterlocutorColumns = (
   context: DataTableConfig<Interlocutor>,
-  options?: { firmId: number }
+  firmId?: number
 ): ColumnDef<Interlocutor>[] => {
   const { t } = useTranslation('contacts');
   const { t: tCommon } = useTranslation('common');
@@ -99,8 +99,7 @@ export const useInterlocutorColumns = (
     }
   ];
 
-  // Conditionally add the "firms" column if `options?.firmId` is undefined
-  if (!options?.firmId) {
+  if (!firmId) {
     columns.push({
       accessorKey: 'firms',
       header: ({ column }) => (
@@ -116,7 +115,7 @@ export const useInterlocutorColumns = (
           return <div className="opacity-70">{t('interlocutor.empty_cells.firms')}</div>;
         }
 
-        const visibleFirms = firms.slice(0, 3); // Show up to 3 firms
+        const visibleFirms = firms.slice(0, 3);
         const hiddenFirms = firms.length - visibleFirms.length;
 
         return (
@@ -151,8 +150,7 @@ export const useInterlocutorColumns = (
     });
   }
 
-  // Conditionally add "position" and "is_main" columns if `options?.firmId` is provided
-  if (options?.firmId) {
+  if (firmId) {
     columns.push(
       {
         accessorKey: 'position',
@@ -165,7 +163,7 @@ export const useInterlocutorColumns = (
         ),
         cell: ({ row }) => {
           const position = row.original.firmsToInterlocutor?.find(
-            (firm) => firm.firmId === options.firmId
+            (firm) => firm.firmId === firmId
           )?.position;
 
           return (
@@ -173,9 +171,7 @@ export const useInterlocutorColumns = (
               {position ? (
                 position
               ) : (
-                <span className="text-zinc-400">
-                  {t('interlocutor.empty_cells.position')}
-                </span>
+                <span className="text-zinc-400">{t('interlocutor.empty_cells.position')}</span>
               )}
             </div>
           );
@@ -195,8 +191,7 @@ export const useInterlocutorColumns = (
         cell: ({ row }) => (
           <div>
             <Badge className="px-4 py-1">
-              {row.original.firmsToInterlocutor?.find((firm) => firm.firmId === options.firmId)
-                ?.isMain
+              {row.original.firmsToInterlocutor?.find((firm) => firm.firmId === firmId)?.isMain
                 ? tCommon('answer.yes')
                 : tCommon('answer.no')}
             </Badge>
@@ -208,29 +203,30 @@ export const useInterlocutorColumns = (
     );
   }
 
-  columns.push({
-    accessorKey: 'created_at',
-    header: ({ column }) => (
-      <DataTableColumnHeader
-        column={column}
-        context={context}
-        title={t('interlocutor.attributes.created_at')}
-        attribute={INTERLOCUTOR_FILTER_ATTRIBUTES.CREATEDAT}
-      />
-    ),
-    cell: ({ row }) => <div>{transformDateTime(row.original?.createdAt || '')}</div>,
-    enableSorting: true,
-    enableHiding: true
-  });
-
-  columns.push({
-    id: 'actions',
-    cell: ({ row }) => (
-      <div className="flex justify-end">
-        <DataTableRowActions row={row} context={context} />
-      </div>
-    )
-  });
+  columns.push(
+    {
+      accessorKey: 'created_at',
+      header: ({ column }) => (
+        <DataTableColumnHeader
+          column={column}
+          context={context}
+          title={t('interlocutor.attributes.created_at')}
+          attribute={INTERLOCUTOR_FILTER_ATTRIBUTES.CREATEDAT}
+        />
+      ),
+      cell: ({ row }) => <div>{transformDateTime(row.original?.createdAt || '')}</div>,
+      enableSorting: true,
+      enableHiding: true
+    },
+    {
+      id: 'actions',
+      cell: ({ row }) => (
+        <div className="flex justify-end">
+          <DataTableRowActions row={row} context={context} />
+        </div>
+      )
+    }
+  );
 
   return columns;
 };

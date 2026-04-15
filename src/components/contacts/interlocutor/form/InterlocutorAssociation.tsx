@@ -9,12 +9,11 @@ import {
   SelectValue
 } from '@/components/ui/select';
 import { useTranslation } from 'react-i18next';
-import { useInterlocutorManager } from '../hooks/useInterlocutorManager';
+import { useInterlocutorStore } from '@/hooks/stores/useInterlocutorStore';
 import { cn } from '@/lib/utils';
 import { Interlocutor } from '@/types';
+import { Input } from '@/components/ui/input';
 import { Combobox } from '@/components/ui/combo-box';
-import { FieldBuilder } from '@/components/shared/form-builder/FieldBuilder';
-import { FieldVariant } from '@/components/shared/form-builder/types';
 
 interface InterlocutorAssociationProps {
   className?: string;
@@ -30,7 +29,7 @@ export const InterlocutorAssociation: React.FC<InterlocutorAssociationProps> = (
   const { t: tCommon } = useTranslation('contacts');
   const { t: tInvoicing } = useTranslation('invoicing');
 
-  const interlocutorManager = useInterlocutorManager();
+  const interlocutorStore = useInterlocutorStore();
   return (
     <div className={cn('flex flex-col gap-2', className)}>
       {/* interlocutor */}
@@ -38,15 +37,15 @@ export const InterlocutorAssociation: React.FC<InterlocutorAssociationProps> = (
         <Label>{tCommon('interlocutor.singular')} (*)</Label>
         <Combobox
           value={
-            interlocutorManager?.id
-              ? `${interlocutorManager?.name}|${interlocutorManager?.surname}|${interlocutorManager?.id}`
+            interlocutorStore?.id
+              ? `${interlocutorStore?.name}|${interlocutorStore?.surname}|${interlocutorStore?.id}`
               : undefined
           }
           onValueChange={(e) => {
             const [name, surname, id] = e.split('|');
-            interlocutorManager.set('id', id);
-            interlocutorManager.set('name', name);
-            interlocutorManager.set('surname', surname);
+            interlocutorStore.set('id', id);
+            interlocutorStore.set('name', name);
+            interlocutorStore.set('surname', surname);
           }}
           data={interlocutors?.map((i) => ({
             label: `${i.name} ${i.surname} (${i.email})`,
@@ -60,19 +59,13 @@ export const InterlocutorAssociation: React.FC<InterlocutorAssociationProps> = (
 
       <div className="mx-1 w-full">
         <Label>{tCommon('interlocutor.attributes.position')}</Label>
-        <FieldBuilder
-          field={{
-            id: 'position',
-            className: 'mt-1',
-            variant: FieldVariant.TEXT,
-            placeholder: 'Ex. CEO',
-            props: {
-              value: interlocutorManager && interlocutorManager.position,
-              disabled: loading || false,
-              onChange: (v: string) => {
-                interlocutorManager.set('position', v);
-              }
-            }
+        <Input
+          isPending={loading || false}
+          className="mt-1"
+          placeholder="Ex. CEO"
+          value={interlocutorStore && interlocutorStore.position}
+          onChange={(e) => {
+            interlocutorStore.set('position', e.target.value);
           }}
         />
       </div>
