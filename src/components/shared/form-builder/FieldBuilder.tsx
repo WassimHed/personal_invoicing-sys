@@ -92,7 +92,7 @@ export const FieldBuilder = ({ field }: FieldBuilderProps) => {
     case 'select':
       return (
         <Select
-          value={field?.props?.value || ''}
+          value={field?.props?.value ?? ''}
           onValueChange={field?.props?.onValueChange}
           disabled={field?.props?.disabled}>
           <SelectTrigger
@@ -128,6 +128,7 @@ export const FieldBuilder = ({ field }: FieldBuilderProps) => {
             (field?.props?.value && new Date(field?.props?.value as string | Date | number)) ||
             undefined
           }
+          placeholder={field.placeholder}
           onChange={(value: Date | null) => field?.props?.onDateChange?.(value)}
           nullable={field?.props?.nullable}
           disabled={field?.props?.disabled}
@@ -218,8 +219,8 @@ export const FieldBuilder = ({ field }: FieldBuilderProps) => {
       return (
         <Editor
           {...field.props}
-          editorSerializedState={field?.props?.value}
-          onSerializedChange={(value) => field?.props?.onChange?.(value)}
+          editorSerializedState={field?.props?.value ? JSON.parse(field.props.value) : undefined}
+          onSerializedChange={(value) => field?.props?.onChange?.(JSON.stringify(value))}
         />
       );
     case 'checkbox':

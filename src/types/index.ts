@@ -27,6 +27,6 @@ export * from './utils';
 export * from './user';
 
 export * from './response';
-// export * from './core/invoicing';
-export * from './core/enterprise';
+export * from './core/invoicing';
+
 export * from './core/reference-types';

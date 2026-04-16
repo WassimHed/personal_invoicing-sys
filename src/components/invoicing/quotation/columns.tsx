@@ -7,18 +7,128 @@ import { useTranslation } from 'react-i18next';
 export const useSellingQuotationColumns = (
   context: DataTableConfig<ResponseQuotationDto>
 ): ColumnDef<ResponseQuotationDto>[] => {
-  const { t } = useTranslation('settings');
+  const { t } = useTranslation('invoicing');
   const { t: tCurrency } = useTranslation('currency');
 
   return [
     {
-      accessorKey: 'id',
+      accessorKey: t('quotation.table.columns.id'),
       header: ({ column }) => (
-        <DataTableColumnHeader column={column} context={context} title="ID" attribute={'id'} />
+        <DataTableColumnHeader
+          column={column}
+          context={context}
+          title={t('quotation.table.columns.id')}
+          attribute={'id'}
+        />
       ),
+
       cell: ({ row }) => <div>{row.original.id}</div>,
       enableSorting: true,
       enableHiding: true
+    },
+    {
+      accessorKey: t('quotation.table.columns.status'),
+      header: ({ column }) => (
+        <DataTableColumnHeader
+          column={column}
+          context={context}
+          title={t('quotation.table.columns.status')}
+          attribute={'status'}
+        />
+      ),
+      cell: ({ row }) => <div>{row.original.status}</div>,
+      enableSorting: true,
+      enableHiding: true
+    },
+    {
+      accessorKey: t('quotation.table.columns.date'),
+      header: ({ column }) => (
+        <DataTableColumnHeader
+          column={column}
+          context={context}
+          title={t('quotation.table.columns.date')}
+          attribute={'date'}
+        />
+      ),
+      cell: ({ row }) => {
+        const date = row.original.date ? new Date(row.original.date) : null;
+        return <DataTableCell variant={DataTableCellVariant.DATE_TIME} value={date} />;
+      },
+      enableSorting: true,
+      enableHiding: true
+    },
+    {
+      accessorKey: t('quotation.table.columns.dueDate'),
+      header: ({ column }) => (
+        <DataTableColumnHeader
+          column={column}
+          context={context}
+          title={t('quotation.table.columns.dueDate')}
+          attribute={'dueDate'}
+        />
+      ),
+      cell: ({ row }) => {
+        const date = row.original.dueDate ? new Date(row.original.dueDate) : null;
+        return <DataTableCell variant={DataTableCellVariant.DATE_TIME} value={date} />;
+      },
+      enableSorting: true,
+      enableHiding: true
+    },
+    {
+      accessorKey: t('quotation.table.columns.object'),
+      header: ({ column }) => (
+        <DataTableColumnHeader
+          column={column}
+          context={context}
+          title={t('quotation.table.columns.object')}
+          attribute={'object'}
+        />
+      ),
+      cell: ({ row }) => <div>{row.original.object}</div>,
+      enableSorting: true,
+      enableHiding: true
+    },
+    {
+      accessorKey: t('quotation.table.columns.createdAt'),
+      header: ({ column }) => (
+        <DataTableColumnHeader
+          column={column}
+          context={context}
+          title={t('quotation.table.columns.createdAt')}
+          attribute={'createdAt'}
+        />
+      ),
+      cell: ({ row }) => {
+        const date = row.original.createdAt ? new Date(row.original.createdAt) : null;
+        return <DataTableCell variant={DataTableCellVariant.DATE_TIME} value={date} />;
+      },
+      enableSorting: true,
+      enableHiding: true
+    },
+    {
+      accessorKey: t('quotation.table.columns.updatedAt'),
+      header: ({ column }) => (
+        <DataTableColumnHeader
+          column={column}
+          context={context}
+          title={t('quotation.table.columns.updatedAt')}
+          attribute={'updatedAt'}
+        />
+      ),
+      cell: ({ row }) => {
+        const date = row.original.updatedAt ? new Date(row.original.updatedAt) : null;
+        return <DataTableCell variant={DataTableCellVariant.DATE_TIME} value={date} />;
+      },
+      enableSorting: true,
+      enableHiding: true
+    },
+    {
+      id: 'actions',
+      cell: ({ row }) => (
+        <div className="flex justify-end">
+          <DataTableRowActions row={row} context={context} />
+        </div>
+      )
     }
   ];
 };
