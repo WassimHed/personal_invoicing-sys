@@ -13,6 +13,7 @@ import { useEnterpriseInterlocutors } from '@/hooks/content/core/useEnterpriseIn
 import { Spinner } from '@/components/shared';
 import React from 'react';
 import { useRouter } from 'next/router';
+import { useEnterpriseStore } from '@/hooks/stores/useEnterpriseStore';
 
 interface QuotationCreateFormProps {
   className?: string;
@@ -22,10 +23,12 @@ export const QuotationCreateForm = ({ className }: QuotationCreateFormProps) => 
   const router = useRouter();
   const isMobile = useMediaQuery('(max-width: 768px)');
   const quotationStore = useQuotationStore();
+  const enterpriseStore = useEnterpriseStore();
 
   React.useEffect(() => {
     return () => {
       quotationStore.reset();
+      enterpriseStore.reset();
     };
   }, []);
 
