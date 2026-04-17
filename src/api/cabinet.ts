@@ -1,6 +1,5 @@
 import axios from './axios';
 import { isEmail } from '@/utils/validations/string.validations';
-import { address } from './address';
 import { Cabinet, ToastValidation, UpdateCabinetDto } from '@/types';
 import { upload } from './upload';
 import { api } from '.';

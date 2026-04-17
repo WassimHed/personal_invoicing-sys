@@ -48,7 +48,9 @@ export const QuotationCreateForm = ({ className }: QuotationCreateFormProps) => 
       toast.success('Quotation created successfully!');
     },
     onError: (error: ServerErrorResponse) => {
-      toast.error(error.message || 'An error occurred while creating the quotation.');
+      toast.error(
+        error.response?.data.message || 'An error occurred while creating the quotation.'
+      );
     }
   });
 
