@@ -29,7 +29,9 @@ export const QuotationCreateForm = ({ className }: QuotationCreateFormProps) => 
     };
   }, []);
 
-  const { enterprises, isEnterprisesPending } = useEnterprises();
+  const { enterprises, isEnterprisesPending } = useEnterprises({
+    join: ['invoicingAddress', 'deliveryAddress']
+  });
   const { interlocutors, isFetchInterlocutorsPending } = useEnterpriseInterlocutors({
     enterpriseId: quotationStore.createDto.enterpriseId,
     enabled: !!quotationStore.createDto.enterpriseId
@@ -59,11 +61,7 @@ export const QuotationCreateForm = ({ className }: QuotationCreateFormProps) => 
 
   const { mainFormStructure, sidebarFormStructure } = useQuotationCreateFormStructure({
     store: quotationStore,
-    enterpriseOptions: mapToSelectOptions({
-      data: enterprises,
-      labelKey: 'name',
-      valueKey: 'id'
-    }),
+    enterprises,
     interlocutorOptions: mapToSelectOptions({
       data: interlocutors,
       labelKey: '',
