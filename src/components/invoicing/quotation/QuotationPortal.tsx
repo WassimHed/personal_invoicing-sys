@@ -6,12 +6,13 @@ import { useIntro } from '@/context/IntroContext';
 import { useDebounce } from '@/hooks/other/useDebounce';
 import { useQuotationStore } from '@/hooks/stores/useQuotationStore';
 import { cn } from '@/lib/utils';
-import { ResponseQuotationDto, UpdateQuotationDto } from '@/types';
-import { useQuery } from '@tanstack/react-query';
-import { dir } from 'console';
+import { ResponseQuotationDto, ServerErrorResponse, UpdateQuotationDto } from '@/types';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import { useRouter } from 'next/router';
 import React from 'react';
 import { useSellingQuotationColumns } from './columns';
+import { toast } from 'sonner';
+import { useQuotationDeleteDialog } from './modals/QuotationDeleteDialog';
 
 interface QuotationPortalProps {
   className?: string;
@@ -80,6 +81,26 @@ export const QuotationPortal = ({ className }: QuotationPortalProps) => {
     return sellingQuotationsResp?.data || [];
   }, [sellingQuotationsResp]);
 
+  const { mutate: deleteQuotation, isPending: isDeleteQuotationPending } = useMutation({
+    mutationFn: (id: number) => api.invoicing.quotation.remove(id),
+    onSuccess: () => {
+      refetchSellingQuotations();
+      closeDeleteQuotationDialog();
+      toast.success('Quotation deleted successfully');
+    },
+    onError: (error: ServerErrorResponse) => {
+      console.error('Error deleting quotation:', error);
+    }
+  });
+
+  const { deleteQuotationDialog, openDeleteQuotationDialog, closeDeleteQuotationDialog } =
+    useQuotationDeleteDialog({
+      representation: `Quotation #${quotationStore.response?.id} - ${quotationStore.response?.object}`,
+      deleteQuotation: () => deleteQuotation(quotationStore.response?.id!),
+      isDeletionPending: isDeleteQuotationPending,
+      resetQuotation: () => quotationStore.reset()
+    });
+
   const context: DataTableConfig<ResponseQuotationDto> = {
     singularName: 'Quotation',
     pluralName: 'Quotations',
@@ -90,7 +111,10 @@ export const QuotationPortal = ({ className }: QuotationPortalProps) => {
     updateCallback: (quotation) => {
       router.push(`/selling/quotations/${quotation.id}`);
     },
-    deleteCallback: () => {},
+    deleteCallback: (quotation) => {
+      quotationStore.set('response', quotation);
+      openDeleteQuotationDialog();
+    },
     additionalActions: {},
     //search, filtering, sorting & paging
     searchTerm,
@@ -129,6 +153,7 @@ export const QuotationPortal = ({ className }: QuotationPortalProps) => {
         context={context}
         isPending={isPending}
       />
+      {deleteQuotationDialog}
     </div>
   );
 };
