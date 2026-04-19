@@ -1,5 +1,6 @@
 import { Firm } from '@/types';
 import React from 'react';
+import { AddressDetails } from '../../../invoicing/AddressDetails';
 import { cn } from '@/lib/utils';
 import { useRouter } from 'next/router';
 import { useTranslation } from 'react-i18next';
