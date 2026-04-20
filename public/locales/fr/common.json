@@ -59,10 +59,6 @@
     "note1": "Il manque quelque chose...",
     "note2": "Désolé, nous ne pouvons pas trouver cette page. Vous trouverez beaucoup de choses à explorer sur la page d'accueil."
   },
-  "attributes": {
-    "id": "ID"
-  },
-  "add_joints": "Ajouter des Pièces Jointes",
   "coming_soon": {
     "coming_soon": "Bientôt disponible",
     "go_back": "Retour au tableau de bord",
@@ -115,13 +111,6 @@
     "validate": "Valider",
     "unassociate": "Dissocier"
   },
-  "buttons": {
-    "profile": "Profil",
-    "account": "Compte",
-    "billing": "Facturation",
-    "notifications": "Notifications",
-    "logout": "Se déconnecter"
-  },
   "elements": "Éléments",
   "files": {
     "uploading": "Téléchargement",
@@ -163,28 +152,6 @@
   "pick_date": "Choisissez une Date",
   "start_date": "Date de début",
   "end_date": "Date de fin",
-  "submenu": {
-    "account": "Compte",
-    "firms": "Entreprises",
-    "interlocutors": "Interlocuteurs",
-    "invoices": "Factures",
-    "other": "Autre",
-    "quotations": "Devis",
-    "payments": "Paiements",
-    "user_management": "Gestion des utilisateurs",
-    "logger": "Journalisation",
-    "system": "Système",
-    "withholding": "Retenue à la source",
-    "pdf": "PDF"
-  },
-  "administrative-tools": {
-    "logger": {},
-    "user_management": {
-      "users": "Utilisateurs",
-      "roles": "Rôles",
-      "permissions": "Permissions"
-    }
-  },
   "settings": {
     "account": {
       "singular": "Compte",

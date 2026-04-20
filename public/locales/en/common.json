@@ -59,9 +59,6 @@
     "note1": "Something is missing...",
     "note2": "Sorry, we can't find this page. You'll find plenty of things to explore on the homepage."
   },
-  "attributes": {
-    "id": "ID"
-  },
   "add_joints": "Add Attachments",
   "answer": {
     "yes": "Yes",
@@ -114,13 +111,6 @@
     "reset": "Reset",
     "validate": "Validate",
     "unassociate": "Unassociate"
-  },
-  "buttons": {
-    "profile": "Profile",
-    "account": "Account",
-    "billing": "Billing",
-    "notifications": "Notifications",
-    "logout": "Log out"
   },
   "elements": "Elements",
   "files": {
@@ -188,11 +178,6 @@
       "tax_withholding": "Tax Withholding",
       "tax": "Tax Synthesis",
       "default_condition": "Default Condition"
-    },
-    "user_management": {
-      "users": "Users",
-      "roles": "Roles",
-      "permissions": "Permissions"
     }
   },
   "table": {
