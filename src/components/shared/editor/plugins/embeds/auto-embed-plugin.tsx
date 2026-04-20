@@ -11,23 +11,14 @@ import { PopoverPortal } from "@radix-ui/react-popover"
 import type { LexicalEditor } from "lexical"
 import { TwitterIcon, YoutubeIcon } from "lucide-react"
 
-import { useEditorModal } from "@/components/editor/editor-hooks/use-modal"
-import { INSERT_TWEET_COMMAND } from "@/components/editor/plugins/embeds/twitter-plugin"
-import { INSERT_YOUTUBE_COMMAND } from "@/components/editor/plugins/embeds/youtube-plugin"
-import { Button } from "@/components/ui/button"
-import {
-  Command,
-  CommandGroup,
-  CommandItem,
-  CommandList,
-} from "@/components/ui/command"
-import { DialogFooter } from "@/components/ui/dialog"
-import { Input } from "@/components/ui/input"
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover"
+import { useEditorModal } from '@/components/shared/editor/editor-hooks/use-modal';
+import { INSERT_TWEET_COMMAND } from '@/components/shared/editor/plugins/embeds/twitter-plugin';
+import { INSERT_YOUTUBE_COMMAND } from '@/components/shared/editor/plugins/embeds/youtube-plugin';
+import { Button } from '@/components/ui/button';
+import { Command, CommandGroup, CommandItem, CommandList } from '@/components/ui/command';
+import { DialogFooter } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 
 export interface CustomEmbedConfig extends EmbedConfig {
   // Human readable name of the embeded content e.g. Tweet or Google Map.
