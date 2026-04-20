@@ -1,37 +1,41 @@
 import { WalletCards } from 'lucide-react';
-import { useTranslation } from 'react-i18next';
 import { useSheet } from '@/components/shared/Sheets';
-import { UpdateTaxForm } from '../forms/UpdateTaxForm';
+import { useTranslation } from 'react-i18next';
+import { UpdateTaxRateForm } from '../forms/UpdateTaxRateForm';
 
-interface TaxUpdateSheet {
-  updateTax: () => void;
+interface TaxRateUpdateSheetProps {
+  updateTaxRate: () => void;
   isUpdatePending?: boolean;
-  resetTax?: () => void;
+  resetTaxRate?: () => void;
 }
 
-export const useTaxUpdateSheet = ({
-  updateTax,
+export const useTaxRateUpdateSheet = ({
+  updateTaxRate,
   isUpdatePending = false,
-  resetTax
-}: TaxUpdateSheet) => {
-  const { t: tSettings } = useTranslation('settings');
+  resetTaxRate
+}: TaxRateUpdateSheetProps) => {
+  const { t } = useTranslation('content-management');
 
   const {
-    SheetFragment: updateTaxSheet,
-    openSheet: openUpdateTaxSheet,
-    closeSheet: closeUpdateTaxSheet
+    SheetFragment: updateTaxRateSheet,
+    openSheet: openUpdateTaxRateSheet,
+    closeSheet: closeUpdateTaxRateSheet
   } = useSheet({
     title: (
       <div className="flex items-center gap-2">
         <WalletCards />
-        {tSettings('tax.update_prompt')}
+        {t('taxRate.sheets.update.title')}
       </div>
     ),
-    description: tSettings('tax.update_dialog_description'),
-    children: <UpdateTaxForm updateTax={updateTax} isUpdatePending={isUpdatePending} />,
+    description: t('taxRate.sheets.update.description'),
+    children: <UpdateTaxRateForm updateTaxRate={updateTaxRate} isUpdatePending={isUpdatePending} />,
     className: 'min-w-[50vw] flex flex-col flex-1 overflow-hidden',
-    onToggle: resetTax
+    onToggle: resetTaxRate
   });
 
-  return { updateTaxSheet, openUpdateTaxSheet, closeUpdateTaxSheet };
+  return {
+    updateTaxRateSheet,
+    openUpdateTaxRateSheet,
+    closeUpdateTaxRateSheet
+  };
 };
