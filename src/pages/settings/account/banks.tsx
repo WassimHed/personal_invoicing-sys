@@ -1,11 +1,11 @@
 import React from 'react';
 import { InformationalSettings } from '@/components/settings/InformationalSettings';
-import { BankAccountPortal } from '@/components/settings/BankAccount/BankAccountPortal';
+import { BankAccountMain } from '@/components/content-management/bank-accounts/BankAccountPortal';
 
 export default function Page() {
   return (
     <InformationalSettings>
-      <BankAccountPortal />
+      <BankAccountMain/>
     </InformationalSettings>
   );
 }
