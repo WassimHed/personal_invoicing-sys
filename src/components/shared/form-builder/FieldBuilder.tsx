@@ -22,7 +22,7 @@ import { ImageUploader } from './ImageUploader';
 import { PasswordField } from './PasswordField';
 import { PhoneInput } from '@/components/ui/phone-input';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { Editor } from '@/components/blocks/editor-x/editor';
+import { Editor } from '@/components/editor/blocks/editor-x/editor';
 
 interface FieldBuilderProps {
   field?: Field<any>;
