@@ -1,46 +1,53 @@
 import React from 'react';
 import { api } from '@/api';
-import { Tax } from '@/types';
+import { ResponseTaxRateDto, Tax } from '@/types';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { getErrorMessage } from '@/utils/errors';
 import { useDebounce } from '@/hooks/other/useDebounce';
 import { useTranslation } from 'react-i18next';
-import { useTaxStore } from '@/hooks/stores/useTaxStore';
-import { DataTable } from '@/components/shared/data-table/data-table';
-import { DataTableConfig } from '@/components/shared/data-table/types';
-import { getTaxColumns } from './columns';
+import { useTaxManager } from '../../../hooks/stores/useTaxRateStore';
+
+import { useTaxRateColumns } from './columns';
 import { useRouter } from 'next/router';
 import { useBreadcrumb } from '@/context/BreadcrumbContext';
 import { cn } from '@/lib/utils';
-import { useTaxDeleteDialog } from './modals/TaxDeleteDialog';
-import { useTaxCreateSheet } from './modals/TaxCreateSheet';
-import { useTaxUpdateSheet } from './modals/TaxUpdateSheet';
+import { useTaxDeleteDialog } from './modals/TaxRateDeleteDialog';
+import { useTaxCreateSheet } from './modals/TaxRateCreateSheet';
+import { useTaxUpdateSheet } from './modals/TaxRateUpdateSheet';
 import { TAX_FILTER_ATTRIBUTES } from '@/constants/tax.filter-attributes';
+import { createTaxSchema, updateTaxSchema } from '@/types/validations/tax.validation';
+import { DataTable } from '@/components/shared/data-table/data-table';
+import { useIntro } from '@/context/IntroContext';
+import { DataTableConfig } from '@/components/shared/data-table/types';
 
-interface TaxMainProps {
+interface TaxRatesPortalProps {
   className?: string;
 }
 
-export const TaxPortal: React.FC<TaxMainProps> = ({ className }) => {
-  //next-router
+export const TaxRatesPortal = ({ className }: TaxRatesPortalProps) => {
   const router = useRouter();
   const { t: tCommon } = useTranslation('common');
   const { t: tSettings } = useTranslation('settings');
   const { t: tCurrency } = useTranslation('currency');
 
-  //set page title in the breadcrumb
-  const { setRoutes } = useBreadcrumb();
+  const { setIntro, clearIntro } = useIntro();
+  const { setRoutes, clearRoutes } = useBreadcrumb();
   React.useEffect(() => {
-    if (setRoutes) {
-      setRoutes?.([
-
-        { title: tCommon('menu.settings') },
-        { title: tCommon('submenu.system') },
-        { title: tCommon('settings.system.tax') }
-      ]);
-    }
-  }, [router.locale, setRoutes, tCommon]);
+    setIntro?.(
+      'Tax Rates',
+      'Here you can manage your tax rates, which will be applied to your products and services.'
+    );
+    setRoutes?.([
+      { title: tCommon('menu.settings') },
+      { title: tCommon('submenu.system') },
+      { title: tCommon('settings.system.tax') }
+    ]);
+    return () => {
+      clearIntro?.();
+      clearRoutes?.();
+    };
+  }, [router.locale]);
 
   const taxStore = useTaxStore();
 
@@ -65,7 +72,7 @@ export const TaxPortal: React.FC<TaxMainProps> = ({ className }) => {
     refetch: refetchTaxes
   } = useQuery({
     queryKey: [
-      'taxes',
+      'taxe-rates',
       debouncedPage,
       debouncedSize,
       debouncedSortDetails.order,
@@ -73,15 +80,11 @@ export const TaxPortal: React.FC<TaxMainProps> = ({ className }) => {
       debouncedSearchTerm
     ],
     queryFn: () =>
-      api.tax.findPaginated({
-        page: debouncedPage,
-        limit: debouncedSize,
-        sort: `${debouncedSortDetails.sortKey},${debouncedSortDetails.order ? 'ASC' : 'DESC'}`,
-        filter: debouncedSearchTerm
-          ? Object.values(TAX_FILTER_ATTRIBUTES)
-              .map((key) => `${key}||$cont||${debouncedSearchTerm}`)
-              .join('||$or||')
-          : ''
+      api.core.taxRate.findPaginated({
+        page: debouncedPage.toString(),
+        limit: debouncedSize.toString(),
+        sort: `${debouncedSortDetails.sortKey},${debouncedSortDetails.order ? 'asc' : 'desc'}`,
+        search: debouncedSearchTerm
       })
   });
 
@@ -128,41 +131,26 @@ export const TaxPortal: React.FC<TaxMainProps> = ({ className }) => {
       refetchTaxes();
     },
     onError: (error) => {
-      toast.error(getErrorMessage('settings', error, 'tax.action_remove_failure'));
+      toast.error(getErrorMessage('', error, 'Erreur lors de la suppression du taxe'));
     }
   });
 
-  const { createTaxSheet, openCreateTaxSheet, closeCreateTaxSheet } = useTaxCreateSheet({
-    createTax,
-    isCreatePending,
-    resetTax: taxStore.reset
-  });
+  // const handleValidation = (result: any) => {
+  //   const errorMessage = Object.values(result.error.flatten().fieldErrors)
+  //     .flat()
+  //     .map((error) => `<li>${error}</li>`)
+  //     .join('');
+  //   toast('⛔ Validation Errors', {
+  //     description: <ul dangerouslySetInnerHTML={{ __html: errorMessage }} />
+  //   });
+  // };
 
-  const { updateTaxSheet, openUpdateTaxSheet, closeUpdateTaxSheet } = useTaxUpdateSheet({
-    updateTax,
-    isUpdatePending,
-    resetTax: taxStore.reset
-  });
-
-  const { deleteTaxDialog, openDeleteTaxDialog, closeDeleteTaxDialog } = useTaxDeleteDialog(
-    taxStore.response?.label,
-    () => removeTax(taxStore.response?.id || 0),
-    isDeletePending
-  );
-
-  const context: DataTableConfig<Tax> = {
-    singularName: tSettings('tax.singular'),
-    pluralName: tSettings('tax.plural'),
-    //dialogs
-    createCallback: () => {
-      openCreateTaxSheet();
-    },
-    updateCallback: () => {
-      openUpdateTaxSheet();
-    },
-    deleteCallback: () => {
-      openDeleteTaxDialog();
-    },
+  const context: DataTableConfig<ResponseTaxRateDto> = {
+    singularName: 'Tax Rate',
+    pluralName: 'Tax Rates',
+    createCallback: () => {},
+    updateCallback: () => {},
+    deleteCallback: () => {},
     //search, filtering, sorting & paging
     searchTerm,
     setSearchTerm,
@@ -173,21 +161,10 @@ export const TaxPortal: React.FC<TaxMainProps> = ({ className }) => {
     setSize,
     order: sortDetails.order,
     sortKey: sortDetails.sortKey,
-    setSortDetails: (order: boolean, sortKey: string) => setSortDetails({ order, sortKey }),
-    targetEntity: (entity) => {
-      taxStore.set('response', entity);
-      taxStore.set('updateDto', {
-        id: entity.id,
-        label: entity.label,
-        value: entity.value,
-        isRate: entity.isRate,
-        isSpecial: entity.isSpecial,
-        currencyId: entity.currencyId
-      });
-    }
+    setSortDetails: (order: boolean, sortKey: string) => setSortDetails({ order, sortKey })
   };
 
-  const columns = getTaxColumns(tSettings, tCommon, tCurrency, context);
+  const columns = useTaxRateColumns(context);
 
   const isPending =
     isFetchPending ||
@@ -205,13 +182,10 @@ export const TaxPortal: React.FC<TaxMainProps> = ({ className }) => {
         className="flex flex-col flex-1 overflow-hidden p-1"
         containerClassName="overflow-auto"
         data={taxes}
-        columns={columns}
         context={context}
+        columns={columns}
         isPending={isPending}
       />
-      {createTaxSheet}
-      {updateTaxSheet}
-      {deleteTaxDialog}
     </div>
   );
 };
