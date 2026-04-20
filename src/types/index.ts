@@ -4,7 +4,6 @@ export * from './activity';
 export * from './app-config';
 export * from './core/address';
 export * from './article';
-export * from './bank-account';
 export * from './cabinet';
 export * from './country';
 export * from './currency';
@@ -30,3 +29,4 @@ export * from './core/address';
 export * from './core/invoicing';
 
 export * from './core/reference-types';
+export * from './core/bank-account';
