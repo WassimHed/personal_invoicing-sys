@@ -38,10 +38,8 @@ const useInitializedState = ({
     initializeData();
   };
 
-  const isDisabled = React.useMemo(() => {
-    if (!isDataLoaded || loading) return true;
-    return _.isEqual(initialData, getCurrentData());
-  }, [initialData, getCurrentData, isDataLoaded, loading]);
+  const isDisabled =
+    !isDataLoaded || loading || _.isEqual(initialData, getCurrentData());
 
   return {
     isDisabled,

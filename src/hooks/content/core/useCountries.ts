@@ -1,5 +1,6 @@
 import React from 'react';
 import { api } from '@/api';
+import { CountryExtras, ResponseRefParamDto } from '@/types';
 import { useQuery } from '@tanstack/react-query';
 
 interface useCountryProps {
@@ -22,7 +23,7 @@ export const useCountries = ({ enabled = true }: useCountryProps = { enabled: tr
 
   const countries = React.useMemo(() => {
     if (!countriesResp) return [];
-    return countriesResp;
+    return countriesResp as ResponseRefParamDto<CountryExtras>[];
   }, [countriesResp]);
 
   return {

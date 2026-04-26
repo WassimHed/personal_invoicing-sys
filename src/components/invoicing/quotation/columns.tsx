@@ -1,5 +1,7 @@
 import { DataTableColumnHeader } from '@/components/shared/data-table/data-table-column-header';
-import { DataTableConfig } from '@/components/shared/data-table/types';
+import DataTableCell from '@/components/shared/data-table/core/data-table-cell';
+import { DataTableCellVariant, DataTableConfig } from '@/components/shared/data-table/types';
+import { DataTableRowActions } from '@/components/shared/data-table/data-table-row-actions';
 import { ResponseQuotationDto } from '@/types';
 import { ColumnDef } from '@tanstack/react-table';
 import { useTranslation } from 'react-i18next';

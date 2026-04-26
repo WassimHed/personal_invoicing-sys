@@ -7,10 +7,10 @@ import { toast } from 'sonner';
 import { Spinner } from '@/components/shared';
 import { cn } from '@/lib/utils';
 import { useCabinetStore } from '@/hooks/stores/useCabinetStore';
-import useCountry from '@/hooks/content/useCountry';
 import useCabinet from '@/hooks/content/useCabinet';
-import useCurrency from '@/hooks/content/useCurrency';
-import useActivities from '@/hooks/content/useActivities';
+import { useActivities } from '@/hooks/content/core/useActivities';
+import { useCountries } from '@/hooks/content/core/useCountries';
+import { useCurrencies } from '@/hooks/content/core/useCurrencies';
 import { useTranslation } from 'react-i18next';
 import useInitializedState from '@/hooks/use-initialized-state';
 import { useRouter } from 'next/router';
@@ -40,8 +40,8 @@ export const CabinetPortal: React.FC<CabinetPortalProps> = ({ className }) => {
 
   const { cabinet, isFetchCabinetPending, error, refetchCabinet } = useCabinet();
   const { activities, isFetchActivitiesPending } = useActivities();
-  const { currencies, isCurrenciesPending } = useCurrency();
-  const { countries, isFetchCountriesPending } = useCountry();
+  const { currencies, isCurrenciesPending } = useCurrencies();
+  const { countries, isFetchCountriesPending } = useCountries();
 
   const cabinetStore = useCabinetStore();
 
@@ -63,8 +63,14 @@ export const CabinetPortal: React.FC<CabinetPortalProps> = ({ className }) => {
     isFetchCountriesPending ||
     isUpdatePending;
 
+  const stableCabinet = React.useMemo(
+    () => cabinet ?? ({} as Partial<Cabinet>),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [cabinet?.id, cabinet?.updatedAt]
+  );
+
   const { isDisabled, globalReset } = useInitializedState({
-    data: cabinet || ({} as Partial<Cabinet>),
+    data: stableCabinet,
     getCurrentData: () => cabinetStore.getCabinet(),
     setFormData: (data: Partial<Cabinet>) => cabinetStore.setCabinet(data),
     resetData: () => cabinetStore.reset(),

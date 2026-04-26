@@ -383,8 +383,10 @@ export const useEnterpriseCreateFormStructure = ({
     id: 'delivery-country',
     label: tContact('address.form.country'),
     variant: FieldVariant.SELECT,
+    required: true,
     description: tContact('address.form.descriptions.country'),
     placeholder: tContact('address.form.placeholders.country'),
+    error: store.errors?.deliveryAddress?.countryId?.[0],
     props: {
       value: store.createDto.deliveryAddress.countryId?.toString(),
       onValueChange: (value) => {
@@ -459,8 +461,10 @@ export const useEnterpriseCreateFormStructure = ({
     id: 'invoicing-country',
     label: tContact('address.form.country'),
     variant: FieldVariant.SELECT,
+    required: true,
     description: tContact('address.form.descriptions.country'),
     placeholder: tContact('address.form.placeholders.country'),
+    error: store.errors?.invoicingAddress?.countryId?.[0],
     props: {
       value: store.createDto.invoicingAddress.countryId?.toString(),
       onValueChange: (value) => {

@@ -4,7 +4,6 @@ import { IconNode, ImagePlus, ListX, Telescope, X } from 'lucide-react';
 import { Input } from './input';
 import { Label } from './label';
 import { cn } from '@/lib/utils';
-import Image from 'next/image';
 import { Button } from './button';
 import { useDebounce } from '@/hooks/other/useDebounce';
 import { PreviewDialog } from './image-preview-dialog';
@@ -13,7 +12,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './tool
 
 interface ImageUploaderProps {
   className?: string;
-  value?: File;
+  value?: File | string;
   onChange?: (value?: File) => void;
   width?: `${number}`;
   height?: `${number}`;
@@ -38,10 +37,16 @@ export const ImageUploader: React.FC<ImageUploaderProps> = ({
 
   const [viewDialog, setViewDialog] = React.useState(false);
 
-  const createPreview = (file: File) => {
-    const reader = new FileReader();
-    reader.onload = () => setPreview(reader.result);
-    reader.readAsDataURL(file);
+  const createPreview = (file: File | string) => {
+    if (typeof file === 'string') {
+      setPreview(file);
+      return;
+    }
+    if (file instanceof File || file instanceof Blob) {
+      setPreview(URL.createObjectURL(file));
+      return;
+    }
+    setPreview(null);
   };
 
   React.useEffect(() => {
@@ -92,10 +97,10 @@ export const ImageUploader: React.FC<ImageUploaderProps> = ({
 
         {debouncedPreview ? (
           <div className="flex flex-col gap-4 items-center w-full h-32">
-            <Image
+            <img
               src={debouncedPreview as string}
               alt={alt || ''}
-              className="rounded-lg my-auto"
+              className="rounded-lg my-auto object-cover"
               width={width || '128'}
               height={height || '128'}
             />

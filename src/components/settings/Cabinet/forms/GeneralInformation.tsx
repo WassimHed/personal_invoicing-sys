@@ -1,7 +1,7 @@
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Building2 } from 'lucide-react';
-import { Country } from '@/types';
+import { CountryExtras, ResponseRefParamDto } from '@/types';
 import { useCabinetStore } from '@/hooks/stores/useCabinetStore';
 import { useTranslation } from 'react-i18next';
 import { useCabinetFormStructure } from '../useCabinetFormStructure';
@@ -9,7 +9,7 @@ import { FormBuilder } from '@/components/shared/form-builder/FormBuilder';
 
 interface GeneralInformationProps {
   className?: string;
-  countries?: Country[];
+  countries?: ResponseRefParamDto<CountryExtras>[];
   isPending?: boolean;
 }
 

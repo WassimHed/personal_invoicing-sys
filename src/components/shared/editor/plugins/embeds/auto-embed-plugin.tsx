@@ -9,7 +9,7 @@ import {
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext"
 import { PopoverPortal } from "@radix-ui/react-popover"
 import type { LexicalEditor } from "lexical"
-import { TwitterIcon, YoutubeIcon } from "lucide-react"
+import { X, VideoIcon } from "lucide-react"
 
 import { useEditorModal } from '@/components/shared/editor/editor-hooks/use-modal';
 import { INSERT_TWEET_COMMAND } from '@/components/shared/editor/plugins/embeds/twitter-plugin';
@@ -43,7 +43,7 @@ export const YoutubeEmbedConfig: CustomEmbedConfig = {
   exampleUrl: "https://www.youtube.com/watch?v=jNQXAC9IVRw",
 
   // Icon for display.
-  icon: <YoutubeIcon className="size-4" />,
+  icon: <VideoIcon className="size-4" />,
 
   insertNode: (editor: LexicalEditor, result: EmbedMatchResult) => {
     editor.dispatchCommand(INSERT_YOUTUBE_COMMAND, result.id)
@@ -78,7 +78,7 @@ export const TwitterEmbedConfig: CustomEmbedConfig = {
   exampleUrl: "https://twitter.com/jack/status/20",
 
   // Icon for display.
-  icon: <TwitterIcon className="size-4" />,
+  icon: <X className="size-4" />,
 
   // Create the Lexical embed node from the url data.
   insertNode: (editor: LexicalEditor, result: EmbedMatchResult) => {

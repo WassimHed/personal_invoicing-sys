@@ -29,8 +29,7 @@ export const useTaxRateUpdateSheet = ({
     ),
     description: t('taxRate.sheets.update.description'),
     children: <UpdateTaxRateForm updateTaxRate={updateTaxRate} isUpdatePending={isUpdatePending} />,
-    className: 'min-w-[50vw] flex flex-col flex-1 overflow-hidden',
-    onToggle: resetTaxRate
+    className: 'min-w-[50vw] flex flex-col flex-1 overflow-hidden'
   });
 
   return {

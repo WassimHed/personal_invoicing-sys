@@ -1,5 +1,5 @@
 import React from 'react';
-import { Activity, Currency } from '@/types';
+import { Activity, CurrencyPayload, ResponseRefParamDto } from '@/types';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useCabinetStore } from '@/hooks/stores/useCabinetStore';
 import { Calculator } from 'lucide-react';
@@ -10,7 +10,7 @@ import { FormBuilder } from '@/components/shared/form-builder/FormBuilder';
 interface AccountingInformationProps {
   className?: string;
   activities: Activity[];
-  currencies: Currency[];
+  currencies: ResponseRefParamDto<CurrencyPayload>[];
   isPending?: boolean;
 }
 

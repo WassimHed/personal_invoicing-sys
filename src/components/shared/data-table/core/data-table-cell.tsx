@@ -39,4 +39,5 @@ export default function DataTableCell({
       </Avatar>
     );
   }
+  return <div className={className}>{value}</div>;
 }

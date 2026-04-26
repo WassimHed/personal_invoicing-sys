@@ -102,7 +102,7 @@ export const useUpdateTaxRateFormStructure = ({
       options: currencies,
       value: store?.updateDto?.currencyId?.toString() || undefined,
       onValueChange: (value) => {
-        store.setNested('updateDto.currencyId', Number(value));
+        store.setNested('updateDto.currencyId', value ? Number(value) : null);
         store.setNested('updateDtoErrors.currencyId', []);
       }
     }

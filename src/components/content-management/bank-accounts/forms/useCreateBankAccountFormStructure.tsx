@@ -139,7 +139,7 @@ export const useCreateBankAccountFormStructure = ({
             fields: [ribField, ibanField]
           },
           {
-            fields: [mainField]
+            fields: [mainField  ]
           }
         ]
       }

@@ -83,7 +83,8 @@ export const TaxRatesPortal = ({ className }: TaxRatesPortalProps) => {
         page: debouncedPage.toString(),
         limit: debouncedSize.toString(),
         sort: `${debouncedSortDetails.sortKey},${debouncedSortDetails.order ? 'asc' : 'desc'}`,
-        search: debouncedSearchTerm
+        search: debouncedSearchTerm,
+        join: 'currency'
       })
   });
 
@@ -136,8 +137,10 @@ export const TaxRatesPortal = ({ className }: TaxRatesPortalProps) => {
       if (taxes?.length == 1 && page > 1) setPage(page - 1);
       toast.success(tContentManagement('taxRate.messages.deleteSuccess'));
       refetchTaxes();
+      taxRateStore.reset();
     },
     onError: (error) => {
+      console.error('Delete Tax Rate Error:', error);
       toast.error(getErrorMessage('content-management', error, 'taxRate.messages.deleteFailure'));
     }
   });
@@ -160,8 +163,7 @@ export const TaxRatesPortal = ({ className }: TaxRatesPortalProps) => {
     useTaxRateDeleteDialog({
       representation: taxRateStore?.response?.label,
       deleteTaxRate: () => removeTaxRate(taxRateStore?.response?.id || 0),
-      isDeletionPending: isDeletePending,
-      reset: taxRateStore.reset
+      isDeletionPending: isDeletePending
     });
 
   const context: DataTableConfig<ResponseTaxRateDto> = {
@@ -195,7 +197,7 @@ export const TaxRatesPortal = ({ className }: TaxRatesPortalProps) => {
         value: entity.value,
         type: entity.type,
         special: entity.special,
-        currencyId: entity?.currency?.id
+        currencyId: entity.currencyId
       });
     }
   };

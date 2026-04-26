@@ -1,5 +1,5 @@
 import { FormBuilder } from '@/components/shared/form-builder/FormBuilder';
-import { useCreateTaxRateFormStructure } from './useCreateTaxFormStructure';
+import { useCreateTaxRateFormStructure } from './useCreateTaxRateFormStructure';
 import { useTaxRateStore } from '@/hooks/stores/useTaxRateStore';
 import { useCurrencies } from '@/hooks/content/core/useCurrencies';
 import { Button } from '@/components/ui/button';

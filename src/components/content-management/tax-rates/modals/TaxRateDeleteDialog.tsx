@@ -52,7 +52,6 @@ export const useTaxRateDeleteDialog = ({
       </div>
     ),
     className: 'w-[500px]',
-    onToggle: reset
   });
 
   return {

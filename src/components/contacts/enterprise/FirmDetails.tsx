@@ -51,7 +51,8 @@ export const FirmDetails: React.FC<FirmDetailsProps> = ({ className, firmId, chi
   ];
 
   return (
-    // <div className={cn('flex flex-col flex-1 overflow-hidden m-5 lg:mx-10', className)}>
+    <>
+    {/* <div className={cn('flex flex-col flex-1 overflow-hidden m-5 lg:mx-10', className)}>
     //   <div className="space-y-0.5 py-5 sm:py-0">
     //     <h1 className="text-2xl font-bold tracking-tight md:text-3xl">
     //       {tContacts('firm.detailmenu.title', { firmName: firm?.name })}
@@ -73,6 +74,7 @@ export const FirmDetails: React.FC<FirmDetailsProps> = ({ className, firmId, chi
     //       )}
     //     </div>
     //   </div>
-    // </div>
+    // </div> */}
+    </>
   );
 };

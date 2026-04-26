@@ -7,15 +7,15 @@ import {
   TextFieldProps
 } from '@/components/shared/form-builder/types';
 import { useTranslation } from 'react-i18next';
-import { Activity, Country, Currency } from '@/types';
+import { Activity, CountryExtras, CurrencyPayload, ResponseRefParamDto } from '@/types';
 
 import { CabinetStore } from '@/hooks/stores/useCabinetStore';
 
 interface UseCabinetFormStructureProps {
   cabinetManager: CabinetStore;
-  countries?: Country[];
+  countries?: ResponseRefParamDto<CountryExtras>[];
   activities?: Activity[];
-  currencies?: Currency[];
+  currencies?: ResponseRefParamDto<CurrencyPayload>[];
   isPending?: boolean;
 }
 
@@ -144,7 +144,9 @@ export const useCabinetFormStructure = ({
           countryId: value
         }),
       options: countries.map((country) => ({
-        label: country?.alpha2Code ? tCountry(country.alpha2Code) : (country.alpha3Code || ''),
+        label: country.extras?.alpha2Code
+          ? tCountry(country.extras.alpha2Code)
+          : country.extras?.alpha3Code || country.label || '',
         value: country.id!.toString()
       })),
       disabled: isPending
@@ -186,9 +188,9 @@ export const useCabinetFormStructure = ({
     placeholder: 'Devise Principale',
     props: {
       value: cabinetManager.currency?.id?.toString(),
-      onValueChange: (value) => cabinetManager.set('currency', { id: parseInt(value) } as Currency),
+      onValueChange: (value) => cabinetManager.set('currency', { id: parseInt(value) }),
       options: currencies.map((currency) => ({
-        label: `${currency?.code ? tCurrency(currency?.code) : currency.label} (${currency.symbol})`,
+        label: `${currency.extras?.code ? tCurrency(currency.extras.code) : currency.label} (${currency.extras?.symbol || ''})`,
         value: currency.id!.toString()
       })),
       disabled: isPending

@@ -16,12 +16,11 @@ const findOne = async (
     const signatureBlob = response.data.signatureId
       ? await api.upload.fetchBlobById(response.data.signatureId)
       : undefined;
+      
     return {
       ...response.data,
-      logo: logoBlob ? new File([logoBlob], 'logo', { type: logoBlob.type }) : undefined,
-      signature: signatureBlob
-        ? new File([signatureBlob], 'signature', { type: signatureBlob.type })
-        : undefined
+      logo: logoBlob ? URL.createObjectURL(logoBlob) : undefined,
+      signature: signatureBlob ? URL.createObjectURL(signatureBlob) : undefined
     };
   }
   return response.data;
@@ -40,8 +39,8 @@ const update = async (cabinet: UpdateCabinetDto): Promise<Cabinet> => {
   
   const response = await axios.put<Cabinet>(`public/cabinet/${cabinet.id}`, {
     ...payload,
-    logoId: logoId || undefined,
-    signatureId: signatureId || undefined
+    logoId: cabinet.logo ? (logoId || undefined) : null,
+    signatureId: cabinet.signature ? (signatureId || undefined) : null
   });
   
   return response.data;
